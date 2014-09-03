@@ -38,9 +38,10 @@ class FrozenCounter(collections.Mapping):
     """Don't forget the docstrings!!"""
     #__slots__ = ('_d','_hash') # Sannsynligvis meningsløs hvis Mapping ikke har __slots__.
     def __init__(self, *args, **kwargs):
-        FrozenCounter.__setattr__(self, '_d', collections.Counter(*args, **kwargs))
-        FrozenCounter.__setattr__(self, '_hash', None)
+        object.__setattr__(self, '_d', collections.Counter(*args, **kwargs))
+        object.__setattr__(self, '_hash', None)
 
+# TODO: block setattr and delattr...
     def __iter__(self):
         return iter(self._d)
 
@@ -55,6 +56,16 @@ class FrozenCounter(collections.Mapping):
             for i in xrange(multiplicity): #  TODO: How to repeat yield without for?
                 yield value
 
+    def __eq__(self, other): #  TODO: Check that this is a good implementation.
+        if self is other:
+            return True
+        elif isinstance(other, FrozenCounter):
+            return self._d == other._d
+        elif isinstance(other, collections.Counter):
+            return self._d == other
+        else:
+            return NotImplemented
+
     def __hash__(self):
         # It would have been simpler and maybe more obvious to 
         # use hash(tuple(sorted(self._d.iteritems()))) from this discussion
@@ -62,10 +73,16 @@ class FrozenCounter(collections.Mapping):
         # n we are going to run into, but sometimes it's hard to resist the 
         # urge to optimize when it will gain improved algorithmic performance.
         if self._hash is None:
-            FrozenCounter.__setattr__(self, '_hash', 0)
+            result = 0
             for pair in self.iteritems():
-                FrozenCounter.__setattr__(self, '_hash', self._hash ^ hash(pair))
+                result ^= hash(pair)
+            object.__setattr__(self, '_hash', result)
         return self._hash
+#         if self._hash is None:
+#             FrozenCounter.__setattr__(self, '_hash', 0)
+#             for pair in self.iteritems():
+#                 FrozenCounter.__setattr__(self, '_hash', self._hash ^ hash(pair))
+#         return self._hash
 
 
 
