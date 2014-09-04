@@ -1,6 +1,8 @@
+#!/usr/bin/env sage -python #  TODO: Add to all files.
 # This Python file uses the following encoding: utf-8
 import cProfile as profile
 import pstats
+from sage.all import *
 
 from forest import Forest
 from trees.ButcherTrees import ButcherTree
