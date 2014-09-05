@@ -26,9 +26,7 @@ class test_Butcher_forest(unittest.TestCase):
 	
 	def test_fifth(self):
 		forest = self.base_forest.D().D().D().D()
-# 		expected = '([[*],[*]]^1, [[[*],*]]^3, [[[[*]]]]^1, '+\
-# 		'[*,[*,*]]^2, [[*,*,*]]^1, [[[*]],*]^2, [[[*,*]]]^1, '+\
-# 		'[[*],*,*]^4, [*,*,*,*]^1)' Old one. probably wrong. TODO: Check manually.
+		#  TODO: Check manually.
 		expected = '([*,[[*]]]^4, [[[[*]]]]^1, [[*,*,*]]^1, '+\
 		'[[[*,*]]]^1, [[*],[*]]^3, [*,[*,*]]^4, [[[*],*]]^3, '+\
 		'[*,*,*,*]^1, [[*],*,*]^6)'

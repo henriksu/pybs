@@ -86,6 +86,11 @@ class AbstractUnorderedRootedTree(FrozenForest, AbstractTreeLike):
     def alpha(self):
         raise NotImplementedError #  TODO: Implement me. Find definition.
 
+#     def __mul__(self, other):
+#         new_self = Multiset(self) # TODO: This line will cause problems with FrozenMultiset.
+#         new_self.update((other,))
+#         return type(self)(new_self)
+
 
 
 class AbstractNotTree(AbstractTreeLike):
