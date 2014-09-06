@@ -2,6 +2,7 @@
 from math import factorial
 
 from utils import memoized
+from utils.multiset import FrozenMultiset
 from trees import FrozenForest, \
     AbstractTreeLike, AbstractUnorderedRootedTree, AbstractNotTree
 
@@ -16,14 +17,14 @@ class ButcherTree(AbstractUnorderedRootedTree, ButcherTreeLike):
 
     @classmethod
     def basetree(cls):
-        return cls(FrozenForest())
+        return cls(FrozenMultiset())
 
     @classmethod
     def basetrees(cls):
-        return cls(FrozenForest())
+        return cls(FrozenMultiset())
 
     def __str__(self):
-        if FrozenForest.__len__(self): #  if Non-empty
+        if FrozenMultiset.__len__(self): #  if Non-empty
             return '[' + ','.join([str(elem) for elem in self.elements()]) + ']'
         else:
             return '*'

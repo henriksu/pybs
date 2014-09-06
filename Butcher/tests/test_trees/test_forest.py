@@ -33,10 +33,11 @@ class test_Butcher_forest(unittest.TestCase):
 		self.assertEqual(expected, str(forest))
 	
 	def test_count_forests(self): #  Also a stress test.
+		#self.assertTrue(False)
 		result = [len(self.base_forest)]
 		for i in xrange(11):
 			self.base_forest = self.base_forest.D()
-			result.append(len(self.base_forest))
+			result.append(self.base_forest.no_uniques())
 		expected = [1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766]
 		self.assertListEqual(expected, result)
 # In the long run test_count_forests would give

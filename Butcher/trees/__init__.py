@@ -2,6 +2,7 @@
 from math import factorial
 from operator import __mul__
 from utils import memoized
+from utils.multiset import Multiset, FrozenMultiset
 from forest import Forest, FrozenForest
 # TODO: Implement the cache miss super fast memoization.
 
@@ -14,13 +15,15 @@ class AbstractTreeLike(object):
         raise AttributeError
 
 
-class AbstractUnorderedRootedTree(FrozenForest, AbstractTreeLike):
+class AbstractUnorderedRootedTree(FrozenMultiset, AbstractTreeLike):
     __slots__ = () #  Making each instance more memory efficient.
     #  In addition __slots__ will cause an error if new instance variables are added.
     #  This is a good thing to detect deviation from the mathematical tree.
-    def __init__(self, forest=FrozenForest()):
-        FrozenForest.__init__(self, forest)
-
+    def __init__(self, forest=FrozenMultiset()):
+        FrozenMultiset.__init__(self, forest)
+        
+    multiplicities = FrozenMultiset.values #  Alias. "Correct" way of doing it?
+    
     @property
     @memoized
     def order(self):
@@ -68,15 +71,16 @@ class AbstractUnorderedRootedTree(FrozenForest, AbstractTreeLike):
 
     def graft(self,other):
             result = Forest()
-            new_forest = self + other
-            new_tree = type(self)(new_forest) #  Not good. TODO:
-            result.update((new_tree,))
-            for subtree in self:
-                amputated_forest = self - subtree
+            new_tree = self * other #  This means attatching the root of other as branch at root of self.
+            result.inplace_add(new_tree)
+            for subtree, multiplicity1 in self.items():
+                amputated_forest = self.sub(subtree)#multiset_difference(Multiset((subtree,)))
                 forest_of_replacements = subtree.graft(other)
-                for sub_diff in forest_of_replacements:
+                for sub_diff, multiplicity2 in forest_of_replacements.items():
                     # Not good TODO:
-                    result.update({type(self)(amputated_forest + sub_diff): forest_of_replacements[sub_diff] * self[subtree]})
+                    multiset_of_new_children = amputated_forest.add(sub_diff)#multiset_sum(Multiset((sub_diff,)))
+                    new_tree2 = type(self)(multiset_of_new_children)
+                    result.inplace_multiset_sum({new_tree2: multiplicity1 * multiplicity2})
             return result
 
     @classmethod
@@ -86,10 +90,10 @@ class AbstractUnorderedRootedTree(FrozenForest, AbstractTreeLike):
     def alpha(self):
         raise NotImplementedError #  TODO: Implement me. Find definition.
 
-#     def __mul__(self, other):
-#         new_self = Multiset(self) # TODO: This line will cause problems with FrozenMultiset.
-#         new_self.update((other,))
-#         return type(self)(new_self)
+    def __mul__(self, other):# TODO: Make sure the logic is right. 
+        new_self = Multiset(self) # TODO: This line will cause problems with FrozenMultiset.
+        new_self.inplace_multiset_sum((other,))
+        return type(self)(new_self)
 
 
 

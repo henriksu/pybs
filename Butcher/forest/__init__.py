@@ -15,12 +15,6 @@ class AbstractForest(object):
         new_self.update((other,))
         return type(self)(new_self)
 
-    def __mul__(self, other):
-        if isinstance(other, int):
-            return type(self)(dict(((key, other*value) for (key, value) in self.iteritems()))) #  TODO: This is a nasty workaround.
-        else:
-            raise NotImplementedError #  TODO: Throw what python wants in such cases
-
     def __sub__(self, other): # TODO: Do these calculations on multisets, not forest...
         new_self = Forest(self)
         new_self.subtract((other,))
@@ -31,7 +25,7 @@ class AbstractForest(object):
     def D(self):
         result = Forest()
         for tree, multiplicity in self.iteritems():
-            result.update(tree.D * multiplicity)
+            result.inplace_multiset_sum( tree.D.scalar_mul(multiplicity) )
         return result
 
 
@@ -45,10 +39,10 @@ class Forest(Multiset, AbstractForest):
         else:
             Multiset.__init__(self, *args, **kwargs)
 
-    def __add__(self, other):
-        new_self = Forest(self) # TODO: This line will cause problems with FrozenMultiset.
-        new_self.update((other,))
-        return new_self
+#     def __add__(self, other):
+#         new_self = Forest(self) # TODO: This line will cause problems with FrozenMultiset.
+#         new_self.update((other,))
+#         return new_self
 
 
 
@@ -56,10 +50,10 @@ class FrozenForest(FrozenMultiset, AbstractForest): #  In effect a frozen Multis
     __slots__ = ()
     multiplicities = FrozenMultiset.values #  Alias. "Correct" way of doing it?
 
-    def __add__(self, other):
-        new_self = Forest(self) # TODO: This line will cause problems with FrozenMultiset.
-        new_self.update((other,))
-        return FrozenForest(new_self)
+#     def __add__(self, other):
+#         new_self = Forest(self) # TODO: This line will cause problems with FrozenMultiset.
+#         new_self.update((other,))
+#         return FrozenForest(new_self)
 
 
 if __name__ == '__main__':
