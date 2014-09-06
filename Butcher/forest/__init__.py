@@ -10,18 +10,6 @@ class AbstractForest(object):
     def __str__(self):
         return '(' + ', '.join([str(tree) + '^' + str(self[tree]) for tree in self]) + ')'
 
-    def __add__(self, other): # Slow backup.
-        new_self = Forest(self) # TODO: This line will cause problems with FrozenMultiset.
-        new_self.update((other,))
-        return type(self)(new_self)
-
-    def __sub__(self, other): # TODO: Do these calculations on multisets, not forest...
-        new_self = Forest(self)
-        new_self.subtract((other,))
-        if new_self[other] == 0:
-            del new_self[other]
-        return type(self)(new_self)
-
     def D(self):
         result = Forest()
         for tree, multiplicity in self.iteritems():
@@ -29,7 +17,7 @@ class AbstractForest(object):
         return result
 
 
-class Forest(Multiset, AbstractForest):
+class Forest(AbstractForest, Multiset):
     __slots__ = ()
     multiplicities = Multiset.values #  Alias. "Correct" way of doing it?
 
@@ -39,22 +27,10 @@ class Forest(Multiset, AbstractForest):
         else:
             Multiset.__init__(self, *args, **kwargs)
 
-#     def __add__(self, other):
-#         new_self = Forest(self) # TODO: This line will cause problems with FrozenMultiset.
-#         new_self.update((other,))
-#         return new_self
 
-
-
-class FrozenForest(FrozenMultiset, AbstractForest): #  In effect a frozen Multiset with some tree specific functions.
+class FrozenForest(AbstractForest, FrozenMultiset):
     __slots__ = ()
-    multiplicities = FrozenMultiset.values #  Alias. "Correct" way of doing it?
-
-#     def __add__(self, other):
-#         new_self = Forest(self) # TODO: This line will cause problems with FrozenMultiset.
-#         new_self.update((other,))
-#         return FrozenForest(new_self)
-
+    multiplicities = FrozenMultiset.values
 
 if __name__ == '__main__':
     a = FrozenForest({'a':1, 'b':2})

@@ -38,15 +38,6 @@ class Multiset(dict):
         if elem in self:
             super(Multiset, self).__delitem__(elem)
 
-    def most_common(self, n=None):
-        if n is None:
-            return sorted(self.iteritems(), key=_itemgetter(1), reverse=True)
-        return _heapq.nlargest(n, self.iteritems(), key=_itemgetter(1))
-
-    def elements(self):
-        'Iterator returning each element as many times as its multiplicity.'
-        return _chain.from_iterable(_starmap(_repeat, self.iteritems()))
-
     def inplace_multiset_sum(self, iterable=None, **kwds):
         'Inplace multiset sum' # TODO: Remane?
         if iterable is not None:
@@ -168,6 +159,15 @@ class Multiset(dict):
         'Number of different elements in the multiset.'
         return dict.__len__(self)
 
+    def most_common(self, n=None):
+        if n is None:
+            return sorted(self.iteritems(), key=_itemgetter(1), reverse=True)
+        return _heapq.nlargest(n, self.iteritems(), key=_itemgetter(1))
+
+    def elements(self):
+        'Iterator returning each element as many times as its multiplicity.'
+        return _chain.from_iterable(_starmap(_repeat, self.iteritems()))
+
     def copy(self):
         return self.__class__(self)
 
@@ -181,7 +181,6 @@ class Multiset(dict):
         items = ', '.join(map('%r: %r'.__mod__, self.most_common()))
         return '%s({%s})' % (self.__class__.__name__, items)
 
-
     @classmethod
     def fromkeys(cls, iterable, v=None):
         raise NotImplementedError(
@@ -189,7 +188,7 @@ class Multiset(dict):
 
 
 class FrozenMultiset(object):
-    __slots__ = ('_ms','_hash')
+    __slots__ = ('_ms', '_hash')
     def __init__(self, *args, **kwargs):
         object.__setattr__(self, '_ms', Multiset(*args, **kwargs))
         object.__setattr__(self, '_hash', None)
@@ -283,34 +282,9 @@ class FrozenMultiset(object):
                 result ^= hash(pair)
             object.__setattr__(self, '_hash', result)
         return self._hash
-#         if self._hash is None:
-#             FrozenCounter.__setattr__(self, '_hash', 0)
-#             for pair in self.iteritems():
-#                 FrozenCounter.__setattr__(self, '_hash', self._hash ^ hash(pair))
-#         return self._hash
+
     def __repr__(self): #  TODO: Do something like this in my classes too!
         if not self:
             return '%s()' % self.__class__.__name__
         items = ', '.join(map('%r: %r'.__mod__, self.most_common()))
         return '%s({%s})' % (self.__class__.__name__, items)
-
-
-
-
-if __name__ == '__main__':
-    a = Multiset({'a':1, 'b':4})
-    print a
-    b = FrozenMultiset(a)
-    print b
-    for elem in a.elements():
-        print elem
-    for elem in b.elements():
-        print elem
-    pass
-    1+1
-    print 1
-    
-    
-    
-    
-    

@@ -8,7 +8,7 @@ from forest import Forest, FrozenForest
 
 
 class AbstractTreeLike(object):
-    __slots__ = ('__weakref__',) #  Immutability
+    __slots__ = ('__weakref__',)
     def __setattr__(self, *args):
         raise AttributeError
     def __delattr__(self, *args):
@@ -16,9 +16,7 @@ class AbstractTreeLike(object):
 
 
 class AbstractUnorderedRootedTree(FrozenMultiset, AbstractTreeLike):
-    __slots__ = () #  Making each instance more memory efficient.
-    #  In addition __slots__ will cause an error if new instance variables are added.
-    #  This is a good thing to detect deviation from the mathematical tree.
+    __slots__ = ()
     def __init__(self, forest=FrozenMultiset()):
         FrozenMultiset.__init__(self, forest)
         
@@ -28,13 +26,14 @@ class AbstractUnorderedRootedTree(FrozenMultiset, AbstractTreeLike):
     @memoized
     def order(self):
         result = 1
-        for elem, mult in self.items(): #  Rename "elem" to "tree" or "subtree".
+        for elem, mult in self.items():
             result += mult * elem.order
         return result
 
     @property
     @memoized
-    def m(self): #  Number of children.
+    def m(self):
+        'Number of children.'
         return sum(self.multiplicities())
 
     @property
@@ -71,14 +70,13 @@ class AbstractUnorderedRootedTree(FrozenMultiset, AbstractTreeLike):
 
     def graft(self,other):
             result = Forest()
-            new_tree = self * other #  This means attatching the root of other as branch at root of self.
+            new_tree = self * other
             result.inplace_add(new_tree)
             for subtree, multiplicity1 in self.items():
-                amputated_forest = self.sub(subtree)#multiset_difference(Multiset((subtree,)))
+                amputated_forest = self.sub(subtree)
                 forest_of_replacements = subtree.graft(other)
                 for sub_diff, multiplicity2 in forest_of_replacements.items():
-                    # Not good TODO:
-                    multiset_of_new_children = amputated_forest.add(sub_diff)#multiset_sum(Multiset((sub_diff,)))
+                    multiset_of_new_children = amputated_forest.add(sub_diff)
                     new_tree2 = type(self)(multiset_of_new_children)
                     result.inplace_multiset_sum({new_tree2: multiplicity1 * multiplicity2})
             return result
@@ -88,11 +86,11 @@ class AbstractUnorderedRootedTree(FrozenMultiset, AbstractTreeLike):
         raise NotImplementedError
     
     def alpha(self):
-        raise NotImplementedError #  TODO: Implement me. Find definition.
+        raise NotImplementedError #  TODO: Implement me.
 
-    def __mul__(self, other):# TODO: Make sure the logic is right. 
-        new_self = Multiset(self) # TODO: This line will cause problems with FrozenMultiset.
-        new_self.inplace_multiset_sum((other,))
+    def __mul__(self, other):
+        new_self = Multiset(self)
+        new_self.inplace_add(other)
         return type(self)(new_self)
 
 
@@ -130,8 +128,6 @@ def TreeGenerator(treetype):
             yield tree
         forest = forest.D()
 
-    
-    
 # La str() gi ut LaTeX-kode? Trenger sikkert flere forskjellige output-formater.
 # The way in which Frozen counter will have to be updated is not too different from strings.
 
@@ -147,7 +143,3 @@ def TreeGenerator(treetype):
 #         else:
 #             cls.tree_pool[new_tree] = new_tree
 #             return new_tree
-
-
-if __name__ == "__main__":
-    pass
