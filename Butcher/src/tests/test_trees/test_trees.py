@@ -1,46 +1,47 @@
 # This Python file uses the following encoding: utf-8
 import unittest
+from trees.ButcherTrees import ButcherTree, alpha, F#, ButcherNotTree
+from trees import order, number_of_children, density, symmetry
 from forest import Forest
-from trees.ButcherTrees import ButcherTree, ButcherNotTree
 
 
-class empty_tree(unittest.TestCase):
-#Does NOT test derivation, grafting and other operations.
-    def test_initialisation(self):
-        self.assertIsInstance(ButcherTree(), ButcherTree)
-
-    def test_str(self):
-        tree1 = ButcherTree.emptytree()
-        self.assertEqual('Ø', str(tree1))
-
-    def test_equality(self):
-        tree1 = ButcherTree.emptytree()
-        tree2 = ButcherNotTree()
-        self.assertEqual(tree1, tree2)
-
-    def test_number_of_subtrees(self):
-        tree1 = ButcherTree.emptytree()
-        self.assertEqual(0, tree1.m)
-
-    def test_order(self):
-        tree1 = ButcherTree.emptytree()
-        self.assertEqual(0, tree1.order)
-
-    def test_density(self):
-        tree1 = ButcherTree.emptytree()
-        self.assertEqual(1, tree1.gamma)
-
-    def test_symmetry(self):
-        tree1 = ButcherTree.emptytree()
-        self.assertEqual(1, tree1.sigma)
-
-    def test_alpha(self):
-        tree1 = ButcherTree.emptytree()
-        self.assertEqual(1, tree1.alpha)
-
-    def test_elementary_differential(self):
-        tree1 = ButcherTree.emptytree()
-        self.assertEqual('y', tree1.F)
+# class empty_tree(unittest.TestCase):
+# #Does NOT test derivation, grafting and other operations.
+#     def test_initialisation(self):
+#         self.assertIsInstance(ButcherTree(), ButcherTree)
+# 
+#     def test_str(self):
+#         tree1 = ButcherTree.emptytree()
+#         self.assertEqual('Ø', str(tree1))
+# 
+#     def test_equality(self):
+#         tree1 = ButcherTree.emptytree()
+#         tree2 = ButcherNotTree()
+#         self.assertEqual(tree1, tree2)
+# 
+#     def test_number_of_subtrees(self):
+#         tree1 = ButcherTree.emptytree()
+#         self.assertEqual(0, tree1.m)
+# 
+#     def test_order(self):
+#         tree1 = ButcherTree.emptytree()
+#         self.assertEqual(0, tree1.order)
+# 
+#     def test_density(self):
+#         tree1 = ButcherTree.emptytree()
+#         self.assertEqual(1, tree1.gamma)
+# 
+#     def test_symmetry(self):
+#         tree1 = ButcherTree.emptytree()
+#         self.assertEqual(1, tree1.sigma)
+# 
+#     def test_alpha(self):
+#         tree1 = ButcherTree.emptytree()
+#         self.assertEqual(1, tree1.alpha)
+# 
+#     def test_elementary_differential(self):
+#         tree1 = ButcherTree.emptytree()
+#         self.assertEqual('y', tree1.F)
 
 class first_order_tree(unittest.TestCase):
 #Does NOT test derivation, grafting and other operations.
@@ -50,7 +51,7 @@ class first_order_tree(unittest.TestCase):
     
     def test_str(self):
         tree1 = ButcherTree.basetree()
-        self.assertEqual('*', str(tree1))
+        self.assertEqual('[]', str(tree1))
 
     def test_equality(self):
         tree1 = ButcherTree.basetree()
@@ -59,27 +60,27 @@ class first_order_tree(unittest.TestCase):
 
     def test_number_of_subtrees(self):
         tree1 = ButcherTree.basetree()
-        self.assertEqual(0, tree1.m)
+        self.assertEqual(0, number_of_children(tree1))
 
     def test_order(self):
         tree1 = ButcherTree.basetree()
-        self.assertEqual(1, tree1.order)
+        self.assertEqual(1, order(tree1))
 
     def test_density(self):
         tree1 = ButcherTree.basetree()
-        self.assertEqual(1, tree1.gamma)
+        self.assertEqual(1, density(tree1))
 
     def test_symmetry(self):
         tree1 = ButcherTree.basetree()
-        self.assertEqual(1, tree1.sigma)
+        self.assertEqual(1, symmetry(tree1))
 
     def test_alpha(self):
         tree1 = ButcherTree.basetree()
-        self.assertEqual(1, tree1.alpha)
+        self.assertEqual(1, alpha(tree1))
 
     def test_elementary_differential(self):
         tree1 = ButcherTree.basetree()
-        self.assertEqual('f', tree1.F)
+        self.assertEqual('f', F(tree1))
 
 
 class Second_order_tree(unittest.TestCase):
@@ -93,7 +94,7 @@ class Second_order_tree(unittest.TestCase):
         self.assertIsInstance(self.tree, ButcherTree)
     
     def test_str(self):
-        self.assertEqual('[*]', str(self.tree))
+        self.assertEqual('[[]]', str(self.tree))
 
     def test_equality(self):
         tree2 = ButcherTree.basetree()
@@ -102,22 +103,22 @@ class Second_order_tree(unittest.TestCase):
         self.assertEqual(tree3, self.tree)
 
     def test_number_of_subtrees(self):
-        self.assertEqual(1, self.tree.m)
+        self.assertEqual(1, number_of_children(self.tree))
 
     def test_order(self):
-        self.assertEqual(2, self.tree.order)
+        self.assertEqual(2, order(self.tree))
 
     def test_density(self):
-        self.assertEqual(2, self.tree.gamma)
+        self.assertEqual(2, density(self.tree))
 
     def test_symmetry(self):
-        self.assertEqual(1, self.tree.sigma)
+        self.assertEqual(1, symmetry(self.tree))
 
     def test_alpha(self):
-        self.assertEqual(1, self.tree.alpha)
+        self.assertEqual(1, alpha(self.tree))
 
     def test_elementary_differential(self):
-        self.assertEqual("f'f", self.tree.F)
+        self.assertEqual("f'f", F(self.tree))
 
 
 class Third_order_tree_no1(unittest.TestCase):
@@ -131,7 +132,7 @@ class Third_order_tree_no1(unittest.TestCase):
         self.assertIsInstance(self.tree, ButcherTree)
     
     def test_str(self):
-        self.assertEqual('[*,*]', str(self.tree))
+        self.assertEqual('[[],[]]', str(self.tree))
 
     def test_equality(self):
         tree2 = ButcherTree(Forest())
@@ -140,19 +141,19 @@ class Third_order_tree_no1(unittest.TestCase):
         self.assertEqual(tree3, self.tree)
 
     def test_number_of_subtrees(self):
-        self.assertEqual(2, self.tree.m)
+        self.assertEqual(2, number_of_children(self.tree))
 
     def test_order(self):
-        self.assertEqual(3, self.tree.order)
+        self.assertEqual(3, order(self.tree))
 
     def test_density(self):
-        self.assertEqual(3, self.tree.gamma)
+        self.assertEqual(3, density(self.tree))
 
     def test_symmetry(self):
-        self.assertEqual(2, self.tree.sigma)
+        self.assertEqual(2, symmetry(self.tree))
 
     def test_alpha(self):
-        self.assertEqual(1, self.tree.alpha)
+        self.assertEqual(1, alpha(self.tree))
 
     def test_elementary_differential(self):
-        self.assertEqual("f''(f,f)", self.tree.F)
+        self.assertEqual("f''(f,f)", F(self.tree))

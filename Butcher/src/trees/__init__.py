@@ -1,85 +1,30 @@
 # This Python file uses the following encoding: utf-8
-from math import factorial
-from operator import __mul__
-from utils import memoized
-from utils.multiset import Multiset, FrozenMultiset
-from forest import Forest, FrozenForest
+import math
+import operator
+from numbers import Number
+
+import src.utils
+from src.utils.miscellaneous import memoized as memoized
+import forest as forest
 # TODO: Implement the cache miss super fast memoization.
 
-
-class AbstractTreeLike(object):
+class AbstractUnorderedRootedTree(src.utils.multiset.FrozenMultiset):
     __slots__ = ('__weakref__',)
+
     def __setattr__(self, *args):
         raise AttributeError
+
     def __delattr__(self, *args):
         raise AttributeError
 
-
-class AbstractUnorderedRootedTree(FrozenMultiset, AbstractTreeLike):
-    __slots__ = ()
-    def __init__(self, forest=FrozenMultiset()):
-        FrozenMultiset.__init__(self, forest)
+    def __init__(self, forest=src.utils.multiset.FrozenMultiset()):
+        src.utils.multiset.FrozenMultiset.__init__(self, forest)
         
-    multiplicities = FrozenMultiset.values #  Alias. "Correct" way of doing it?
-    
-    @property
-    @memoized
-    def order(self):
-        result = 1
-        for elem, mult in self.items():
-            result += mult * elem.order
-        return result
-
-    @property
-    @memoized
-    def m(self):
-        'Number of children.'
-        return sum(self.multiplicities())
-
-    @property
-    @memoized
-    def gamma(self):
-        result = self.order
-        for elem in self:
-            result *= elem.gamma ** self[elem]
-        return result
-
-    @property
-    @memoized
-    def sigma(self):
-        return reduce(__mul__, map(self._subtree_contribution, self.items()), 1)
-
+    multiplicities = src.utils.multiset.FrozenMultiset.values #  Alias. "Correct" way of doing it?
+ 
     @staticmethod
     def _subtree_contribution((tree, multiplicity)):
-        return tree.sigma ** multiplicity * factorial(multiplicity)
-
-    @property
-    def norm(self): #  Alias TODO: Norm is defined for infinitytrees. Make sure this does not crash.
-        return self.order
-    
-    @property
-    def number_of_children(self): #  Alias
-        return self.m
-    @property
-    def density(self): #  Alias
-        return self.gamma
-    
-    @property
-    def symmetry(self): #  Alias
-        return self.sigma
-
-    def graft(self,other):
-            result = Forest()
-            new_tree = self * other
-            result.inplace_add(new_tree)
-            for subtree, multiplicity1 in self.items():
-                amputated_forest = self.sub(subtree)
-                forest_of_replacements = subtree.graft(other)
-                for sub_diff, multiplicity2 in forest_of_replacements.items():
-                    multiset_of_new_children = amputated_forest.add(sub_diff)
-                    new_tree2 = type(self)(multiset_of_new_children)
-                    result.inplace_multiset_sum({new_tree2: multiplicity1 * multiplicity2})
-            return result
+        return symmetry(tree) ** multiplicity * math.factorial(multiplicity)
 
     @classmethod
     def basetrees(cls):
@@ -89,44 +34,48 @@ class AbstractUnorderedRootedTree(FrozenMultiset, AbstractTreeLike):
         raise NotImplementedError #  TODO: Implement me.
 
     def __mul__(self, other):
-        new_self = Multiset(self)
-        new_self.inplace_add(other)
-        return type(self)(new_self)
+        if isinstance(other, type(self)):
+            new_self = src.utils.multiset.Multiset(self)
+            new_self.inplace_add(other)
+            return type(self)(new_self)
+        elif isinstance(other, Number):
+            from forest.linearCombination import LinearCombination # TODO: Nasty work around
+            tmp = LinearCombination()
+            tmp[self] = other
+            return tmp
+
+   
+@memoized
+def order(tree):
+    result = 1
+    for elem, mult in tree.items():
+        result += mult * order(elem)
+    return result
+
+@memoized
+def number_of_children(tree):
+    'Number of children.'
+    return sum(tree.multiplicities())
+
+@memoized
+def density(tree):
+    result = order(tree)
+    for elem in tree:
+        result *= density(elem) ** tree[elem]
+    return result
+
+@memoized
+def symmetry(tree):
+    return reduce(operator.__mul__, map(tree._subtree_contribution, tree.items()), 1)
 
 
-
-class AbstractNotTree(AbstractTreeLike):
-    __slots__ = ()
-    def graft(self, other):# TODO: Sjekk at jeg ikke prøver å pode to ikke-trær
-        return FrozenForest((other,))
-
-    def __str__(self):
-        return 'Ø'
-
-    def __eq__(self, other):
-        return isinstance(other, type(self))
-
-    def __ne__(self, other):
-        return not isinstance(other, type(self))
-
-    def __hash__(self):
-        return 0
-
-    # Should these really be defined ???
-    F = 'y'
-    order = 0
-    multiplicities = []
-    m = number_of_children = 0
-    gamma = density = 1
-    sigma = symmetry = 1
-    alpha = 1
 
 def TreeGenerator(treetype):
-    forest = FrozenForest([treetype.basetrees()])
+    theForest = forest.FrozenForest([treetype.basetrees()])
     while True:
-        for tree in forest:
+        for tree in theForest:
             yield tree
-        forest = forest.D()
+        theForest = theForest.D()
 
 # La str() gi ut LaTeX-kode? Trenger sikkert flere forskjellige output-formater.
 # The way in which Frozen counter will have to be updated is not too different from strings.

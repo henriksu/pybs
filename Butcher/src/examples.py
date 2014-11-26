@@ -1,20 +1,20 @@
-from trees.ButcherTrees import ButcherTree, ButcherNotTree
-from trees import FrozenForest
+from trees.ButcherTrees import ButcherTree, D
+from forest import FrozenForest
 
 print 'The first tree is: ButcherTree() =', ButcherTree()
-print 'And the empty tree is: ButcherNotTree() =', ButcherNotTree()
-print 'And since ButcherNotTree().F =', ButcherNotTree().F, 'we have ButcherNotTree.D =', str(ButcherNotTree().D) + '. Note: The result is a "FrozenForest" containing one "' + str(ButcherTree.basetree()) + '".'
+#print 'And the empty tree is: ButcherNotTree() =', ButcherNotTree()
+#print 'And since ButcherNotTree().F =', ButcherNotTree().F, 'we have ButcherNotTree.D =', str(ButcherNotTree().D) + '. Note: The result is a "FrozenForest" containing one "' + str(ButcherTree.basetree()) + '".'
 print 'These two first trees can be accessed through ButcherTree.emptytree() =', ButcherTree.emptytree(), 'and ButcherTree.basetree() =', str(ButcherTree.basetree()) + '.'
 print 'So far, new trees can be made:'
 print '    1. by taking the derivative of existing trees.'
-print '    Ex.: ButcherTree.basetree().D =', ButcherTree.basetree().D, 'Note: The derivative always returns a "FrozenForest".'
+print '    Ex.: D(ButcherTree.basetree()) =', D(ButcherTree.basetree()), 'Note: The derivative always returns a "FrozenForest".'
 print '    2. by specifying the forest of child trees to the constructor.'
 print '    Ex.: ButcherTree(FrozenForest([ButcherTree.basetree(), ButcherTree.basetree()])) = ', ButcherTree(FrozenForest([ButcherTree.basetree(), ButcherTree.basetree()]))
 print 'It is also possible to derivate all the trees in a FrozenForest. Starting at the empty tree,'
 print 'the n-th derivative is the FrozenForest of all trees of order n. Complete with alpha as the multiplicity (check this claim):'
-forest_of_trees_of_order_1 = ButcherTree.emptytree().D
+forest_of_trees_of_order_1 = D(ButcherTree.emptytree())
 print 'forest_of_trees_of_order_1 = ButcherTree.emptytree().D =', forest_of_trees_of_order_1
-forest_of_trees_of_order_2 = forest_of_trees_of_order_1.D()
+forest_of_trees_of_order_2 = D(forest_of_trees_of_order_1)
 print 'forest_of_trees_of_order_2 = forest_of_trees_of_order_1.D() =', forest_of_trees_of_order_2
 forest_of_trees_of_order_3 = forest_of_trees_of_order_2.D()
 print 'forest_of_trees_of_order_3 = forest_of_trees_of_order_2.D() =', forest_of_trees_of_order_3

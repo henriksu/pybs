@@ -16,7 +16,7 @@ class Multiset(dict):
         super(Multiset, self).__init__()
         self.inplace_multiset_sum(iterable, **kwds)
 
-    def __missing__(self, key): #  Do I really want this behaviour? I do.
+    def __missing__(self, key):
         return 0
 
     def __setitem__(self, key, value):

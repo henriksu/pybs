@@ -2,42 +2,42 @@
 import unittest
 from forest import Forest
 from trees.ButcherTrees import ButcherTree
+from forest.differentiation import differentiate as D
 
 class test_Butcher_forest(unittest.TestCase):
 	def setUp(self):
-		basetree = ButcherTree(Forest())
-		self.base_forest = Forest([basetree])
+		self.basetree = ButcherTree(Forest())
 
 	def test_first(self):
-		self.assertEqual('(*^1)',str(self.base_forest))
+		self.assertEqual('[]',str(self.basetree))
 
 	def test_second(self):
-		forest = self.base_forest.D()
-		self.assertEqual('([*]^1)', str(forest))
+		forest = D(self.basetree)
+		self.assertEqual('1*[[]]', str(forest))
 	
 	def test_third(self):
-		forest = self.base_forest.D()
-		forest = forest.D()
-		self.assertEqual('([[*]]^1, [*,*]^1)', str(forest))
+		thesum = D(self.basetree)
+		thesum = D(thesum)
+		self.assertEqual('1*[[[]]] + 1*[[],[]]', str(thesum))
 
 	def test_fourth(self):
-		forest = self.base_forest.D().D().D()
-		self.assertEqual('([[*],*]^3, [[[*]]]^1, [*,*,*]^1, [[*,*]]^1)', str(forest))
+		thingy = D(D(D(self.basetree)))
+		self.assertEqual('3*[[[]],[]] + 1*[[[[]]]] + 1*[[],[],[]] + 1*[[[],[]]]', str(thingy))
 	
 	def test_fifth(self):
-		forest = self.base_forest.D().D().D().D()
+		forest = D(D(D(D(self.basetree))))
 		#  TODO: Check manually.
-		expected = '([*,[[*]]]^4, [[[[*]]]]^1, [[*,*,*]]^1, '+\
-		'[[[*,*]]]^1, [[*],[*]]^3, [*,[*,*]]^4, [[[*],*]]^3, '+\
-		'[*,*,*,*]^1, [[*],*,*]^6)'
+		expected = '4*[[],[[[]]]] + 1*[[[[[]]]]] + 1*[[[],[],[]]] + '+\
+		'1*[[[[],[]]]] + 3*[[[]],[[]]] + 4*[[],[[],[]]] + 3*[[[[]],[]]] + '+\
+		'1*[[],[],[],[]] + 6*[[[]],[],[]]'
 		self.assertEqual(expected, str(forest))
 	
 	def test_count_forests(self): #  Also a stress test.
 		#self.assertTrue(False)
-		result = [len(self.base_forest)]
+		result = [1]
 		for i in xrange(11):
-			self.base_forest = self.base_forest.D()
-			result.append(self.base_forest.no_uniques())
+			self.basetree = D(self.basetree)
+			result.append(self.basetree.dimensions())
 		expected = [1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766]
 		self.assertListEqual(expected, result)
 # In the long run test_count_forests would give

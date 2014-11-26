@@ -1,8 +1,6 @@
 # This Python file uses the following encoding: utf-8
-#from collections import Counter
-#from utils import FrozenCounter
-from utils.multiset import Multiset as Multiset, FrozenMultiset as FrozenMultiset
-from copy import copy
+from src.utils.multiset import Multiset as Multiset, FrozenMultiset as FrozenMultiset
+
 
 class AbstractForest(object):
     __slots__ = ()
@@ -10,11 +8,11 @@ class AbstractForest(object):
     def __str__(self):
         return '(' + ', '.join([str(tree) + '^' + str(self[tree]) for tree in self]) + ')'
 
-    def D(self):
-        result = Forest()
-        for tree, multiplicity in self.iteritems():
-            result.inplace_multiset_sum( tree.D.scalar_mul(multiplicity) )
-        return result
+#     def D(self):
+#         result = Forest()
+#         for tree, multiplicity in self.iteritems():
+#             result.inplace_multiset_sum( tree.D.scalar_mul(multiplicity) )
+#         return result
 
 
 class Forest(AbstractForest, Multiset):
