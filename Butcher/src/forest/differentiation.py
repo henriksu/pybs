@@ -1,17 +1,16 @@
 from linearCombination import LinearCombination
 from trees.ButcherTrees import ButcherTree as ButcherTree
 
-def graft(base,other):
+def graft(base, other):
     result = LinearCombination()
-    new_tree = base * other
-    result += new_tree
+    result += base * other # Grafting onto the root.
     for subtree, multiplicity1 in base.items():
-        amputated_tree = base.sub(subtree)
-        sum_of_replacements = graft(subtree, other)
-        for sub_diff, multiplicity2 in sum_of_replacements.items():
-            multiset_of_new_children = amputated_tree.add(sub_diff)
-            new_tree2 = type(base)(multiset_of_new_children)
-            result += new_tree2 * (multiplicity1 * multiplicity2)
+        amputated_tree = base.sub(subtree) # Removing one instance of subtree.
+        replacements = graft(subtree, other)
+        for replacement, multiplicity2 in replacements.items():
+            multiset_of_new_children = amputated_tree.add(replacement)
+            new_tree = type(base)(multiset_of_new_children)
+            result += new_tree * (multiplicity1 * multiplicity2)
     return result
 
 def differentiate(thing):
@@ -25,3 +24,10 @@ def differentiate(thing):
 
 def treeD(tree):
     return graft(tree, ButcherTree.basetree())
+
+def TreeGenerator(treetype):
+    theSum = LinearCombination(treetype.basetree())
+    while True:
+        for tree in theSum:
+            yield tree
+        theSum = differentiate(theSum)

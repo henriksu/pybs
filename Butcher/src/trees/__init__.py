@@ -70,12 +70,6 @@ def symmetry(tree):
 
 
 
-def TreeGenerator(treetype):
-    theForest = forest.FrozenForest([treetype.basetrees()])
-    while True:
-        for tree in theForest:
-            yield tree
-        theForest = theForest.D()
 
 # La str() gi ut LaTeX-kode? Trenger sikkert flere forskjellige output-formater.
 # The way in which Frozen counter will have to be updated is not too different from strings.

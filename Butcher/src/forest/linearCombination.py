@@ -45,7 +45,8 @@ class LinearCombination(dict):
         elif isinstance(other, ButcherTree):
             self._fast_setitem(other, self_get(other, 0) + 1)
         elif other is not None:
-            print 'Other must be LinearCombination or ButcherTree, not ' + str(type(other))
+            raise TypeError(
+                'Other must be LinearCombination or ButcherTree, not ' + str(type(other)) )
         return self
 
     def __add__(self, other):
