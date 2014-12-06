@@ -2,6 +2,7 @@ from numbers import Number
 from collections import Mapping as _Mapping
 from trees.ButcherTrees import ButcherTree
 from copy import copy
+from trees.ButcherTrees import ButcherEmptyTree
 
 class LinearCombination(dict):
     __slots__ = ('_fast_setitem',)
@@ -42,7 +43,7 @@ class LinearCombination(dict):
                     self._fast_setitem(elem, self_get(elem, 0) + count)
             else:
                 super(LinearCombination, self).update(other)
-        elif isinstance(other, ButcherTree):
+        elif isinstance(other, ButcherTree) or isinstance(other, ButcherEmptyTree):
             self._fast_setitem(other, self_get(other, 0) + 1)
         elif other is not None:
             raise TypeError(

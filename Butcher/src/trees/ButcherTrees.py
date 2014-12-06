@@ -30,7 +30,7 @@ class ButcherTree(trees.AbstractUnorderedRootedTree):
 
     @classmethod
     def emptytree(cls):
-        return forest.FrozenForest() # TODO: USeful default/choice?
+        return ButcherEmptyTree()
 #     def __eq__(self,other):
 #         if self is other:
 #             return True #  Is this necessary, or is it done automatically?
@@ -45,25 +45,13 @@ class ButcherTree(trees.AbstractUnorderedRootedTree):
 #         #  TODO: Is it true that two trees evaluate equal iff (with large probability) their hash are equal?
 
 
-@memoized
-def alpha(tree):
-    return math.factorial(trees.order(tree)) / (trees.symmetry(tree) * trees.density(tree)) #  Will always come out integer.
-
-def F(tree): #  Elementary differential.
-    #if tree == ButcherTree.emptytree:
-    #   return 'y'
-    result = 'f' + "'" * trees.number_of_children(tree)
-    if trees.number_of_children(tree) == 1:
-        result += F(tree.keys()[0])
-    elif trees.number_of_children(tree) > 1:
-        result += '(' + ','.join([F(elem) for elem in tree.elements()]) + ')'
-    return result
 
 
-
-#class ButcherNotTree(trees.AbstractNotTree, ButcherTreeLike):
-#    __slots__ = ()
-#    D = forest.FrozenForest([ButcherTree()])
-
+class ButcherEmptyTree(object):
+    def __eq__(self, other):
+        if isinstance(other, ButcherEmptyTree):
+            return True
+        else:
+            return False
 # TODO: FIX THIS
-#ButcherTree.emptytree = ButcherNotTree
+#ButcherTree.emptytree = ButcherEmptyTree

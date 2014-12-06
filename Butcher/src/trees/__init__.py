@@ -22,10 +22,6 @@ class AbstractUnorderedRootedTree(src.utils.multiset.FrozenMultiset):
         
     multiplicities = src.utils.multiset.FrozenMultiset.values #  Alias. "Correct" way of doing it?
  
-    @staticmethod
-    def _subtree_contribution((tree, multiplicity)):
-        return symmetry(tree) ** multiplicity * math.factorial(multiplicity)
-
     @classmethod
     def basetrees(cls):
         raise NotImplementedError
@@ -45,28 +41,6 @@ class AbstractUnorderedRootedTree(src.utils.multiset.FrozenMultiset):
             return tmp
 
    
-@memoized
-def order(tree):
-    result = 1
-    for elem, mult in tree.items():
-        result += mult * order(elem)
-    return result
-
-@memoized
-def number_of_children(tree):
-    'Number of children.'
-    return sum(tree.multiplicities())
-
-@memoized
-def density(tree):
-    result = order(tree)
-    for elem in tree:
-        result *= density(elem) ** tree[elem]
-    return result
-
-@memoized
-def symmetry(tree):
-    return reduce(operator.__mul__, map(tree._subtree_contribution, tree.items()), 1)
 
 
 
