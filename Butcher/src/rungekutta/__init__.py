@@ -2,12 +2,11 @@
 import operator
 import numpy as np
 
-import src.trees as trees
+import trees
 import forest.differentiation as differentiation
-from trees import ButcherTrees
 from trees.functions import density, order
 import src.utils.miscellaneous
-from trees.ButcherTrees import ButcherEmptyTree
+from trees.ButcherTrees import ButcherTree, ButcherEmptyTree
 #  Note the use of dtype=object. It allows for exact algebra.
 #  However it is much slower since numpy will call Python code.
 
@@ -25,15 +24,15 @@ class RK_method(object):
     @property
     @src.utils.miscellaneous.memoized
     def order(self):
-        for tree in differentiation.TreeGenerator(ButcherTrees.ButcherTree):
+        for tree in differentiation.TreeGenerator(ButcherTree):
             #print tree
             if not self.phi(tree) * density(tree) == 1:
                 return order(tree) - 1
 
     def phi(self, tree): #  elementary weight
-        if isinstance(tree, ButcherEmptyTree):
-            return 1
-        return np.dot(self.b, self.g_vector(tree))
+        if isinstance(tree, trees.ButcherTrees.ButcherEmptyTree):
+            return 1 # We havent even allowed for non-consistent RK-methods.
+        return np.dot(self.b, self.g_vector(tree))[0]
 
     @src.utils.miscellaneous.memoized
     def g_vector(self, tree):
