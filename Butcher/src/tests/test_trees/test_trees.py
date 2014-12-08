@@ -1,7 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import unittest
 from trees.ButcherTrees import ButcherTree#, ButcherNotTree
-from trees.functions import alpha, F, order, number_of_children, density, symmetry
+from trees.functions import alpha, F, order, number_of_children, density, symmetry, isTall, isBinary, isBushy
 from forest import Forest
 
 
@@ -81,6 +81,12 @@ class first_order_tree(unittest.TestCase):
     def test_elementary_differential(self):
         tree1 = ButcherTree.basetree()
         self.assertEqual('f', F(tree1))
+        
+    def test_properties(self):
+        tree1=ButcherTree.basetree()
+        self.assertTrue(isBinary(tree1))
+        self.assertTrue(isTall(tree1))
+        self.assertFalse(isBushy(tree1))
 
 
 class Second_order_tree(unittest.TestCase):
@@ -120,6 +126,11 @@ class Second_order_tree(unittest.TestCase):
     def test_elementary_differential(self):
         self.assertEqual("f'f", F(self.tree))
 
+    def test_properties(self):
+        self.assertTrue(isBinary(self.tree))
+        self.assertTrue(isTall(self.tree))
+        self.assertTrue(isBushy(self.tree))
+
 
 class Third_order_tree_no1(unittest.TestCase):
 #Does NOT test derivation, grafting and other operations.
@@ -157,3 +168,8 @@ class Third_order_tree_no1(unittest.TestCase):
 
     def test_elementary_differential(self):
         self.assertEqual("f''(f,f)", F(self.tree))
+
+    def test_properties(self):
+        self.assertTrue(isBinary(self.tree))
+        self.assertFalse(isTall(self.tree))
+        self.assertTrue(isBushy(self.tree))

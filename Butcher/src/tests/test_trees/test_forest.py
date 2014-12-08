@@ -1,8 +1,31 @@
 # This Python file uses the following encoding: utf-8
 import unittest
 from forest import Forest
-from trees.ButcherTrees import ButcherTree
+from trees.ButcherTrees import ButcherTree, ButcherEmptyTree
 from forest.differentiation import differentiate as D
+from forest.differentiation import treeCommutator, linCombCommutator
+from forest.linearCombination import LinearCombination
+
+class test_commutator(unittest.TestCase):
+	def test_empty(self):
+		tree = ButcherEmptyTree()
+		self.assertEqual(treeCommutator(tree, tree), LinearCombination())
+	
+	def test_first_and_empty(self):
+		tree1 = ButcherEmptyTree()
+		tree2 = ButcherTree.basetree()
+		self.assertEqual(treeCommutator(tree1,tree2), LinearCombination())
+		self.assertEqual(treeCommutator(tree2,tree2), LinearCombination())
+
+	def test_first_second(self):
+		tree1 = ButcherTree.basetree()
+		tree2 = D(tree1).keys()[0]
+		expected = LinearCombination()
+		forest1 = Forest([tree1, tree1])
+		tree3 = ButcherTree(forest1)
+		expected -= tree3 
+		result = treeCommutator(tree1, tree2)
+		self.assertEqual(result, expected)
 
 class test_Butcher_forest(unittest.TestCase):
 	def setUp(self):

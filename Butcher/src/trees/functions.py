@@ -3,14 +3,14 @@ import operator
 
 from src.utils.miscellaneous import memoized as memoized
 
-from trees.ButcherTrees import ButcherEmptyTree
+from trees.ButcherTrees import ButcherTree, ButcherEmptyTree
 
 
 @memoized
 def order(tree):
     result = 1
-    if isinstance(tree, ButcherEmptyTree):
-        return result
+    if tree == ButcherEmptyTree():
+        return 0
     for elem, mult in tree.items():
         result += mult * order(elem)
     return result
@@ -53,9 +53,10 @@ def F(tree): #  Elementary differential.
         result += '(' + ','.join([F(elem) for elem in tree.elements()]) + ')'
     return result
 
+
 def isBinary(tree):
     if isinstance(tree, ButcherEmptyTree):
-        return True # IT THIS RIGHT?
+        return True
     if number_of_children(tree) > 2:
         return False
     for subtree in tree:
@@ -65,9 +66,19 @@ def isBinary(tree):
 
 def isTall(tree):
     if isinstance(tree, ButcherEmptyTree):
-        return True # IT THIS RIGHT?
+        return True
     if number_of_children(tree) > 1:
         return False
     for subtree in tree:
         if not isTall(subtree):
             return False
+    return True
+
+def isBushy(tree):
+    if tree == ButcherEmptyTree or tree == ButcherTree.basetree():
+        return True
+    elif tree.keys() == [ButcherTree.basetree()]:
+        return True
+    else:
+        return False
+    

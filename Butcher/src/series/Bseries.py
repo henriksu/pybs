@@ -1,8 +1,12 @@
 import operator
+from math import factorial
+from fractions import Fraction
 from fractions import Fraction
 from forest.linearCombination import LinearCombination
 from trees.ButcherTrees import ButcherTree, ButcherEmptyTree
-from trees.functions import density
+from trees.functions import density, order
+from forest.differentiation import split
+from forest import Forest
 
 class BseriesRule(object):
     def __init__(self, arg = None):
@@ -11,7 +15,7 @@ class BseriesRule(object):
         elif arg == 'unit':
             self._call = self._unit
         elif arg == 'exact':
-            self.call = self._exact
+            self._call = self._exact
         elif isinstance(arg, LinearCombination):
             self._call = lambda tree: arg[tree]
         elif callable(arg):
@@ -30,7 +34,7 @@ class BseriesRule(object):
         return Fraction(1, density(tree))
 
 def hf_composition(baseRule):
-    if baseRule(ButcherEmptyTree) != 1:
+    if baseRule(ButcherEmptyTree()) != 1:
         raise ValueError
     result = BseriesRule()
     def newRule(tree):
@@ -43,3 +47,45 @@ def hf_composition(baseRule):
             return result
     result._call = newRule
     return result
+
+def lieDerivative(c, b, truncated=False):
+    if b(ButcherEmptyTree()) != 0:
+        raise ValueError
+    result = BseriesRule()
+    def newRule(tree):
+        result = 0
+        if tree == ButcherEmptyTree():
+            return result
+        pairs = split(tree, truncated)
+        for pair, multiplicity in pairs.items():
+            result += multiplicity * c(pair[0]) * b(pair[1])
+        return result
+    result._call = newRule
+    return result
+
+def modifiedEquation(a):
+    if a(ButcherEmptyTree())!= 1 or a(ButcherTree.basetree()) !=1:
+        raise ValueError
+    mainResult = BseriesRule()
+    def newRule(tree):
+        if tree == ButcherEmptyTree():
+            return 0
+        elif tree == ButcherTree.basetree():
+            return 1
+        result = a(tree)
+        c = mainResult # NASTY recursive thing.
+        for j in range(2, order(tree) + 1):
+            c = lieDerivative(c, mainResult, True) # Just as nasty
+            result -= Fraction(c(tree), factorial(j))
+        return result
+    mainResult._call = newRule
+    return mainResult
+
+if __name__ == '__main__':
+    exact = BseriesRule('exact')
+    modified = modifiedEquation(exact)
+    from forest.differentiation import TreeGenerator
+    for tree in TreeGenerator(ButcherTree):
+        if order(tree) > 4:
+            break
+        print modified(tree)

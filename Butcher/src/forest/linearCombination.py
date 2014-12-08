@@ -51,7 +51,7 @@ class LinearCombination(dict):
         return self
 
     def __add__(self, other):
-        result = copy(self)
+        result = self.copy()
         result += other
         return result
 
@@ -61,12 +61,12 @@ class LinearCombination(dict):
         if isinstance(other, LinearCombination):
             for elem, count in other.items():
                 self[elem] = self_get(elem, 0) - count
-        elif isinstance(other, ButcherTree):
-            self._fast_setitem(other, self_get(other, 0) + 1)
+        elif isinstance(other, ButcherTree) or isinstance(other, ButcherEmptyTree):
+            self._fast_setitem(other, self_get(other, 0) - 1)
         return self
 
     def __sub__(self, other):
-        result = copy(self)
+        result = self.copy()
         result -= other
         return result
 
@@ -88,10 +88,12 @@ class LinearCombination(dict):
         return dict.__len__(self)
 
     def copy(self):
-        return self.__class__(self)
+        result = LinearCombination()
+        result += self
+        return result
 
-    def __reduce__(self): #  Good for pickling.
-        return self.__class__, (dict(self),)
+#    def __reduce__(self): #  Good for pickling.
+#        return self.__class__, (dict(self),)
 
 
     def __repr__(self): #  TODO: Do something like this in my classes too!
