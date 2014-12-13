@@ -2,7 +2,7 @@
 from numbers import Number
 #from collections import Mapping as _Mapping
 
-from trees import ButcherTree, ButcherEmptyTree
+from src.trees import ButcherTree, ButcherEmptyTree
 
 class LinearCombination(dict):
     __slots__ = ('_fast_setitem',)

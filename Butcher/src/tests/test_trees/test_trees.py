@@ -1,8 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import unittest
-from trees.ButcherTrees import ButcherTree#, ButcherNotTree
-from trees.functions import alpha, F, order, number_of_children, density, symmetry, isTall, isBinary, isBushy
-from combinations import Forest
+from src.trees import ButcherTree, alpha, F, order, number_of_children, density, symmetry, isTall, isBinary, isBushy#, ButcherNotTree
+from src.combinations import Forest
 
 
 # class empty_tree(unittest.TestCase):

@@ -1,11 +1,9 @@
 import unittest
-import trees
-from trees.ButcherTrees import ButcherTree, ButcherEmptyTree
-from trees.functions import alpha, F, order, number_of_children, density, symmetry
-from forest import Forest
-from series.Bseries import BseriesRule
-from forest.linearCombination import LinearCombination
-from forest.differentiation import differentiate
+
+from src.trees import ButcherTree, ButcherEmptyTree#, alpha, F, order, number_of_children, density, symmetry
+from src.combinations import Forest, LinearCombination#, differentiate
+from src.series import BseriesRule
+
 
 class simple_series(unittest.TestCase):
     def test_zero_series(self):
@@ -23,7 +21,7 @@ class simple_series(unittest.TestCase):
     def test_RK_series(self):
         import rungekutta.methods
         rule1 = BseriesRule(rungekutta.methods.RKeuler.phi)
-        self.assertEqual(1, rule1(trees.ButcherTrees.ButcherEmptyTree()))
+        self.assertEqual(1, rule1(ButcherEmptyTree()))
         self.assertEqual(1, rule1(ButcherTree.basetree()))
         tree2 = ButcherTree.basetree()
         forest2 = Forest([tree2])

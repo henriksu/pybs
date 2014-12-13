@@ -1,1 +1,1 @@
-1
+from Bseries import BseriesRule

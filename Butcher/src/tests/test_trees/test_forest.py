@@ -1,8 +1,8 @@
 # This Python file uses the following encoding: utf-8
 import unittest
 
-from trees import ButcherTree, ButcherEmptyTree
-from combinations import Forest, LinearCombination, differentiate as D, treeCommutator, linCombCommutator
+from src.trees import ButcherTree, ButcherEmptyTree
+from src.combinations import Forest, LinearCombination, differentiate as D, treeCommutator
 
 
 class test_commutator(unittest.TestCase):
@@ -58,6 +58,7 @@ class test_Butcher_forest(unittest.TestCase):
 		#self.assertTrue(False)
 		result = [1]
 		for i in xrange(11):
+			i
 			self.basetree = D(self.basetree)
 			result.append(self.basetree.dimensions())
 		expected = [1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766]

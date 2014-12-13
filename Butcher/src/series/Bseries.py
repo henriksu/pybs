@@ -1,19 +1,23 @@
-import operator
 from math import factorial
 from fractions import Fraction
 
-from trees import ButcherTree, ButcherEmptyTree, density, order
-from combinations import Forest, LinearCombination, split, TreeGenerator
+from src.trees import ButcherTree, ButcherEmptyTree, density, order, isTall, isBinary, number_of_children
+from src.combinations import LinearCombination, split, TreeGenerator
 
 
 class BseriesRule(object):
-    def __init__(self, arg = None):
+    def __init__(self, arg = None, a = 0):
         if arg is None:
             self._call = lambda x: 0
         elif arg == 'unit':
             self._call = self._unit
         elif arg == 'exact':
             self._call = self._exact
+        elif arg == 'kahan':
+            self._call = self._kahan
+        elif arg == 'AVF' or arg == 'average vector field':
+            self.a = a
+            self._call = self._AVF
         elif isinstance(arg, LinearCombination):
             self._call = lambda tree: arg[tree]
         elif callable(arg):
@@ -30,7 +34,27 @@ class BseriesRule(object):
 
     def _exact(self, tree):
         return Fraction(1, density(tree))
+    
+    def _kahan(self, tree):
+        'Directly from Owren'
+        if isTall(tree):
+            return 2 ** (1-order(tree))
+        else:
+            return 0
 
+    def _AVF(self, tree):
+        'Directly from Owren'
+        if order(tree) == 1:
+            return 1
+        elif not isBinary(tree):
+            return 0
+        else:
+            if number_of_children(tree) == 1:
+                return self._AVF(tree.child)/2.0 # TODO: tree.child FINNES IKKE
+            elif number_of_children(tree) == 2:
+                alpha = Fraction(2*self.a + 1, 4)
+                return alpha * self._AVF(tree.childOne) * self._AVF(tree.childTwo)
+                
 def hf_composition(baseRule):
     if baseRule(ButcherEmptyTree()) != 1:
         raise ValueError

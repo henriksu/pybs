@@ -1,8 +1,7 @@
 # This Python file uses the following encoding: utf-8
 from itertools import repeat as _repeat, chain as _chain, starmap as _starmap
-from itertools import imap as _imap
 import heapq as _heapq
-from operator import itemgetter as _itemgetter, eq as _eq, __add__
+from operator import itemgetter as _itemgetter, __add__ as _add
 from collections import Mapping as _Mapping
 from copy import copy
 
@@ -153,7 +152,7 @@ class Multiset(dict):
 
     def __len__(self):
         'Cardinality. Sum of multiplicities.'
-        return reduce(__add__, self.values(), 0)
+        return reduce(_add, self.values(), 0)
 
     def no_uniques(self):
         'Number of different elements in the multiset.'

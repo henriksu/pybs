@@ -1,7 +1,10 @@
 # This Python file uses the following encoding: utf-8
-import collections
-import functools
-import weakref
+from collections import Hashable as _Hashable, Counter as _Counter, Mapping as _Mapping
+from functools import partial as _partial
+from weakref import WeakKeyDictionary as _WeakKeyDictionary, ref as _ref
+from operator import __add__ as _add
+from itertools import imap as _imap
+
 
 # Copied from https://wiki.python.org/moin/PythonDecoratorLibrary#Memoize
 class memoized(object):
@@ -13,7 +16,7 @@ class memoized(object):
         self.func = func
         self.cache = {}#weakref.WeakKeyDictionary()
     def __call__(self, *args):
-        if not isinstance(args, collections.Hashable):
+        if not isinstance(args, _Hashable):
             # uncacheable. a list, for instance.
             # better to not cache than blow up.
             return self.func(*args)
@@ -28,17 +31,17 @@ class memoized(object):
         return self.func.__doc__
     def __get__(self, obj, objtype):
         '''Support instance methods.'''
-        return functools.partial(self.__call__, obj)
+        return _partial(self.__call__, obj)
 
 
 # Following is due to Mike Graham (I exchanged dict for Counter and added elements)
 # Found at
 #http://stackoverflow.com/questions/2703599/what-would-be-a-frozen-dict
-class FrozenCounter(collections.Mapping):
+class FrozenCounter(_Mapping):
     """Don't forget the docstrings!!"""
     #__slots__ = ('_d','_hash') # Sannsynligvis meningsløs hvis Mapping ikke har __slots__.
     def __init__(self, *args, **kwargs):
-        object.__setattr__(self, '_d', collections.Counter(*args, **kwargs))
+        object.__setattr__(self, '_d', _Counter(*args, **kwargs))
         object.__setattr__(self, '_hash', None)
 
 # TODO: block setattr and delattr...
@@ -61,7 +64,7 @@ class FrozenCounter(collections.Mapping):
             return True
         elif isinstance(other, FrozenCounter):
             return self._d == other._d
-        elif isinstance(other, collections.Counter):
+        elif isinstance(other, _Counter):
             return self._d == other
         else:
             return NotImplemented
@@ -97,15 +100,15 @@ class WeakKeyValueDict(object):
     def __init__(self, *args, **kw):
         init_dict = dict(*args, **kw)
         
-        self._d = weakref.WeakKeyDictionary(
+        self._d = _WeakKeyDictionary(
             (key, self._create_value(key, value))
             for key, value in init_dict.iteritems())
 
     def _create_value(self, key, value):
-        key_weakref = weakref.ref(key)
+        key_weakref = _ref(key)
         def value_collected(wr):
             del self[key_weakref()]
-        return weakref.ref(value, value_collected)
+        return _ref(value, value_collected)
 
     def __getitem__(self, key):
         return self._d[key]()
@@ -200,3 +203,24 @@ class WeakKeyValueDict(object):
         self[key] = default
         return default
 
+
+@memoized
+def number_of_trees_of_order(n):
+    if n < 2:
+        return n
+    result = 0
+    for k in range(1, n):
+        result += k * number_of_trees_of_order(k) * _s(n-1, k)
+    return result / (n - 1)
+
+@memoized
+def _s(n, k):
+    result = 0
+    for j in range(1, n/k + 1):
+        result += number_of_trees_of_order(n+1-j*k)
+    return result
+# Joe Riel (joer(AT)san.rr.com), Jun 23 2008
+
+def number_of_trees_up_to_order(n):
+    '''Number of trees up to and including order n.'''
+    return reduce(_add, _imap(number_of_trees_of_order, xrange(n + 1)), 0)

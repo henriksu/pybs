@@ -2,21 +2,21 @@
 import operator
 import numpy as np
 
-from combinations import TreeGenerator
-from utils import memoized as memoized
-from trees import ButcherTree, ButcherEmptyTree, density, order
+from src.combinations import TreeGenerator
+from src.utils import memoized as memoized
+from src.trees import ButcherTree, ButcherEmptyTree, density, order
 #  Note the use of dtype=object. It allows for exact algebra.
-#  However it is much slower since numpy will call Python code.
+#  However it is much slower since _np will call Python code.
 
 class RK_method(object):
-    def __init__(self, a, b):
-        self.a = a #  np array
+    def __init__(self, number_of_trees_of_order, b):
+        self.number_of_trees_of_order = number_of_trees_of_order #  np array
         self.b = b #  np array
-        self.s = self.b.size #  "a" is s x s. TODO: Check that a is same.
+        self._s = self.b.size #  "number_of_trees_of_order" is _s x _s. TODO: Check that number_of_trees_of_order is same.
 
     def printMe(self): # Simple thing. Look into prettyPrint
-        print 'a ='
-        print self.a
+        print 'number_of_trees_of_order ='
+        print self.number_of_trees_of_order
         print 'b =', self.b
 
     @property
@@ -34,7 +34,7 @@ class RK_method(object):
 
     @memoized
     def g_vector(self, tree):
-        g_vector = np.ones((self.s,1), dtype=object)
+        g_vector = np.ones((self._s,1), dtype=object)
         def u_vector((subtree, multiplicity)):
-            return np.dot(self.a,self.g_vector(subtree)) ** multiplicity
+            return np.dot(self.number_of_trees_of_order,self.g_vector(subtree)) ** multiplicity
         return reduce(operator.__mul__, map(u_vector, tree.items()), g_vector)
