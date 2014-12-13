@@ -1,29 +1,23 @@
 # This Python file uses the following encoding: utf-8
-import math
-
-import src.utils
-import src.utils.multiset as multiset
-from src.utils.miscellaneous import memoized as memoized
-import src.trees as trees
-import src.forest as forest
-
+from utils import FrozenMultiset as FrozenMultiset, memoized as memoized
+from abstractTrees import AbstractUnorderedRootedTree as AbstractUnorderedRootedTree
 #class ButcherTreeLike(trees.AbstractTreeLike):
 #    __slots__= ()
 
 
-class ButcherTree(trees.AbstractUnorderedRootedTree):
+class ButcherTree(AbstractUnorderedRootedTree):
     __slots__ = ()
 
     @classmethod
     def basetree(cls):
-        return cls(multiset.FrozenMultiset())
+        return cls(FrozenMultiset())
 
 #    @classmethod
 #    def basetrees(cls):
 #        return cls(multiset.FrozenMultiset())
 
     def __str__(self):
-        if multiset.FrozenMultiset.__len__(self): #  if Non-empty
+        if FrozenMultiset.__len__(self): #  if Non-empty
             return '[' + ','.join([str(elem) for elem in self.elements()]) + ']'
         else:
             return '[]' #TODO: Remove IF.

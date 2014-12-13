@@ -1,8 +1,6 @@
-from utils.multiset import Multiset
+from utils import Multiset as Multiset
+from trees import ButcherTree, ButcherEmptyTree, order
 from linearCombination import LinearCombination
-from trees.ButcherTrees import ButcherTree as ButcherTree
-from trees.ButcherTrees import ButcherEmptyTree
-from trees.functions import order
 
 def graft(base, other):
     result = LinearCombination()

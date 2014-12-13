@@ -1,10 +1,9 @@
 # This Python file uses the following encoding: utf-8
 import unittest
-from forest import Forest
-from trees.ButcherTrees import ButcherTree, ButcherEmptyTree
-from forest.differentiation import differentiate as D
-from forest.differentiation import treeCommutator, linCombCommutator
-from forest.linearCombination import LinearCombination
+
+from trees import ButcherTree, ButcherEmptyTree
+from forest import Forest, LinearCombination, differentiate as D, treeCommutator, linCombCommutator
+
 
 class test_commutator(unittest.TestCase):
 	def test_empty(self):

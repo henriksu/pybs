@@ -2,11 +2,9 @@
 import operator
 import numpy as np
 
-import trees
-import forest.differentiation as differentiation
-from trees.functions import density, order
-import src.utils.miscellaneous
-from trees.ButcherTrees import ButcherTree, ButcherEmptyTree
+from forest import TreeGenerator
+from utils import memoized as memoized
+from trees import ButcherTree, ButcherEmptyTree, density, order
 #  Note the use of dtype=object. It allows for exact algebra.
 #  However it is much slower since numpy will call Python code.
 
@@ -22,30 +20,21 @@ class RK_method(object):
         print 'b =', self.b
 
     @property
-    @src.utils.miscellaneous.memoized
+    @memoized
     def order(self):
-        for tree in differentiation.TreeGenerator(ButcherTree):
+        for tree in TreeGenerator(ButcherTree):
             #print tree
             if not self.phi(tree) * density(tree) == 1:
                 return order(tree) - 1
 
     def phi(self, tree): #  elementary weight
-        if isinstance(tree, trees.ButcherTrees.ButcherEmptyTree):
+        if isinstance(tree, ButcherEmptyTree):
             return 1 # We havent even allowed for non-consistent RK-methods.
         return np.dot(self.b, self.g_vector(tree))[0]
 
-    @src.utils.miscellaneous.memoized
+    @memoized
     def g_vector(self, tree):
         g_vector = np.ones((self.s,1), dtype=object)
         def u_vector((subtree, multiplicity)):
             return np.dot(self.a,self.g_vector(subtree)) ** multiplicity
         return reduce(operator.__mul__, map(u_vector, tree.items()), g_vector)
-
-
-if __name__ == "__main__":
-    pass
-
-
-    #print 'phi of basetree: ', RKeuler.phi('*')
-    #print 'phi of second-order tree: ', RKeuler.phi('[*]')
-    #print 'phi of ', '[*,*]', ': ', RKeuler.phi('[*,*]')

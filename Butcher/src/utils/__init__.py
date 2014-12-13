@@ -1,3 +1,3 @@
 # This Python file uses the following encoding: utf-8
-import miscellaneous
-import multiset
+from miscellaneous import memoized
+from multiset import Multiset, FrozenMultiset

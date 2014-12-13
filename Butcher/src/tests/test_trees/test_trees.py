@@ -86,7 +86,7 @@ class first_order_tree(unittest.TestCase):
         tree1=ButcherTree.basetree()
         self.assertTrue(isBinary(tree1))
         self.assertTrue(isTall(tree1))
-        self.assertFalse(isBushy(tree1))
+        self.assertTrue(isBushy(tree1))
 
 
 class Second_order_tree(unittest.TestCase):

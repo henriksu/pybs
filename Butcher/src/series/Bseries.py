@@ -73,9 +73,9 @@ def modifiedEquation(a):
         elif tree == ButcherTree.basetree():
             return 1
         result = a(tree)
-        c = mainResult # NASTY recursive thing.
+        c = mainResult # This is a BseriesRule. Caution: Recursive!
         for j in range(2, order(tree) + 1):
-            c = lieDerivative(c, mainResult, True) # Just as nasty
+            c = lieDerivative(c, mainResult, True)
             result -= Fraction(c(tree), factorial(j))
         return result
     mainResult._call = newRule
@@ -86,6 +86,8 @@ if __name__ == '__main__':
     modified = modifiedEquation(exact)
     from forest.differentiation import TreeGenerator
     for tree in TreeGenerator(ButcherTree):
-        if order(tree) > 4:
+        if order(tree) > 7:
             break
+        print tree
         print modified(tree)
+    print 'Finished'

@@ -1,8 +1,8 @@
+#from copy import copy
 from numbers import Number
-from collections import Mapping as _Mapping
-from trees.ButcherTrees import ButcherTree
-from copy import copy
-from trees.ButcherTrees import ButcherEmptyTree
+#from collections import Mapping as _Mapping
+
+from trees import ButcherTree, ButcherEmptyTree
 
 class LinearCombination(dict):
     __slots__ = ('_fast_setitem',)
