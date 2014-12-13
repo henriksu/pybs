@@ -2,7 +2,7 @@
 import unittest
 
 from trees import ButcherTree, ButcherEmptyTree
-from forest import Forest, LinearCombination, differentiate as D, treeCommutator, linCombCommutator
+from combinations import Forest, LinearCombination, differentiate as D, treeCommutator, linCombCommutator
 
 
 class test_commutator(unittest.TestCase):

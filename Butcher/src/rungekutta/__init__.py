@@ -2,7 +2,7 @@
 import operator
 import numpy as np
 
-from forest import TreeGenerator
+from combinations import TreeGenerator
 from utils import memoized as memoized
 from trees import ButcherTree, ButcherEmptyTree, density, order
 #  Note the use of dtype=object. It allows for exact algebra.

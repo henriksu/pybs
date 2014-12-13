@@ -2,7 +2,7 @@
 import unittest
 from trees.ButcherTrees import ButcherTree#, ButcherNotTree
 from trees.functions import alpha, F, order, number_of_children, density, symmetry, isTall, isBinary, isBushy
-from forest import Forest
+from combinations import Forest
 
 
 # class empty_tree(unittest.TestCase):

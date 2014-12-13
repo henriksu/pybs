@@ -1,12 +1,10 @@
 import operator
 from math import factorial
 from fractions import Fraction
-from fractions import Fraction
-from forest.linearCombination import LinearCombination
-from trees.ButcherTrees import ButcherTree, ButcherEmptyTree
-from trees.functions import density, order
-from forest.differentiation import split
-from forest import Forest
+
+from trees import ButcherTree, ButcherEmptyTree, density, order
+from combinations import Forest, LinearCombination, split, TreeGenerator
+
 
 class BseriesRule(object):
     def __init__(self, arg = None):
@@ -84,7 +82,7 @@ def modifiedEquation(a):
 if __name__ == '__main__':
     exact = BseriesRule('exact')
     modified = modifiedEquation(exact)
-    from forest.differentiation import TreeGenerator
+#    from forest.differentiation import TreeGenerator
     for tree in TreeGenerator(ButcherTree):
         if order(tree) > 7:
             break
