@@ -1,7 +1,7 @@
 import unittest
 
-from src.trees import ButcherTree, ButcherEmptyTree#, alpha, F, order, number_of_children, density, symmetry
-from src.combinations import Forest, LinearCombination#, differentiate
+from src.trees import ButcherTree, ButcherEmptyTree
+from src.combinations import Forest, LinearCombination
 from src.series import BseriesRule
 
 

@@ -1,8 +1,7 @@
-#from copy import copy
 from numbers import Number
-#from collections import Mapping as _Mapping
 
 from src.trees import ButcherTree, ButcherEmptyTree
+
 
 class LinearCombination(dict):
     __slots__ = ('_fast_setitem',)
@@ -13,7 +12,8 @@ class LinearCombination(dict):
         self.__iadd__(iterable)
 
     def __str__(self):
-        return ' + '.join([str(self[element]) + '*' + str(element) for element in self])
+        return ' + '.join([str(self[element]) + '*' +
+                           str(element) for element in self])
 
     def __missing__(self, key):
         return 0
@@ -27,10 +27,12 @@ class LinearCombination(dict):
                 self._fast_setitem(key, value)
         else:
             raise TypeError(
-                'bad operand type. Values must be of type Number, not: ' + str(type(value)))
+                'bad operand type. Values must be of type Number, not: ' +
+                str(type(value)))
 
     def __delitem__(self, elem):
-        'Like dict.__delitem__() but does not raise KeyError for missing values.'
+        'Like dict.__delitem__() ' + \
+            'but does not raise KeyError for missing values.'
         if elem in self:
             super(LinearCombination, self).__delitem__(elem)
 
@@ -43,11 +45,13 @@ class LinearCombination(dict):
                     self._fast_setitem(elem, self_get(elem, 0) + count)
             else:
                 super(LinearCombination, self).update(other)
-        elif isinstance(other, ButcherTree) or isinstance(other, ButcherEmptyTree):
+        elif isinstance(other, ButcherTree) or \
+                isinstance(other, ButcherEmptyTree):
             self._fast_setitem(other, self_get(other, 0) + 1)
         elif other is not None:
             raise TypeError(
-                'Other must be LinearCombination or ButcherTree, not ' + str(type(other)) )
+                'Other must be LinearCombination or ButcherTree, not ' +
+                str(type(other)))
         return self
 
     def __add__(self, other):
@@ -61,7 +65,8 @@ class LinearCombination(dict):
         if isinstance(other, LinearCombination):
             for elem, count in other.items():
                 self[elem] = self_get(elem, 0) - count
-        elif isinstance(other, ButcherTree) or isinstance(other, ButcherEmptyTree):
+        elif isinstance(other, ButcherTree) or \
+                isinstance(other, ButcherEmptyTree):
             self._fast_setitem(other, self_get(other, 0) - 1)
         return self
 
@@ -70,16 +75,16 @@ class LinearCombination(dict):
         result -= other
         return result
 
-    def __mul__(self, other): 
+    def __mul__(self, other):
         'Scalar multiplication.'
         if isinstance(other, Number):
             result = LinearCombination()
-            for key,value in self.iteritems():
+            for key, value in self.iteritems():
                 result[key] = value * other
             return result
         else:
             return NotImplemented
-    
+
     def __rmul__(self, other):
         return self * other
 
@@ -95,8 +100,7 @@ class LinearCombination(dict):
 #    def __reduce__(self): #  Good for pickling.
 #        return self.__class__, (dict(self),)
 
-
-    def __repr__(self): #  TODO: Do something like this in my classes too!
+    def __repr__(self):  # TODO: Do something like this in my classes too!
         if not self:
             return '%s()' % self.__class__.__name__
         items = ', '.join(map('%r: %r'.__mod__, self.most_common()))

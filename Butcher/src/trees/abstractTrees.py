@@ -2,8 +2,8 @@
 from numbers import Number
 
 from src.utils import Multiset as Multiset, FrozenMultiset as FrozenMultiset
-#import forest as forest
 # TODO: Implement the cache miss super fast memoization.
+
 
 class AbstractUnorderedRootedTree(FrozenMultiset):
     __slots__ = ('__weakref__',)
@@ -16,15 +16,15 @@ class AbstractUnorderedRootedTree(FrozenMultiset):
 
     def __init__(self, forest=FrozenMultiset()):
         FrozenMultiset.__init__(self, forest)
-        
-    multiplicities = FrozenMultiset.values #  Alias. "Correct" way of doing it?
- 
+
+    multiplicities = FrozenMultiset.values  # Alias. "Correct" way of doing it?
+
     @classmethod
     def basetrees(cls):
         raise NotImplementedError
-    
+
     def alpha(self):
-        raise NotImplementedError #  TODO: Implement me.
+        raise NotImplementedError  # TODO: Implement me.
 
     def __mul__(self, other):
         if isinstance(other, type(self)):
@@ -32,14 +32,11 @@ class AbstractUnorderedRootedTree(FrozenMultiset):
             new_self.inplace_add(other)
             return type(self)(new_self)
         elif isinstance(other, Number):
-            from src.combinations.linearCombination import LinearCombination # TODO: Nasty work around
+            from src.combinations.linearCombination import LinearCombination
+            # TODO: Nasty work around
             tmp = LinearCombination()
             tmp[self] = other
             return tmp
-
-   
-
-
 
 
 # La str() gi ut LaTeX-kode? Trenger sikkert flere forskjellige output-formater.

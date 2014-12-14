@@ -1,5 +1,8 @@
 # This Python file uses the following encoding: utf-8
-from collections import Hashable as _Hashable, Counter as _Counter, Mapping as _Mapping
+from collections import \
+    Hashable as _Hashable, \
+    Counter as _Counter, \
+    Mapping as _Mapping
 from functools import partial as _partial
 from weakref import WeakKeyDictionary as _WeakKeyDictionary, ref as _ref
 from operator import __add__ as _add
@@ -14,7 +17,8 @@ class memoized(object):
     '''
     def __init__(self, func):
         self.func = func
-        self.cache = {}#weakref.WeakKeyDictionary()
+        self.cache = {}  # weakref.WeakKeyDictionary()
+
     def __call__(self, *args):
         if not isinstance(args, _Hashable):
             # uncacheable. a list, for instance.
@@ -26,20 +30,22 @@ class memoized(object):
             value = self.func(*args)
             self.cache[args] = value
             return value
+
     def __repr__(self):
         '''Return the function's docstring.'''
         return self.func.__doc__
+
     def __get__(self, obj, objtype):
         '''Support instance methods.'''
         return _partial(self.__call__, obj)
 
 
-# Following is due to Mike Graham (I exchanged dict for Counter and added elements)
+# Following is due to Mike Graham
+# (I exchanged dict for Counter and added elements)
 # Found at
-#http://stackoverflow.com/questions/2703599/what-would-be-a-frozen-dict
+# http://stackoverflow.com/questions/2703599/what-would-be-a-frozen-dict
 class FrozenCounter(_Mapping):
     """Don't forget the docstrings!!"""
-    #__slots__ = ('_d','_hash') # Sannsynligvis meningsløs hvis Mapping ikke har __slots__.
     def __init__(self, *args, **kwargs):
         object.__setattr__(self, '_d', _Counter(*args, **kwargs))
         object.__setattr__(self, '_hash', None)
@@ -53,13 +59,13 @@ class FrozenCounter(_Mapping):
 
     def __getitem__(self, key):
         return self._d[key]
-    
+
     def elements(self):
         for value, multiplicity in self.iteritems():
-            for i in xrange(multiplicity): #  TODO: How to repeat yield without for?
+            for i in xrange(multiplicity):  # TODO: Repeat yield without for?
                 yield value
 
-    def __eq__(self, other): #  TODO: Check that this is a good implementation.
+    def __eq__(self, other):  # TODO: Check that this is a good implementation.
         if self is other:
             return True
         elif isinstance(other, FrozenCounter):
@@ -70,10 +76,10 @@ class FrozenCounter(_Mapping):
             return NotImplemented
 
     def __hash__(self):
-        # It would have been simpler and maybe more obvious to 
+        # It would have been simpler and maybe more obvious to
         # use hash(tuple(sorted(self._d.iteritems()))) from this discussion
-        # so far, but this solution is O(n). I don't know what kind of 
-        # n we are going to run into, but sometimes it's hard to resist the 
+        # so far, but this solution is O(n). I don't know what kind of
+        # n we are going to run into, but sometimes it's hard to resist the
         # urge to optimize when it will gain improved algorithmic performance.
         if self._hash is None:
             result = 0
@@ -84,10 +90,9 @@ class FrozenCounter(_Mapping):
 #         if self._hash is None:
 #             FrozenCounter.__setattr__(self, '_hash', 0)
 #             for pair in self.iteritems():
-#                 FrozenCounter.__setattr__(self, '_hash', self._hash ^ hash(pair))
+#                 FrozenCounter.__setattr__(self, '_hash',
+#                     self._hash ^ hash(pair))
 #         return self._hash
-
-
 
 
 # By Eyal Lotem and Yair Chuchem, 2007,
@@ -99,20 +104,21 @@ class WeakKeyValueDict(object):
     """
     def __init__(self, *args, **kw):
         init_dict = dict(*args, **kw)
-        
+
         self._d = _WeakKeyDictionary(
             (key, self._create_value(key, value))
             for key, value in init_dict.iteritems())
 
     def _create_value(self, key, value):
         key_weakref = _ref(key)
+
         def value_collected(wr):
             del self[key_weakref()]
         return _ref(value, value_collected)
 
     def __getitem__(self, key):
         return self._d[key]()
-    
+
     def __setitem__(self, key, value):
         self._d[key] = self._create_value(key, value)
 
@@ -151,7 +157,7 @@ class WeakKeyValueDict(object):
 
     def values(self):
         return list(self.itervalues())
-    
+
     def iteritems(self):
         for key in self._d:
             yield self._d[key]()
@@ -187,7 +193,7 @@ class WeakKeyValueDict(object):
 
     def _pop(self, key):
         return self._d.pop(key)()
-    
+
     def _pop_with_default(self, key, default):
         if key in self:
             return self._d.pop(key)
@@ -213,6 +219,7 @@ def number_of_trees_of_order(n):
         result += k * number_of_trees_of_order(k) * _s(n-1, k)
     return result / (n - 1)
 
+
 @memoized
 def _s(n, k):
     result = 0
@@ -220,6 +227,7 @@ def _s(n, k):
         result += number_of_trees_of_order(n+1-j*k)
     return result
 # Joe Riel (joer(AT)san.rr.com), Jun 23 2008
+
 
 def number_of_trees_up_to_order(n):
     '''Number of trees up to and including order n.'''

@@ -1,6 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import unittest
-from src.trees import ButcherTree, alpha, F, order, number_of_children, density, symmetry, isTall, isBinary, isBushy#, ButcherNotTree
+from src.trees import ButcherTree, alpha, F, order, number_of_children, \
+    density, symmetry, isTall, isBinary, isBushy
 from src.combinations import Forest
 
 
@@ -8,46 +9,45 @@ from src.combinations import Forest
 # #Does NOT test derivation, grafting and other operations.
 #     def test_initialisation(self):
 #         self.assertIsInstance(ButcherTree(), ButcherTree)
-# 
+#
 #     def test_str(self):
 #         tree1 = ButcherTree.emptytree()
 #         self.assertEqual('Ø', str(tree1))
-# 
+#
 #     def test_equality(self):
 #         tree1 = ButcherTree.emptytree()
 #         tree2 = ButcherNotTree()
 #         self.assertEqual(tree1, tree2)
-# 
+#
 #     def test_number_of_subtrees(self):
 #         tree1 = ButcherTree.emptytree()
 #         self.assertEqual(0, tree1.m)
-# 
+#
 #     def test_order(self):
 #         tree1 = ButcherTree.emptytree()
 #         self.assertEqual(0, tree1.order)
-# 
+#
 #     def test_density(self):
 #         tree1 = ButcherTree.emptytree()
 #         self.assertEqual(1, tree1.gamma)
-# 
+#
 #     def test_symmetry(self):
 #         tree1 = ButcherTree.emptytree()
 #         self.assertEqual(1, tree1.sigma)
-# 
+#
 #     def test_alpha(self):
 #         tree1 = ButcherTree.emptytree()
 #         self.assertEqual(1, tree1.alpha)
-# 
+#
 #     def test_elementary_differential(self):
 #         tree1 = ButcherTree.emptytree()
 #         self.assertEqual('y', tree1.F)
 
 class first_order_tree(unittest.TestCase):
-#Does NOT test derivation, grafting and other operations.
-
+    # Does NOT test derivation, grafting and other operations.
     def test_initialisation(self):
         self.assertIsInstance(ButcherTree(Forest()), ButcherTree)
-    
+
     def test_str(self):
         tree1 = ButcherTree.basetree()
         self.assertEqual('[]', str(tree1))
@@ -80,16 +80,16 @@ class first_order_tree(unittest.TestCase):
     def test_elementary_differential(self):
         tree1 = ButcherTree.basetree()
         self.assertEqual('f', F(tree1))
-        
+
     def test_properties(self):
-        tree1=ButcherTree.basetree()
+        tree1 = ButcherTree.basetree()
         self.assertTrue(isBinary(tree1))
         self.assertTrue(isTall(tree1))
         self.assertTrue(isBushy(tree1))
 
 
 class Second_order_tree(unittest.TestCase):
-#Does NOT test derivation, grafting and other operations.
+    # Does NOT test derivation, grafting and other operations.
     def setUp(self):
         tree1 = ButcherTree.basetree()
         forest1 = Forest([tree1])
@@ -97,7 +97,7 @@ class Second_order_tree(unittest.TestCase):
 
     def test_initialisation(self):
         self.assertIsInstance(self.tree, ButcherTree)
-    
+
     def test_str(self):
         self.assertEqual('[[]]', str(self.tree))
 
@@ -132,7 +132,7 @@ class Second_order_tree(unittest.TestCase):
 
 
 class Third_order_tree_no1(unittest.TestCase):
-#Does NOT test derivation, grafting and other operations.
+    # Does NOT test derivation, grafting and other operations.
     def setUp(self):
         tree1 = ButcherTree.basetree()
         forest1 = Forest([tree1, tree1])
@@ -140,7 +140,7 @@ class Third_order_tree_no1(unittest.TestCase):
 
     def test_initialisation(self):
         self.assertIsInstance(self.tree, ButcherTree)
-    
+
     def test_str(self):
         self.assertEqual('[[],[]]', str(self.tree))
 

@@ -1,8 +1,9 @@
 # This Python file uses the following encoding: utf-8
 from src.utils import FrozenMultiset as FrozenMultiset
-from abstractTrees import AbstractUnorderedRootedTree as AbstractUnorderedRootedTree
-#class ButcherTreeLike(trees.AbstractTreeLike):
-#    __slots__= ()
+from abstractTrees import \
+    AbstractUnorderedRootedTree as AbstractUnorderedRootedTree
+# class ButcherTreeLike(trees.AbstractTreeLike):
+#     __slots__= ()
 
 
 class ButcherTree(AbstractUnorderedRootedTree):
@@ -17,10 +18,11 @@ class ButcherTree(AbstractUnorderedRootedTree):
 #        return cls(multiset.FrozenMultiset())
 
     def __str__(self):
-        if FrozenMultiset.__len__(self): #  if Non-empty
-            return '[' + ','.join([str(elem) for elem in self.elements()]) + ']'
+        if FrozenMultiset.__len__(self):  # if Non-empty
+            return '[' + \
+                ','.join([str(elem) for elem in self.elements()]) + ']'
         else:
-            return '[]' #TODO: Remove IF.
+            return '[]'  # TODO: Remove IF.
 
     @classmethod
     def emptytree(cls):
@@ -36,9 +38,8 @@ class ButcherTree(AbstractUnorderedRootedTree):
 #         if self is other:
 #             return False
 #         return self.childtrees != other.childtrees
-#         #  TODO: Is it true that two trees evaluate equal iff (with large probability) their hash are equal?
-
-
+#         #  TODO: Is it true that two trees evaluate equal iff
+#                  (with large probability) their hash are equal?
 
 
 class ButcherEmptyTree(object):
@@ -48,4 +49,4 @@ class ButcherEmptyTree(object):
         else:
             return False
 # TODO: FIX THIS
-#ButcherTree.emptytree = ButcherEmptyTree
+# ButcherTree.emptytree = ButcherEmptyTree

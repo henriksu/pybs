@@ -2,23 +2,25 @@ from src.utils import Multiset as Multiset
 from src.trees import ButcherTree, ButcherEmptyTree, order
 from src.combinations import LinearCombination
 
+
 def graft(base, other):
     result = LinearCombination()
     if isinstance(base, ButcherEmptyTree):
         result += other
-        return result # Just to make sure it is Lincomb.
+        return result  # Just to make sure it is Lincomb.
     elif isinstance(other, ButcherEmptyTree):
         result += base
         return result
-    result += base * other # Grafting onto the root.
+    result += base * other  # Grafting onto the root.
     for subtree, multiplicity1 in base.items():
-        amputated_tree = base.sub(subtree) # Removing one instance of subtree.
+        amputated_tree = base.sub(subtree)  # Removing one instance of subtree.
         replacements = graft(subtree, other)
         for replacement, multiplicity2 in replacements.items():
             multiset_of_new_children = amputated_tree.add(replacement)
             new_tree = type(base)(multiset_of_new_children)
             result += new_tree * (multiplicity1 * multiplicity2)
     return result
+
 
 def split(tree, truncated=False):
     if tree == ButcherEmptyTree():
@@ -27,6 +29,7 @@ def split(tree, truncated=False):
     if not truncated:
         result[(ButcherEmptyTree(), tree)] = 1
     return result
+
 
 def _split(tree):
     result = Multiset()
@@ -41,6 +44,7 @@ def _split(tree):
             result[new_pair] = multiplicity * multiplicity2
     return result
 
+
 def differentiate(thing):
     if isinstance(thing, LinearCombination):
         result = LinearCombination()
@@ -52,8 +56,10 @@ def differentiate(thing):
         result = ButcherTree.basetree()
     return result
 
+
 def treeD(tree):
     return graft(tree, ButcherTree.basetree())
+
 
 def linCombCommutator(op1, op2, max_order=None):
     if isinstance(op1, ButcherTree) or isinstance(op1, ButcherEmptyTree):
@@ -71,13 +77,15 @@ def linCombCommutator(op1, op2, max_order=None):
                 result += (factor1 * factor2) * treeCommutator(tree1, tree2)
     return result
 
+
 def treeCommutator(op1, op2):
     return graft(op1, op2) - graft(op2, op1)
 
-def TreeGenerator(treetype):
-    theSum = LinearCombination(treetype.emptytree())
+
+def treeGenerator():
+    'Yields all trees, including empty tree, by increasing order.'
+    theSum = LinearCombination(ButcherEmptyTree())
     while True:
         for tree in theSum:
             yield tree
         theSum = differentiate(theSum)
-

@@ -1,6 +1,6 @@
 # This Python file uses the following encoding: utf-8
 import unittest
-from forest import Forest
+from src.combinations import Forest
 from trees.LabeledTrees.ColouredTrees.BiColouredTrees import \
     BiColouredTree, black, white, BiColouredNotTree
 

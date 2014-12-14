@@ -14,12 +14,14 @@ def order(tree):
         result += mult * order(elem)
     return result
 
+
 @memoized
 def number_of_children(tree):
     'Number of children.'
     if isinstance(tree, ButcherEmptyTree):
         return 0
     return sum(tree.multiplicities())
+
 
 @memoized
 def density(tree):
@@ -30,19 +32,23 @@ def density(tree):
         result *= density(elem) ** tree[elem]
     return result
 
+
 @memoized
 def symmetry(tree):
     def _subtree_contribution((tree, multiplicity)):
         return symmetry(tree) ** multiplicity * math.factorial(multiplicity)
-    return reduce(operator.__mul__, map(_subtree_contribution, tree.items()), 1)
+    return reduce(operator.__mul__, map(_subtree_contribution, tree.items()),
+                  1)
+
 
 @memoized
 def alpha(tree):
-    return math.factorial(order(tree)) / (symmetry(tree) * density(tree)) #  Will always come out integer.
+    return math.factorial(order(tree)) / (symmetry(tree) * density(tree))
+    # Will always come out integer.
 
-def F(tree): #  Elementary differential.
-    #if tree == ButcherTree.emptytree:
-    #   return 'y'
+
+def F(tree):
+    'Elementary differential.'
     if isinstance(tree, ButcherEmptyTree):
         return 'y'
     result = 'f' + "'" * number_of_children(tree)
@@ -63,6 +69,7 @@ def isBinary(tree):
             return False
     return True
 
+
 def isTall(tree):
     if isinstance(tree, ButcherEmptyTree):
         return True
@@ -73,6 +80,7 @@ def isTall(tree):
             return False
     return True
 
+
 def isBushy(tree):
     if tree == ButcherEmptyTree or tree == ButcherTree.basetree():
         return True
@@ -80,4 +88,3 @@ def isBushy(tree):
         return True
     else:
         return False
-    
