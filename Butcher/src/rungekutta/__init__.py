@@ -2,9 +2,11 @@
 import operator
 import numpy as np
 
-from src.combinations import treeGenerator
+
 from src.utils import memoized as memoized
 from src.trees import ButcherTree, ButcherEmptyTree, density, order
+from src.combinations import treeGenerator
+from src.series import BseriesRule, equal_up_to_order
 #  Note the use of dtype=object. It allows for exact algebra.
 #  However it is much slower since numpy will call Python code.
 
@@ -23,9 +25,9 @@ class RK_method(object):
     @property
     @memoized
     def order(self):
-        for tree in treeGenerator():
-            if not self.phi(tree) * density(tree) == 1:
-                return order(tree) - 1
+        a = BseriesRule('exact')
+        b = BseriesRule(self.phi)
+        return equal_up_to_order(a, b)
 
     def phi(self, tree):
         'elementary weight'
