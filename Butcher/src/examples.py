@@ -1,5 +1,6 @@
 from src.trees import ButcherTree, ButcherEmptyTree, F, order, number_of_children, density, symmetry, alpha
 from src.combinations import Forest, FrozenForest, differentiate as D
+import src.rungekutta
 
 print 'The first tree is: ButcherTree() =', ButcherTree()
 print 'And the empty tree is: ButcherNotTree() =', ButcherEmptyTree()
@@ -28,7 +29,7 @@ tmp = ButcherTree(Forest([ButcherTree.basetree()]))
 t = ButcherTree(Forest([tmp, ButcherTree.basetree()])); del tmp
 print 'let t =', str(t) + ', then:'
 print 'order(t) = ', order(t)
-print 'numer_of_children(t) = ', number_of_children(t)
+print 'number_of_children(t) = ', number_of_children(t)
 print 'density(t) = ', density(t)
 print 'symmetry(t) = ', symmetry(t)
 print 'alpha(t) =', alpha(t)
