@@ -4,7 +4,8 @@ from ButcherTrees import \
 from functions import \
     order, \
     number_of_children, \
-    density, symmetry, \
+    density, \
+    symmetry, \
     alpha, \
     F, \
     isBinary, \
