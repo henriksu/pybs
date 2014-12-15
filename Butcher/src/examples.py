@@ -1,39 +1,39 @@
-from trees.ButcherTrees import ButcherTree, D
-from forest import FrozenForest
+from src.trees import ButcherTree, ButcherEmptyTree, F, order, number_of_children, density, symmetry, alpha
+from src.combinations import Forest, FrozenForest, differentiate as D
 
 print 'The first tree is: ButcherTree() =', ButcherTree()
-#print 'And the empty tree is: ButcherNotTree() =', ButcherNotTree()
-#print 'And since ButcherNotTree().F =', ButcherNotTree().F, 'we have ButcherNotTree.D =', str(ButcherNotTree().D) + '. Note: The result is a "FrozenForest" containing one "' + str(ButcherTree.basetree()) + '".'
+print 'And the empty tree is: ButcherNotTree() =', ButcherEmptyTree()
+print 'And since F(ButcherEmptyTree()) =', F(ButcherEmptyTree()), ', we have D(ButcherEmptyTree) =', str(D(ButcherEmptyTree())) + '. Note: The result is a "LinearCombination" containing one "' + str(ButcherTree.basetree()) + '".'
 print 'These two first trees can be accessed through ButcherTree.emptytree() =', ButcherTree.emptytree(), 'and ButcherTree.basetree() =', str(ButcherTree.basetree()) + '.'
 print 'So far, new trees can be made:'
 print '    1. by taking the derivative of existing trees.'
-print '    Ex.: D(ButcherTree.basetree()) =', D(ButcherTree.basetree()), 'Note: The derivative always returns a "FrozenForest".'
+print '    Ex.: D(ButcherTree.basetree()) =', D(ButcherTree.basetree()), 'Note: The derivative always returns a "LinearCombination".'
 print '    2. by specifying the forest of child trees to the constructor.'
-print '    Ex.: ButcherTree(FrozenForest([ButcherTree.basetree(), ButcherTree.basetree()])) = ', ButcherTree(FrozenForest([ButcherTree.basetree(), ButcherTree.basetree()]))
-print 'It is also possible to derivate all the trees in a FrozenForest. Starting at the empty tree,'
-print 'the n-th derivative is the FrozenForest of all trees of order n. Complete with alpha as the multiplicity (check this claim):'
+print '    Ex.: ButcherTree(Forest([ButcherTree.basetree(), ButcherTree.basetree()])) = ', ButcherTree(Forest([ButcherTree.basetree(), ButcherTree.basetree()]))
+print 'It is also possible to take the derivative of all the trees in a LinearCOmbination. Starting at the empty tree,'
+print 'the n-th derivative is a LinearCombination of all trees of order n, Complete with alpha as the multiplicity:'
 forest_of_trees_of_order_1 = D(ButcherTree.emptytree())
-print 'forest_of_trees_of_order_1 = ButcherTree.emptytree().D =', forest_of_trees_of_order_1
+print 'forest_of_trees_of_order_1 = D(ButcherTree.emptytree()) =', forest_of_trees_of_order_1
 forest_of_trees_of_order_2 = D(forest_of_trees_of_order_1)
-print 'forest_of_trees_of_order_2 = forest_of_trees_of_order_1.D() =', forest_of_trees_of_order_2
-forest_of_trees_of_order_3 = forest_of_trees_of_order_2.D()
-print 'forest_of_trees_of_order_3 = forest_of_trees_of_order_2.D() =', forest_of_trees_of_order_3
-forest_of_trees_of_order_4 = forest_of_trees_of_order_3.D()
-print 'forest_of_trees_of_order_4 = forest_of_trees_of_order_3.D() =', forest_of_trees_of_order_4
-forest_of_trees_of_order_5 = forest_of_trees_of_order_4.D()
-print 'forest_of_trees_of_order_5 = forest_of_trees_of_order_4.D() =', forest_of_trees_of_order_5
+print 'forest_of_trees_of_order_2 = D(forest_of_trees_of_order_1) =', forest_of_trees_of_order_2
+forest_of_trees_of_order_3 = D(forest_of_trees_of_order_2)
+print 'forest_of_trees_of_order_3 = D(forest_of_trees_of_order_2) =', forest_of_trees_of_order_3
+forest_of_trees_of_order_4 = D(forest_of_trees_of_order_3)
+print 'forest_of_trees_of_order_4 = D(forest_of_trees_of_order_3) =', forest_of_trees_of_order_4
+forest_of_trees_of_order_5 = D(forest_of_trees_of_order_4)
+print 'forest_of_trees_of_order_5 = D(forest_of_trees_of_order_4) =', forest_of_trees_of_order_5
 print
 print 'Further each ButcherTree-object provides some useful properties:'
-tmp = ButcherTree(FrozenForest([ButcherTree.basetree()]))
-t = ButcherTree(FrozenForest([tmp, ButcherTree.basetree()])); del tmp
+tmp = ButcherTree(Forest([ButcherTree.basetree()]))
+t = ButcherTree(Forest([tmp, ButcherTree.basetree()])); del tmp
 print 'let t =', str(t) + ', then:'
-print 't.order = t.order =', t.order
-print 't.numer_of_children = t.m =', t.m
-print 't.density = t.gamma =', t.gamma
-print 't.symmetry = t.sigma =', t.sigma
-print 't.alpha =', t.alpha
-print 't.F = <<' + t.F + '>> (A string)'
-print 't.D =', t.D
+print 'order(t) = ', order(t)
+print 'numer_of_children(t) = ', number_of_children(t)
+print 'density(t) = ', density(t)
+print 'symmetry(t) = ', symmetry(t)
+print 'alpha(t) =', alpha(t)
+print 'F(t) = <<' + F(t) + '>> (A string)'
+print 'D(t) =', D(t)
 print 't.multiplicities() =', t.multiplicities(),  '(Mostly for internal use)'
 print
 from rungekutta.methods import RKmidpoint

@@ -53,7 +53,8 @@ def differentiate(thing):
     elif isinstance(thing, ButcherTree):
         result = treeD(thing)
     elif isinstance(thing, ButcherEmptyTree):
-        result = ButcherTree.basetree()
+        result = LinearCombination()
+        result += ButcherTree.basetree()
     return result
 
 

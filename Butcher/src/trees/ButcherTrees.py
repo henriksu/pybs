@@ -48,5 +48,9 @@ class ButcherEmptyTree(object):
             return True
         else:
             return False
+
+    def __str__(self):
+        return 'Ø'
+
 # TODO: FIX THIS
 # ButcherTree.emptytree = ButcherEmptyTree

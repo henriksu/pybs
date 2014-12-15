@@ -12,14 +12,14 @@ from src.series import BseriesRule, equal_up_to_order
 
 
 class RK_method(object):
-    def __init__(self, number_of_trees_of_order, b):
-        self.number_of_trees_of_order = number_of_trees_of_order  # np array
+    def __init__(self, A, b):
+        self.A = A  # np array
         self.b = b  # np array
         self._s = self.b.size
 
     def printMe(self):  # Simple thing. Look into prettyPrint
-        print 'number_of_trees_of_order ='
-        print self.number_of_trees_of_order
+        print 'A ='
+        print self.A
         print 'b =', self.b
 
     @property
@@ -40,6 +40,6 @@ class RK_method(object):
         g_vector = np.ones((self._s, 1), dtype=object)
 
         def u_vector((subtree, multiplicity)):
-            return np.dot(self.number_of_trees_of_order,
+            return np.dot(self.A,
                           self.g_vector(subtree)) ** multiplicity
         return reduce(operator.__mul__, map(u_vector, tree.items()), g_vector)
