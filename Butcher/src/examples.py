@@ -36,7 +36,7 @@ print 'F(t) = <<' + F(t) + '>> (A string)'
 print 'D(t) =', D(t)
 print 't.multiplicities() =', t.multiplicities(),  '(Mostly for internal use)'
 print
-from rungekutta.methods import RKmidpoint
+from src.rungekutta.methods import RKmidpoint
 print 'One useful application is implemented,'
 print 'finding the order of an RK method.'
 print 'Ex.: The midpoint rule:'
