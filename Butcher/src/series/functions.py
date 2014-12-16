@@ -16,7 +16,8 @@ def equal_up_to_order(a, b, max_order=None):
 
 def hf_composition(baseRule):
     if baseRule(ButcherEmptyTree()) != 1:
-        raise ValueError
+        raise ValueError(
+            'Composition can only be performed on consistent B-series.')
     result = BseriesRule()
 
     def newRule(tree):
@@ -31,16 +32,17 @@ def hf_composition(baseRule):
     return result
 
 
-def lieDerivative(c, b, truncated=False):
+def lieDerivative(c, b, truncate=False):
     if b(ButcherEmptyTree()) != 0:
-        raise ValueError
+        raise ValueError(
+            'The second argument does not satisfy b(ButcherEmptyTree()) == 0.')
     result = BseriesRule()
 
     def newRule(tree):
         result = 0
         if tree == ButcherEmptyTree():
             return result
-        pairs = split(tree, truncated)
+        pairs = split(tree, truncate)
         for pair, multiplicity in pairs.items():
             result += multiplicity * c(pair[0]) * b(pair[1])
         return result
@@ -50,8 +52,9 @@ def lieDerivative(c, b, truncated=False):
 
 def modifiedEquation(a):
     if a(ButcherEmptyTree()) != 1 or a(ButcherTree.basetree()) != 1:
-        raise ValueError
-    mainResult = BseriesRule()
+        raise ValueError(
+            'Can not calculate the modified equation for this BseriesRule.')
+    finalRule = BseriesRule()
 
     def newRule(tree):
         if tree == ButcherEmptyTree():
@@ -59,13 +62,13 @@ def modifiedEquation(a):
         elif tree == ButcherTree.basetree():
             return 1
         result = a(tree)
-        c = mainResult  # This is a BseriesRule. Caution: Recursive!
+        c = finalRule  # This is a BseriesRule. Caution: Recursive!
         for j in range(2, order(tree) + 1):
-            c = lieDerivative(c, mainResult, True)
+            c = lieDerivative(c, finalRule, True)
             result -= Fraction(c(tree), factorial(j))
         return result
-    mainResult._call = newRule
-    return mainResult
+    finalRule._call = newRule
+    return finalRule
 
 if __name__ == '__main__':
     exact = BseriesRule('exact')

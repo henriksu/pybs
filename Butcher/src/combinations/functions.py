@@ -22,11 +22,11 @@ def graft(base, other):
     return result
 
 
-def split(tree, truncated=False):
+def split(tree, truncate=False):
     if tree == ButcherEmptyTree():
-        raise ValueError
+        raise ValueError('Can not split the empty tree')
     result = _split(tree)
-    if not truncated:
+    if not truncate:
         result[(ButcherEmptyTree(), tree)] = 1
     return result
 
