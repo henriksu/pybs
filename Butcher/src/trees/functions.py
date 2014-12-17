@@ -59,6 +59,7 @@ def F(tree):
     return result
 
 
+@memoized
 def isBinary(tree):
     if isinstance(tree, ButcherEmptyTree):
         return True
@@ -70,6 +71,7 @@ def isBinary(tree):
     return True
 
 
+@memoized
 def isTall(tree):
     if isinstance(tree, ButcherEmptyTree):
         return True

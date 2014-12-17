@@ -1,6 +1,7 @@
 from math import factorial
 from fractions import Fraction
 
+from src.utils import memoized
 from src.trees import ButcherTree, ButcherEmptyTree, order
 from src.combinations import split, treeGenerator
 from Bseries import BseriesRule
@@ -56,6 +57,7 @@ def modifiedEquation(a):
             'Can not calculate the modified equation for this BseriesRule.')
     finalRule = BseriesRule()
 
+    @memoized
     def newRule(tree):
         if tree == ButcherEmptyTree():
             return 0
@@ -75,8 +77,8 @@ if __name__ == '__main__':
     modified = modifiedEquation(exact)
 #    from forest.differentiation import TreeGenerator
     for tree in treeGenerator():
-        if order(tree) > 7:
+        if order(tree) > 8:
             break
-        print tree
+        #print tree
         print modified(tree)
     print 'Finished'

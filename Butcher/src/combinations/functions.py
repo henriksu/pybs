@@ -1,8 +1,9 @@
-from src.utils import Multiset as Multiset
+from src.utils import Multiset as Multiset, memoized
 from src.trees import ButcherTree, ButcherEmptyTree, order
 from src.combinations import LinearCombination
 
 
+@memoized
 def graft(base, other):
     result = LinearCombination()
     if isinstance(base, ButcherEmptyTree):
@@ -31,6 +32,7 @@ def split(tree, truncate=False):
     return result
 
 
+@memoized
 def _split(tree):
     result = Multiset()
     for childtree, multiplicity in tree.items():
