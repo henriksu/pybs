@@ -69,6 +69,4 @@ class test_Butcher_forest(unittest.TestCase):
 # In the long run test_count_forests would give
 # a=[1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766, 12486, 32973, 87811,
 # 235381, 634847, 1721159]
-# When it was finished, about 2GB was used.
-# That is on average 1.162 kB per tree. The larges trees had 18 nodes.
-# That makes about 70 bytes per node.
+# When it was finished, about 2GB of memory was used.
