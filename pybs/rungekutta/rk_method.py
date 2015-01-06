@@ -3,10 +3,10 @@ import operator
 import numpy as np
 
 
-from src.utils import memoized as memoized
-from src.trees import ButcherTree, ButcherEmptyTree, density, order
-from src.combinations import treeGenerator
-from src.series import BseriesRule, equal_up_to_order
+from pybs.utils import memoized as memoized
+from pybs.trees import ButcherTree, ButcherEmptyTree, density, order
+from pybs.combinations import treeGenerator
+from pybs.series import BseriesRule, equal_up_to_order
 #  Note the use of dtype=object. It allows for exact algebra.
 #  However it is much slower since numpy will call Python code.
 

@@ -1,8 +1,8 @@
 # This Python file uses the following encoding: utf-8
 import unittest
 
-from src.trees import ButcherTree, ButcherEmptyTree
-from src.combinations import Forest, LinearCombination, differentiate as D, \
+from pybs.trees import ButcherTree, ButcherEmptyTree
+from pybs.combinations import Forest, LinearCombination, differentiate as D, \
     treeCommutator
 
 

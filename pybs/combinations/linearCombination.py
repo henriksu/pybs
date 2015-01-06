@@ -1,6 +1,6 @@
 from numbers import Number
 
-from src.trees import ButcherTree, ButcherEmptyTree
+from pybs.trees import ButcherTree, ButcherEmptyTree
 
 
 class LinearCombination(dict):

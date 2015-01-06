@@ -1,8 +1,8 @@
-from src.utils import number_of_trees_of_order
-from src.trees import ButcherTree, ButcherEmptyTree, F, order, \
+from pybs.utils import number_of_trees_of_order
+from pybs.trees import ButcherTree, ButcherEmptyTree, F, order, \
     number_of_children, density, symmetry, alpha
-from src.combinations import Forest, differentiate as D, graft, treeCommutator, split, treeGenerator
-from src.series import BseriesRule, hf_composition, modifiedEquation
+from pybs.combinations import Forest, differentiate as D, graft, treeCommutator, split, treeGenerator
+from pybs.series import BseriesRule, hf_composition, modifiedEquation
 
 print 'The first tree is: ButcherTree() =', ButcherTree()
 print 'And the empty tree is: ButcherEmptyTree() =', ButcherEmptyTree()
@@ -75,7 +75,7 @@ print tmp_tree, ', c = ', c(tmp_tree)
 tmp_tree = tmp.next()
 print tmp_tree, ', c = ', c(tmp_tree), '(c is zero for all other trees...)'
 print
-from src.rungekutta.methods import RKmidpoint # A small collection of Butcher tableaus.
+from pybs.rungekutta.methods import RKmidpoint # A small collection of Butcher tableaus.
 print 'And last, but not least, finding the order of an RK method.'
 print 'Ex.: The midpoint rule:'
 print 'RKmidpoint.printMe():'

@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-from src.utils import Multiset as Multiset, FrozenMultiset as FrozenMultiset
+from pybs.utils import Multiset as Multiset, FrozenMultiset as FrozenMultiset
 
 
 class AbstractForest(object):

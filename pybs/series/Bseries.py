@@ -1,8 +1,8 @@
 from fractions import Fraction
 
-from src.trees import ButcherEmptyTree, density, order, \
+from pybs.trees import ButcherEmptyTree, density, order, \
     isTall, isBinary, number_of_children
-from src.combinations import LinearCombination
+from pybs.combinations import LinearCombination
 
 
 class BseriesRule(object):

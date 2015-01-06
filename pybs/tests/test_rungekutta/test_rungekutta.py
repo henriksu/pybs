@@ -1,7 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import unittest
 
-from src.rungekutta.methods import *
+from pybs.rungekutta.methods import *
 
 
 class RK_library(unittest.TestCase):

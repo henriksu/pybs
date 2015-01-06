@@ -1,7 +1,7 @@
 # This Python file uses the following encoding: utf-8
 from numbers import Number
 
-from src.utils import Multiset as Multiset, FrozenMultiset as FrozenMultiset
+from pybs.utils import Multiset as Multiset, FrozenMultiset as FrozenMultiset
 # TODO: Implement the cache miss super fast memoization.
 
 
@@ -32,7 +32,7 @@ class AbstractUnorderedRootedTree(FrozenMultiset):
             new_self.inplace_add(other)
             return type(self)(new_self)
         elif isinstance(other, Number):
-            from src.combinations.linearCombination import LinearCombination
+            from pybs.combinations.linearCombination import LinearCombination
             # TODO: Nasty work around
             tmp = LinearCombination()
             tmp[self] = other

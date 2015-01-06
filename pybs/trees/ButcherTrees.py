@@ -1,5 +1,5 @@
 # This Python file uses the following encoding: utf-8
-from src.utils import FrozenMultiset as FrozenMultiset
+from pybs.utils import FrozenMultiset as FrozenMultiset
 from abstractTrees import \
     AbstractUnorderedRootedTree as AbstractUnorderedRootedTree
 # class ButcherTreeLike(trees.AbstractTreeLike):

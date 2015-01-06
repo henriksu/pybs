@@ -1,8 +1,8 @@
 import math
 import operator
 
-from src.utils import memoized as memoized
-from src.trees import ButcherTree, ButcherEmptyTree
+from pybs.utils import memoized as memoized
+from pybs.trees import ButcherTree, ButcherEmptyTree
 
 
 @memoized

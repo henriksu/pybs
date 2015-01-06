@@ -1,9 +1,9 @@
 from math import factorial
 from fractions import Fraction
 
-from src.utils import memoized
-from src.trees import ButcherTree, ButcherEmptyTree, order
-from src.combinations import split, treeGenerator
+from pybs.utils import memoized
+from pybs.trees import ButcherTree, ButcherEmptyTree, order
+from pybs.combinations import split, treeGenerator
 from Bseries import BseriesRule
 
 

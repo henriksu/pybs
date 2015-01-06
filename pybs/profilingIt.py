@@ -3,8 +3,8 @@ import cProfile as profile
 import pstats
 
 
-from src.trees import ButcherEmptyTree
-from src.combinations import LinearCombination, differentiate as D
+from pybs.trees import ButcherEmptyTree
+from pybs.combinations import LinearCombination, differentiate as D
 
 
 def make_all_trees_up_to_order(n=11):

@@ -1,6 +1,6 @@
-from src.utils import Multiset as Multiset, memoized
-from src.trees import ButcherTree, ButcherEmptyTree, order
-from src.combinations import LinearCombination
+from pybs.utils import Multiset as Multiset, memoized
+from pybs.trees import ButcherTree, ButcherEmptyTree, order
+from pybs.combinations import LinearCombination
 
 
 @memoized

@@ -1,8 +1,8 @@
 import unittest
 
-from src.trees import ButcherTree, ButcherEmptyTree
-from src.combinations import Forest, LinearCombination
-from src.series import BseriesRule
+from pybs.trees import ButcherTree, ButcherEmptyTree
+from pybs.combinations import Forest, LinearCombination
+from pybs.series import BseriesRule
 
 
 class simple_series(unittest.TestCase):

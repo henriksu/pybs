@@ -1,7 +1,7 @@
 # This Python file uses the following encoding: utf-8
-from src.trees import AbstractTreeLike, AbstractUnorderedRootedTree, AbstractNotTree
-from src.combinations import FrozenForest
-from src.utils import memoized
+from pybs.trees import AbstractTreeLike, AbstractUnorderedRootedTree, AbstractNotTree
+from pybs.combinations import FrozenForest
+from pybs.utils import memoized
 
 
 class AbstractLabeledTreeLike(AbstractTreeLike):
