@@ -43,7 +43,7 @@ Documentation
 --------------
 
 The report from the author's specialization project gives an overview.
-In addition reading and running ``/pybs/pybs/examples.py`` as well as the tests found in ``/pybs/pybs/test/`` can be useful.
+In addition reading and running ``pybs/pybs/examples.py`` as well as the tests found in ``pybs/pybs/test/`` can be useful.
 
 Contact
 --------
