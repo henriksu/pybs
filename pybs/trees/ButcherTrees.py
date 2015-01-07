@@ -9,6 +9,24 @@ from abstractTrees import \
 class ButcherTree(AbstractUnorderedRootedTree):
     __slots__ = ()
 
+    def __init__(self, arg=None):
+        if isinstance(arg, basestring):
+            # make '' be the empty tree in the factory.
+            if arg == '[]':
+                AbstractUnorderedRootedTree.__init__(self)
+            elif not (arg[0] == '[' and arg[-1] == ']'):
+                raise ValueError('Invalid string')
+            else:
+                arg = arg[1:-1].split(',')
+                childtrees = []
+                for elem in arg:
+                    childtrees.append(ButcherTree(elem))
+                AbstractUnorderedRootedTree.__init__(self, childtrees)
+        elif arg is None:
+            AbstractUnorderedRootedTree.__init__(self)
+        else:
+            AbstractUnorderedRootedTree.__init__(self, arg)
+
     @classmethod
     def basetree(cls):
         return cls(FrozenMultiset())

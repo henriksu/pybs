@@ -47,10 +47,13 @@ class first_order_tree(unittest.TestCase):
     # Does NOT test derivation, grafting and other operations.
     def test_initialisation(self):
         self.assertIsInstance(ButcherTree(Forest()), ButcherTree)
+        self.assertIsInstance(ButcherTree('[]'), ButcherTree)
 
     def test_str(self):
         tree1 = ButcherTree.basetree()
         self.assertEqual('[]', str(tree1))
+        tree2 = ButcherTree('[]')
+        self.assertEqual(str(tree1), str(tree2))
 
     def test_equality(self):
         tree1 = ButcherTree.basetree()
@@ -106,6 +109,8 @@ class Second_order_tree(unittest.TestCase):
         forest2 = Forest([tree2])
         tree3 = ButcherTree(forest2)
         self.assertEqual(tree3, self.tree)
+        tree4 = ButcherTree('[[]]')
+        self.assertEqual(tree4, self.tree)
 
     def test_number_of_subtrees(self):
         self.assertEqual(1, number_of_children(self.tree))
@@ -149,6 +154,8 @@ class Third_order_tree_no1(unittest.TestCase):
         forest2 = Forest([tree2, tree2])
         tree3 = ButcherTree(forest2)
         self.assertEqual(tree3, self.tree)
+        tree4 = ButcherTree('[[],[]]')
+        self.assertEqual(tree4, self.tree)
 
     def test_number_of_subtrees(self):
         self.assertEqual(2, number_of_children(self.tree))
