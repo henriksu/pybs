@@ -1,10 +1,10 @@
 # This Python file uses the following encoding: utf-8
 import unittest
 from pybs.combinations import Forest
-from trees.LabeledTrees.ColouredTrees.BiColouredTrees import \
-    BiColouredTree, black, white, BiColouredNotTree
+#from trees.LabeledTrees.ColouredTrees.BiColouredTrees import \
+#    BiColouredTree, black, white, BiColouredNotTree
 
-
+@unittest.skip("Not maintained")
 class empty_tree(unittest.TestCase):
     #Does NOT test derivation, grafting and other operations.
     def test_initialisation(self):
@@ -58,6 +58,8 @@ class empty_tree(unittest.TestCase):
         tree1 = BiColouredTree.emptytree(white)
         self.assertEqual('z', tree1.F)
 
+
+@unittest.skip("Not maintained")
 class first_order_tree(unittest.TestCase):
 #Does NOT test derivation, grafting and other operations.
 
@@ -116,7 +118,7 @@ class first_order_tree(unittest.TestCase):
         tree1 = BiColouredTree.basetree(white)
         self.assertEqual('g', tree1.F)
 
-
+@unittest.skip("Not maintained")
 class Second_order_tree(unittest.TestCase):
 #Does NOT test derivation, grafting and other operations.
     def setUp(self):
@@ -184,6 +186,7 @@ class Second_order_tree(unittest.TestCase):
         self.assertEqual("g_zg", self.tree4.F)
 
 
+@unittest.skip("Not maintained")
 class Third_order_tree_no1(unittest.TestCase):
 #Does NOT test derivation, grafting and other operations.
     def setUp(self):
