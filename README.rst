@@ -25,7 +25,7 @@ Alternatively one can dowload this repository and execute
 ``$ python setup.py install``
 
 or
-
+, @henriksu,
 ``$ python setup.py develop``
 
 from the outermost pybs-directory.
@@ -36,8 +36,8 @@ Documentation
 The report from the author's specialization project gives an overview.
 In addition reading and running ``/pybs/pybs/examples.py`` as well as the tests found in ``/pybs/pybs/test/`` can be useful.
 
-The author
+Contact
 --------
-PyBS is developed as a part of the master's thesis of Henrik Sperre Sundklakk
+PyBS is developed as a part of the master's thesis of Henrik Sperre Sundklakk, @henriksu,
 under the supervision of professor Brynjulf Owren at the  Department of Mathematical Sciences,
 Norwegian University of Science and Technology (NTNU).
