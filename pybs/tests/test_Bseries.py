@@ -19,8 +19,8 @@ class simple_series(unittest.TestCase):
         self.assertEqual(1, rule1(ButcherTree.basetree()))
 
     def test_RK_series(self):
-        import rungekutta.methods
-        rule1 = BseriesRule(rungekutta.methods.RKeuler.phi)
+        import pybs.rungekutta.methods
+        rule1 = BseriesRule(pybs.rungekutta.methods.RKeuler.phi)
         self.assertEqual(1, rule1(ButcherEmptyTree()))
         self.assertEqual(1, rule1(ButcherTree.basetree()))
         tree2 = ButcherTree.basetree()
