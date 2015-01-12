@@ -9,4 +9,5 @@ from functions import \
     differentiate, \
     linCombCommutator, \
     treeCommutator, \
-    treeGenerator
+    treeGenerator, \
+    trees_of_order

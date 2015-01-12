@@ -1,9 +1,11 @@
 from math import factorial
 from fractions import Fraction
+from itertools import count, islice
+from functools import partial
 
 from pybs.utils import memoized
 from pybs.trees import ButcherTree, ButcherEmptyTree, order
-from pybs.combinations import split, treeGenerator
+from pybs.combinations import split, treeGenerator, trees_of_order
 from Bseries import BseriesRule
 
 
@@ -71,6 +73,27 @@ def modifiedEquation(a):
         return result
     finalRule._call = newRule
     return finalRule
+
+
+def symplectic_up_to_order(a, max_order=None):
+    orders = count(start=2)
+    if max_order:
+        orders = islice(orders, max_order)
+    _sympCond = partial(_symplecticityCondition, a)
+    for order in orders:
+        max_check_order = order / 2  # Intentional truncation in division.
+        for order1 in islice(count(1), max_check_order):
+            order2 = order - order1
+            for tree1 in trees_of_order(order1):
+                for tree2 in trees_of_order(order2):
+                    if not _sympCond(tree1, tree2):
+                        return order - 1
+    return max_order
+
+
+def _symplecticityCondition(a, tree1, tree2):
+    'Symmetric function in tree1, tree2.'
+    return a(tree1 * tree2) + a(tree2 * tree1) == a(tree1) * a(tree2)
 
 if __name__ == '__main__':
     exact = BseriesRule('exact')

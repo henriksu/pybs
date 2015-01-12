@@ -92,3 +92,11 @@ def treeGenerator():
         for tree in theSum:
             yield tree
         theSum = differentiate(theSum)
+
+
+def trees_of_order(n):
+    theSum = LinearCombination(ButcherEmptyTree())
+    for i in xrange(n):
+        theSum = differentiate(theSum)
+    for tree in theSum:
+        yield tree
