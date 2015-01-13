@@ -6,7 +6,7 @@ import numpy as np
 from pybs.utils import memoized as memoized
 from pybs.trees import ButcherTree, ButcherEmptyTree, density, order
 from pybs.combinations import treeGenerator
-from pybs.series.Bseries import exponential, BseriesRule
+from pybs.series.Bseries import exponential
 from pybs.series.functions import equal_up_to_order
 #  Note the use of dtype=object. It allows for exact algebra.
 #  However it is much slower since numpy will call Python code.
@@ -27,7 +27,7 @@ class RK_method(object):
     @memoized
     def order(self):
         a = exponential
-        b = BseriesRule(self.phi)
+        b = self.phi
         return equal_up_to_order(a, b)
 
     def phi(self, tree):

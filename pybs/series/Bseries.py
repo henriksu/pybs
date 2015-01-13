@@ -5,18 +5,8 @@ from pybs.trees import ButcherEmptyTree, density, order, \
 from pybs.combinations import LinearCombination
 
 
-class BseriesRule(object):
-    def __init__(self, arg=None, a=0):
-        if arg is None:
-            self._call = lambda x: 0
-        elif isinstance(arg, LinearCombination):
-            self._call = lambda tree: arg[tree]
-        elif callable(arg):
-            self._call = arg
-
-    def __call__(self, tree):
-        return self._call(tree)
-
+def _zero(tree):
+    return 0
 
 def _unit(tree):
     if isinstance(tree, ButcherEmptyTree):
@@ -48,4 +38,5 @@ def _AVF(self, tree, a):
             return alpha * _AVF(tree.keys()[0], a) * \
                 _AVF(tree.keys()[1], a)
 
-exponential = BseriesRule(_exact)
+exponential = _exact
+zero = _zero
