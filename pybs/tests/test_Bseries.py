@@ -41,3 +41,14 @@ class simple_series(unittest.TestCase):
         computed = list(c(tree) for tree in islice(treeGenerator(), 0, n))
         expected = [0,1] + [0]*(n-2)
         self.assertEqual(computed, expected)
+
+    def test_memoization(self):
+        """
+        Performing a split has an influence on the modified equation computation?
+        """
+        tmp = ButcherTree(Forest([ButcherTree.basetree()]))
+        t = ButcherTree(Forest([tmp, ButcherTree.basetree()]))
+        split(t)
+        a = exponential
+        c = modifiedEquation(a)
+
