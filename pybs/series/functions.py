@@ -6,7 +6,6 @@ from functools import partial
 from pybs.utils import memoized
 from pybs.trees import ButcherTree, ButcherEmptyTree, order
 from pybs.combinations import split, treeGenerator, trees_of_order
-from Bseries import zero
 
 
 def equal_up_to_order(a, b, max_order=None):
