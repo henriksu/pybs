@@ -53,7 +53,6 @@ def modifiedEquation(a):
     if a(ButcherEmptyTree()) != 1 or a(ButcherTree.basetree()) != 1:
         raise ValueError(
             'Can not calculate the modified equation for this BseriesRule.')
-    finalRule = zero
 
     @memoized
     def newRule(tree):
@@ -62,13 +61,12 @@ def modifiedEquation(a):
         elif tree == ButcherTree.basetree():
             return 1
         result = a(tree)
-        c = finalRule  # This is a BseriesRule. Caution: Recursive!
+        c = newRule  # This is a BseriesRule. Caution: Recursive!
         for j in range(2, order(tree) + 1):
-            c = lieDerivative(c, finalRule, True)
+            c = lieDerivative(c, newRule, True)
             result -= Fraction(c(tree), factorial(j))
         return result
-    finalRule._call = newRule
-    return finalRule
+    return newRule
 
 
 def symplectic_up_to_order(a, max_order=None):
