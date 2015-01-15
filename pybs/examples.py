@@ -2,7 +2,7 @@ from pybs.utils import number_of_trees_of_order
 from pybs.trees import ButcherTree, ButcherEmptyTree, F, order, \
     number_of_children, density, symmetry, alpha
 from pybs.combinations import Forest, differentiate as D, graft, treeCommutator, split, treeGenerator
-from pybs.series import BseriesRule, hf_composition, modifiedEquation
+from pybs.series import exponential, hf_composition, modifiedEquation
 
 print 'The first tree is: ButcherTree() =', ButcherTree()
 print 'And the empty tree is: ButcherEmptyTree() =', ButcherEmptyTree()
@@ -48,7 +48,7 @@ print 'Tree commutator: treeCommutator(t, ButcherTree.basetree()) = ', treeCommu
 print 'Splitting: split(tree) = ', split(tree)
 print
 print 'B-series:'
-a = BseriesRule('exact')
+a = exponential
 print "Let a = BseriesRule('exact')"
 b = hf_composition(a)
 print "Then b = hf_composition(a) gives:"
