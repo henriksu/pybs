@@ -6,7 +6,6 @@ from functools import partial
 from pybs.utils import memoized
 from pybs.trees import ButcherTree, ButcherEmptyTree, order
 from pybs.combinations import split, treeGenerator, trees_of_order
-from Bseries import BseriesRule
 
 
 def equal_up_to_order(a, b, max_order=None):
@@ -21,7 +20,6 @@ def hf_composition(baseRule):
     if baseRule(ButcherEmptyTree()) != 1:
         raise ValueError(
             'Composition can only be performed on consistent B-series.')
-    result = BseriesRule()
 
     def newRule(tree):
         if isinstance(tree, ButcherEmptyTree):
@@ -31,15 +29,13 @@ def hf_composition(baseRule):
             for subtree, multiplicity in tree.items():
                 result *= baseRule(subtree) ** multiplicity
             return result
-    result._call = newRule
-    return result
+    return newRule
 
 
 def lieDerivative(c, b, truncate=False):
     if b(ButcherEmptyTree()) != 0:
         raise ValueError(
             'The second argument does not satisfy b(ButcherEmptyTree()) == 0.')
-    result = BseriesRule()
 
     def newRule(tree):
         result = 0
@@ -49,15 +45,13 @@ def lieDerivative(c, b, truncate=False):
         for pair, multiplicity in pairs.items():
             result += multiplicity * c(pair[0]) * b(pair[1])
         return result
-    result._call = newRule
-    return result
+    return newRule
 
 
 def modifiedEquation(a):
     if a(ButcherEmptyTree()) != 1 or a(ButcherTree.basetree()) != 1:
         raise ValueError(
             'Can not calculate the modified equation for this BseriesRule.')
-    finalRule = BseriesRule()
 
     @memoized
     def newRule(tree):
@@ -66,13 +60,12 @@ def modifiedEquation(a):
         elif tree == ButcherTree.basetree():
             return 1
         result = a(tree)
-        c = finalRule  # This is a BseriesRule. Caution: Recursive!
+        c = newRule  # This is a BseriesRule. Caution: Recursive!
         for j in range(2, order(tree) + 1):
-            c = lieDerivative(c, finalRule, True)
+            c = lieDerivative(c, newRule, True)
             result -= Fraction(c(tree), factorial(j))
         return result
-    finalRule._call = newRule
-    return finalRule
+    return newRule
 
 
 def symplectic_up_to_order(a, max_order=None):
