@@ -1,4 +1,7 @@
 # This Python file uses the following encoding: utf-8
+from operator import itemgetter
+from functools import total_ordering
+
 from pybs.utils import FrozenMultiset as FrozenMultiset
 from abstractTrees import \
     AbstractUnorderedRootedTree as AbstractUnorderedRootedTree
@@ -6,6 +9,7 @@ from abstractTrees import \
 #     __slots__= ()
 
 
+@total_ordering
 class ButcherTree(AbstractUnorderedRootedTree):
     __slots__ = ()
 
@@ -45,6 +49,41 @@ class ButcherTree(AbstractUnorderedRootedTree):
     @classmethod
     def emptytree(cls):
         return ButcherEmptyTree()
+
+    def __lt__(self, other):
+        'Ordering due to P.Leone (2000) PhD thesis.'
+        from functions import order, number_of_children
+        if self == other:
+            return False  # Quicker, and necessary for the empty tree.
+        elif order(self) < order(other):
+            return True
+        elif order(self) > order(other):
+            return False
+        elif number_of_children(self) < number_of_children(other):
+            return True
+        elif number_of_children(self) > number_of_children(other):
+            return False
+        else:
+            list_a = self.items()
+            list_a.sort(key=itemgetter(0))
+            list_b = other.items()
+            list_b.sort(key=itemgetter(0))
+            for (a, b) in zip(list_a, list_b):
+                if a != b:
+                    if a[0] < b[0]:
+                        return True
+                    elif a[0] > b[0]:
+                        return False
+                    elif a[1] < b[1]:
+                        return False
+                    else:
+                        # by now a[1] > b[1] (They cant be equal since
+                        # the tuples are unequal)
+                        return True
+#                else:
+#                    pass
+
+
 #     def __eq__(self,other):
 #         if self is other:
 #             return True #  Is this necessary, or is it done automatically?
