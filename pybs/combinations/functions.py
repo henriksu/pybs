@@ -32,7 +32,6 @@ def split(tree, truncate=False):
     return result
 
 
-@memoized
 def _split(tree):
     result = Multiset()
     for childtree, multiplicity in tree.items():
