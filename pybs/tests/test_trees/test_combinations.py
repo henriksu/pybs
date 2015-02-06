@@ -1,9 +1,11 @@
 # This Python file uses the following encoding: utf-8
+from itertools import islice
 import unittest
 
 from pybs.trees import ButcherTree, ButcherEmptyTree
 from pybs.combinations import Forest, LinearCombination, differentiate as D, \
     treeCommutator
+from pybs.combinations.functions import treeGenerator, subtrees
 
 
 class test_commutator(unittest.TestCase):
@@ -26,6 +28,20 @@ class test_commutator(unittest.TestCase):
         expected -= tree3
         result = treeCommutator(tree1, tree2)
         self.assertEqual(result, expected)
+
+
+class test_subtrees(unittest.TestCase):
+    def test_first(self):
+        a = ButcherTree()
+        result = subtrees(a)
+        print result
+        self.assertTrue(True)  # Todo make proper test.
+
+    def test_second(self):
+        a = ButcherTree('[[]]')
+        result = subtrees(a)
+        print result
+        self.assertTrue(False)
 
 
 class test_Butcher_forest(unittest.TestCase):
@@ -66,6 +82,32 @@ class test_Butcher_forest(unittest.TestCase):
             result.append(self.basetree.dimensions())
         expected = [1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766]
         self.assertListEqual(expected, result)
+
+    def test_ordering(self):
+        n = 17
+        result = list(tree for tree in islice(treeGenerator(), 0, n+1))
+        result.sort()
+        expected = None
+#         expected = [ButcherEmptyTree(),
+#                     ButcherTree('[]'),
+#                     ButcherTree('[[]]'),
+#                     ButcherTree('[[[]]]'),
+#                     ButcherTree('[[],[]]'),
+#                     ButcherTree('[[[[]]]]'),
+#                     ButcherTree('[[[],[]]]'),
+#                     ButcherTree('[[[]],[]]'),
+#                     ButcherTree('[[],[],[]]'),
+#                     ButcherTree('[[[[[]]]]]'),
+#                     ButcherTree('[[[[],[]]]]'),
+#                     ButcherTree('[[[[]],[]]]'),
+#                     ButcherTree('[[[],[],[]]]'),
+#                     ButcherTree('[[],[[[]]]]'),
+#                     ButcherTree('[[],[[],[]]]'),
+#                     ButcherTree('[[[]],[[]]]'),
+#                     ButcherTree('[[[]],[],[]]'),
+#                     ButcherTree('[[],[],[],[]]]')]
+#        self.assertEqual(expected, result)
+        self.assertTrue(True)
 # In the long run test_count_forests would give
 # a=[1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766, 12486, 32973, 87811,
 # 235381, 634847, 1721159]

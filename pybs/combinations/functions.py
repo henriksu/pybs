@@ -1,6 +1,7 @@
+from itertools import product
 from pybs.utils import Multiset as Multiset, memoized
 from pybs.trees import ButcherTree, ButcherEmptyTree, order
-from pybs.combinations import LinearCombination
+from pybs.combinations import LinearCombination, Forest, FrozenForest
 
 
 @memoized
@@ -44,6 +45,25 @@ def _split(tree):
             new_pair = (new_tree, pair[1])
             result[new_pair] = multiplicity * multiplicity2
     return result
+
+
+def subtrees(tree):
+    if tree == ButcherEmptyTree():
+        raise ValueError('Can not split the empty tree')
+    result = Multiset()
+
+    result[(ButcherEmptyTree(), FrozenForest((tree,)))] = 1
+    tmp = [subtrees(sub_tree) for sub_tree in tree.elements()]
+    if tmp:
+        for item in product(*tmp):  # iterator over all combinations.
+            to_be_grafted, cuttings = zip(*item)
+            new_forest_of_cuttings = \
+                reduce(Forest.inplace_multiset_sum, cuttings, Forest())
+            result.inplace_add((ButcherTree(to_be_grafted), FrozenForest(new_forest_of_cuttings)))
+    else:
+        result[(tree, FrozenForest())] = 1
+    return result
+        # TODO: Is there a missing multiplicity?
 
 
 def differentiate(thing):

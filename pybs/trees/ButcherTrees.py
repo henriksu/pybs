@@ -1,8 +1,9 @@
 # This Python file uses the following encoding: utf-8
 from operator import itemgetter
+from itertools import ifilter
 from functools import total_ordering
 
-from pybs.utils import FrozenMultiset as FrozenMultiset
+from pybs.utils import FrozenMultiset as FrozenMultiset, Multiset as Multiset
 from abstractTrees import \
     AbstractUnorderedRootedTree as AbstractUnorderedRootedTree
 # class ButcherTreeLike(trees.AbstractTreeLike):
@@ -28,8 +29,14 @@ class ButcherTree(AbstractUnorderedRootedTree):
                 AbstractUnorderedRootedTree.__init__(self, childtrees)
         elif arg is None:
             AbstractUnorderedRootedTree.__init__(self)
+        elif isinstance(arg, Multiset):  # Catching ButcherTree(Forest).
+            object.__setattr__(self, '_ms', Multiset(arg))
+            object.__setattr__(self, '_hash', None)
         else:
-            AbstractUnorderedRootedTree.__init__(self, arg)
+            # arg is iterable. Cleaning ButcherEmptyTree.
+            arg = ifilter(lambda x: isinstance(x, ButcherTree), arg)
+            object.__setattr__(self, '_ms', Multiset(arg))
+            object.__setattr__(self, '_hash', None)
 
     @classmethod
     def basetree(cls):
