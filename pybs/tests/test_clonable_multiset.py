@@ -43,6 +43,8 @@ class simple_multisets(unittest.TestCase):
             a._ms = []
         self.assertEqual(repr(a), 'ClonableMultiset()')
         self.assertEqual(a._latex_(), '\\emptyset')
+        #
+        self.assertTrue(a.is_finite())
 
     def test_one_element(self):
         a = Multiset()
@@ -94,6 +96,8 @@ class simple_multisets(unittest.TestCase):
             b._ms = []
         self.assertEqual(repr(b), "ClonableMultiset({'a': 1})")
         self.assertEqual(b._latex_(), "\\left[\\text{\\texttt{a}} ^{ 1 }\\right]")
+        self.assertTrue('a' in b)
+        self.assertFalse('b' in b)
 
     def test_double_element(self):
         a = Multiset()

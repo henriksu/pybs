@@ -26,7 +26,7 @@ class ClonableMultiset(ClonableElement):
         pass
 
     def __copy__(self):
-        result = self._parent(self._ms)
+        result = self.__class__(self.parent(), self._ms)
         result._set_mutable()
         return result
 
@@ -153,7 +153,7 @@ class ClonableMultiset(ClonableElement):
         'Zero truncated multiset difference. Returns new instance.'
         # TODO: Choose the not-truncated?
         if isinstance(other, ClonableMultiset):
-            with self._parent().clone() as result:
+            with self.__class__(self.parent()).clone() as result:
                 for elem, count in self.items():
                     newcount = count - other[elem]
                     if newcount > 0:
@@ -165,7 +165,7 @@ class ClonableMultiset(ClonableElement):
     def __or__(self, other):
         'Multiset union'  # TODO: Correctly assosciated to "|". Rename?
         if isinstance(other, ClonableMultiset):
-            with self._parent().clone() as result:
+            with self.__class__(self.parent()).clone() as result:
                 for elem, count in self.items():
                     other_count = other[elem]
                     result._ms[elem] = \
@@ -180,7 +180,7 @@ class ClonableMultiset(ClonableElement):
     def __and__(self, other):
         'Multiset intersection'  # TODO: Correctly associated to "&". Rename?
         if isinstance(other, ClonableMultiset):
-            with self._parent().clone() as result:
+            with self.__class__(self.parent()).clone() as result:
                 for elem, count in self.items():
                     other_count = other[elem]
                     newcount = count if count < other_count else other_count
@@ -207,7 +207,7 @@ class ClonableMultiset(ClonableElement):
         'Iterator returning each element as many times as its multiplicity.'
         return _chain.from_iterable(_starmap(_repeat, self._ms.iteritems()))
 
-    def _eq_(self, other):
+    def __eq__(self, other):
         if self is other:
             return True
         elif isinstance(other, ClonableMultiset):
@@ -215,7 +215,7 @@ class ClonableMultiset(ClonableElement):
         else:
             return NotImplemented
 
-    def _ne_(self, other):
+    def __ne__(self, other):
         if self is other:
             return False
         elif isinstance(other, ClonableMultiset):
@@ -227,7 +227,7 @@ class ClonableMultiset(ClonableElement):
         raise AttributeError
 
     def __delattr__(self, *args, **kwargs):
-        pass
+        raise AttributeError
 
     def __iter__(self):
         return iter(self._ms)
@@ -250,14 +250,23 @@ class ClonableMultiset(ClonableElement):
     def sub(self, elem):
         with self.clone() as result:
             if elem in result:
-                count = result.get(elem, 0)
+                count = result[elem]
                 if count > 1:
-                    result._fast_setitem(elem, count - 1)
+                    result._ms[elem] -= 1#fast_setitem(elem, count - 1)
                 elif count == 1:
                     del result[elem]
                 else:
                     raise ValueError
             return result
+
+    def is_finite(self):
+        return True
+
+    def __contains__(self, elem):
+        return elem in self._ms
+
+    def is_empty(self):
+        return not bool(self._ms)
 
     def _hash_(self):
         # It would have been simpler and maybe more obvious to
@@ -288,6 +297,10 @@ class ClonableMultiset(ClonableElement):
                 ', '.join(results) +\
                 '\\right]'
 
+    def _an_element_(self):
+        return ClonableMultiset(ClonableMultisets(),
+                              ['a', 'a', 'b'])
+
 
 class ClonableMultisets(UniqueRepresentation, Parent):
     def __init__(self):
@@ -296,5 +309,8 @@ class ClonableMultisets(UniqueRepresentation, Parent):
 
     def _element_constructor_(self, *args, **keywords):
         return self.element_class(self, *args, **keywords)
+
+    def _repr_(self):
+        return 'Multiset()'
 
     Element = ClonableMultiset
