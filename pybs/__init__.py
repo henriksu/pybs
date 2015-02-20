@@ -1,4 +1,4 @@
-from sage import *
+#from sage import *
 import utils
 import trees
 import combinations

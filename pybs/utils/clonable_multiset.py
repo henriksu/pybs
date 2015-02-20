@@ -1,24 +1,18 @@
 from copy import copy
 from itertools import repeat as _repeat, chain as _chain, starmap as _starmap
 import heapq as _heapq
-from sage.structure.list_clone import ClonableElement
 from collections import Mapping as _Mapping
 from operator import itemgetter as _itemgetter, __add__ as _add
-from sage.misc.latex import latex
-from sage.structure.parent import Parent
-from sage.structure.unique_representation import UniqueRepresentation
-from sage.categories.sets_cat import Sets
-from sage.categories.objects import Objects
-from sage.categories.sets_with_partial_maps import SetsWithPartialMaps
+from pybs.utils.clonable import Clonable
 
 
-class ClonableMultiset(ClonableElement):
-    __slots__ = ('_ms', '_parent')
+class ClonableMultiset(Clonable):
+    __slots__ = ('_ms',)
 
-    def __init__(self, parent, iterable=0, *args, **kwargs):
+    def __init__(self, iterable=0, *args, **kwargs):
         # ClonableElement.__init__(self, parent=Parent())
-        ClonableElement.__setattr__(self, '_parent', parent)
-        ClonableElement.__setattr__(self, '_ms', dict())
+        Clonable.__init__(self)
+        Clonable.__setattr__(self, '_ms', dict())
         self.inplace_multiset_sum(iterable, **kwargs)
         self.set_immutable()
 
@@ -26,7 +20,7 @@ class ClonableMultiset(ClonableElement):
         pass
 
     def __copy__(self):
-        result = self.__class__(self.parent(), self._ms)
+        result = self.__class__(self._ms)
         result._set_mutable()
         return result
 
@@ -153,7 +147,7 @@ class ClonableMultiset(ClonableElement):
         'Zero truncated multiset difference. Returns new instance.'
         # TODO: Choose the not-truncated?
         if isinstance(other, ClonableMultiset):
-            with self.__class__(self.parent()).clone() as result:
+            with self.__class__().clone() as result:
                 for elem, count in self.items():
                     newcount = count - other[elem]
                     if newcount > 0:
@@ -165,7 +159,7 @@ class ClonableMultiset(ClonableElement):
     def __or__(self, other):
         'Multiset union'  # TODO: Correctly assosciated to "|". Rename?
         if isinstance(other, ClonableMultiset):
-            with self.__class__(self.parent()).clone() as result:
+            with self.__class__().clone() as result:
                 for elem, count in self.items():
                     other_count = other[elem]
                     result._ms[elem] = \
@@ -180,7 +174,7 @@ class ClonableMultiset(ClonableElement):
     def __and__(self, other):
         'Multiset intersection'  # TODO: Correctly associated to "&". Rename?
         if isinstance(other, ClonableMultiset):
-            with self.__class__(self.parent()).clone() as result:
+            with self.__class__().clone() as result:
                 for elem, count in self.items():
                     other_count = other[elem]
                     newcount = count if count < other_count else other_count
@@ -259,14 +253,11 @@ class ClonableMultiset(ClonableElement):
                     raise ValueError
             return result
 
-    def is_finite(self):
-        return True
-
     def __contains__(self, elem):
         return elem in self._ms
 
-    def is_empty(self):
-        return not bool(self._ms)
+    def __bool__(self):
+        return bool(self._ms)
 
     def _hash_(self):
         # It would have been simpler and maybe more obvious to
@@ -279,38 +270,8 @@ class ClonableMultiset(ClonableElement):
             result ^= hash(pair)
         return result
 
-    def _repr_(self):  # TODO: Do something like this in my classes too!
+    def __repr__(self):  # TODO: Do something like this in my classes too!
         if not self:
             return '%s()' % self.__class__.__name__
         items = ', '.join(map('%r: %r'.__mod__, self.most_common()))
         return '%s({%s})' % (self.__class__.__name__, items)
-
-    def _latex_(self):
-        if not self:
-            return '\\emptyset'
-        else:
-            results = []
-            for elem, mult in self.most_common():
-                tmp = latex(elem) + '^{' + latex(mult) + '}'
-                results.append(tmp)
-            return '\\left[' +\
-                ', '.join(results) +\
-                '\\right]'
-
-    def _an_element_(self):
-        return ClonableMultiset(ClonableMultisets(),
-                              ['a', 'a', 'b'])
-
-
-class ClonableMultisets(UniqueRepresentation, Parent):
-    def __init__(self):
-        Parent.__init__(self, category=Sets())#Objects())#SetsWithPartialMaps())
-        # TODO: Is this the right choice?
-
-    def _element_constructor_(self, *args, **keywords):
-        return self.element_class(self, *args, **keywords)
-
-    def _repr_(self):
-        return 'Multiset()'
-
-    Element = ClonableMultiset

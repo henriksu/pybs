@@ -2,29 +2,30 @@
 from itertools import islice
 import unittest
 
-from pybs.trees import ButcherTree, ButcherEmptyTree
+from pybs.unordered_tree import UnorderedTree, leaf
+from pybs.combinations.forests import empty_tree
 from pybs.combinations import Forest, LinearCombination, differentiate as D, \
     treeCommutator
-from pybs.combinations.functions import treeGenerator, subtrees
+from pybs.combinations.functions import subtrees
 
 
 class test_commutator(unittest.TestCase):
     def test_empty(self):
-        tree = ButcherEmptyTree()
+        tree = empty_tree()
         self.assertEqual(treeCommutator(tree, tree), LinearCombination())
 
     def test_first_and_empty(self):
-        tree1 = ButcherEmptyTree()
-        tree2 = ButcherTree.basetree()
+        tree1 = empty_tree()
+        tree2 = leaf()
         self.assertEqual(treeCommutator(tree1, tree2), LinearCombination())
         self.assertEqual(treeCommutator(tree2, tree2), LinearCombination())
 
     def test_first_second(self):
-        tree1 = ButcherTree.basetree()
+        tree1 = leaf()
         tree2 = D(tree1).keys()[0]
         expected = LinearCombination()
         forest1 = Forest([tree1, tree1])
-        tree3 = ButcherTree(forest1)
+        tree3 = UnorderedTree(forest1)
         expected -= tree3
         result = treeCommutator(tree1, tree2)
         self.assertEqual(result, expected)
@@ -32,13 +33,13 @@ class test_commutator(unittest.TestCase):
 
 class test_subtrees(unittest.TestCase):
     def test_first(self):
-        a = ButcherTree()
+        a = leaf()
         result = subtrees(a)
         print result
         self.assertTrue(True)  # Todo make proper test.
 
     def test_second(self):
-        a = ButcherTree('[[]]')
+        a = UnorderedTree('[[]]')
         result = subtrees(a)
         print result
         self.assertTrue(False)
@@ -46,7 +47,7 @@ class test_subtrees(unittest.TestCase):
 
 class test_Butcher_forest(unittest.TestCase):
     def setUp(self):
-        self.basetree = ButcherTree(Forest())
+        self.basetree = UnorderedTree(Forest())
 
     def test_first(self):
         self.assertEqual('[]', str(self.basetree))
@@ -76,18 +77,17 @@ class test_Butcher_forest(unittest.TestCase):
     def test_count_forests(self):  # Also a stress test.
         # self.assertTrue(False)
         result = [1]
-        for i in xrange(11):
-            i
+        for _ in xrange(11):
             self.basetree = D(self.basetree)
             result.append(self.basetree.dimensions())
         expected = [1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766]
         self.assertListEqual(expected, result)
 
-    def test_ordering(self):
-        n = 17
-        result = list(tree for tree in islice(treeGenerator(), 0, n+1))
-        result.sort()
-        expected = None
+    # def test_ordering(self):
+    #    n = 17
+    #    result = list(tree for tree in islice(treeGenerator(), 0, n+1))
+    #    result.sort()
+    #    expected = None
 #         expected = [ButcherEmptyTree(),
 #                     ButcherTree('[]'),
 #                     ButcherTree('[[]]'),
@@ -107,7 +107,7 @@ class test_Butcher_forest(unittest.TestCase):
 #                     ButcherTree('[[[]],[],[]]'),
 #                     ButcherTree('[[],[],[],[]]]')]
 #        self.assertEqual(expected, result)
-        self.assertTrue(True)
+     #   self.assertTrue(True)
 # In the long run test_count_forests would give
 # a=[1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766, 12486, 32973, 87811,
 # 235381, 634847, 1721159]

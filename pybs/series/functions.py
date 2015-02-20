@@ -4,25 +4,29 @@ from itertools import count, islice
 from functools import partial
 
 from pybs.utils import memoized
-from pybs.trees import ButcherTree, ButcherEmptyTree, order
-from pybs.combinations import split, treeGenerator, trees_of_order
+from pybs.combinations import split
+from pybs.combinations.forests import empty_tree
+from pybs.series.Bseries import exponential
+from pybs.unordered_tree import tree_generator, trees_of_order, leaf
 
 
 def equal_up_to_order(a, b, max_order=None):
-    for tree in treeGenerator():
-        if max_order and order(tree) > max_order:
+    if not a(empty_tree()) == b(empty_tree()):
+        return 0
+    for tree in tree_generator():
+        if max_order and tree.order() > max_order:
             return max_order
         elif not a(tree) == b(tree):
-            return order(tree) - 1
+            return tree.order() - 1
 
 
 def hf_composition(baseRule):
-    if baseRule(ButcherEmptyTree()) != 1:
+    if baseRule(empty_tree()) != 1:
         raise ValueError(
             'Composition can only be performed on consistent B-series.')
 
     def newRule(tree):
-        if isinstance(tree, ButcherEmptyTree):
+        if tree == empty_tree():
             return 0
         else:
             result = 1
@@ -33,13 +37,13 @@ def hf_composition(baseRule):
 
 
 def lieDerivative(c, b, truncate=False):
-    if b(ButcherEmptyTree()) != 0:
+    if b(empty_tree()) != 0:
         raise ValueError(
             'The second argument does not satisfy b(ButcherEmptyTree()) == 0.')
 
     def newRule(tree):
         result = 0
-        if tree == ButcherEmptyTree():
+        if tree == empty_tree():
             return result
         pairs = split(tree, truncate)
         for pair, multiplicity in pairs.items():
@@ -49,19 +53,19 @@ def lieDerivative(c, b, truncate=False):
 
 
 def modifiedEquation(a):
-    if a(ButcherEmptyTree()) != 1 or a(ButcherTree.basetree()) != 1:
+    if a(empty_tree()) != 1 or a(leaf()) != 1:
         raise ValueError(
             'Can not calculate the modified equation for this BseriesRule.')
 
     @memoized
     def newRule(tree):
-        if tree == ButcherEmptyTree():
+        if tree == empty_tree():
             return 0
-        elif tree == ButcherTree.basetree():
+        elif tree == leaf():
             return 1
         result = a(tree)
         c = newRule  # This is a BseriesRule. Caution: Recursive!
-        for j in range(2, order(tree) + 1):
+        for j in range(2, tree.order() + 1):
             c = lieDerivative(c, newRule, True)
             result -= Fraction(c(tree), factorial(j))
         return result
@@ -89,12 +93,12 @@ def _symplecticityCondition(a, tree1, tree2):
     return a(tree1 * tree2) + a(tree2 * tree1) == a(tree1) * a(tree2)
 
 if __name__ == '__main__':
-    exact = BseriesRule('exact')
-    modified = modifiedEquation(exact)
+    modified = modifiedEquation(exponential)
 #    from forest.differentiation import TreeGenerator
-    for tree in treeGenerator():
-        if order(tree) > 8:
+    print modified(empty_tree())
+    for tree in tree_generator():
+        if tree.order() > 8:
             break
-        #print tree
+        print tree
         print modified(tree)
     print 'Finished'

@@ -4,8 +4,7 @@ import numpy as np
 
 
 from pybs.utils import memoized as memoized
-from pybs.trees import ButcherTree, ButcherEmptyTree, density, order
-from pybs.combinations import treeGenerator
+from pybs.combinations import empty_tree
 from pybs.series.Bseries import exponential
 from pybs.series.functions import equal_up_to_order
 #  Note the use of dtype=object. It allows for exact algebra.
@@ -32,7 +31,7 @@ class RK_method(object):
 
     def phi(self, tree):
         'elementary weight'
-        if isinstance(tree, ButcherEmptyTree):
+        if tree == empty_tree():
             return 1  # We haven't even allowed for non-consistent RK-methods.
         return np.dot(self.b, self.g_vector(tree))[0]
 

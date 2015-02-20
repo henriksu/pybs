@@ -1,7 +1,5 @@
 from numbers import Number
 
-from pybs.trees import ButcherTree, ButcherEmptyTree
-
 
 class LinearCombination(dict):
     __slots__ = ('_fast_setitem',)
@@ -45,13 +43,8 @@ class LinearCombination(dict):
                     self._fast_setitem(elem, self_get(elem, 0) + count)
             else:
                 super(LinearCombination, self).update(other)
-        elif isinstance(other, ButcherTree) or \
-                isinstance(other, ButcherEmptyTree):
+        elif other is not None:  # WHY condition?
             self._fast_setitem(other, self_get(other, 0) + 1)
-        elif other is not None:
-            raise TypeError(
-                'Other must be LinearCombination or ButcherTree, not ' +
-                str(type(other)))
         return self
 
     def __add__(self, other):
@@ -65,8 +58,7 @@ class LinearCombination(dict):
         if isinstance(other, LinearCombination):
             for elem, count in other.items():
                 self[elem] = self_get(elem, 0) - count
-        elif isinstance(other, ButcherTree) or \
-                isinstance(other, ButcherEmptyTree):
+        else:
             self._fast_setitem(other, self_get(other, 0) - 1)
         return self
 
@@ -106,8 +98,9 @@ class LinearCombination(dict):
         items = ', '.join(map('%r: %r'.__mod__, self.most_common()))
         return '%s({%s})' % (self.__class__.__name__, items)
 
+
 def make_rule(linear_combination):
+    # TODO: Check that ther eare only trees in the linear_combination.
     def rule(tree):
         return linear_combination[tree]
     return rule
-

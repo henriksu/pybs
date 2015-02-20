@@ -1,39 +1,43 @@
 from fractions import Fraction
 
-from pybs.trees import ButcherEmptyTree, density, order, \
-    isTall, isBinary, number_of_children
-from pybs.combinations import LinearCombination
+from pybs.combinations.forests import empty_tree
 
 
 def _zero(tree):
     return 0
 
+
 def _unit(tree):
-    if isinstance(tree, ButcherEmptyTree):
+    if tree == empty_tree():
         return 1
     else:
         return 0
 
+
 def _exact(tree):
-    return Fraction(1, density(tree))
+    if tree == empty_tree():
+        return 1
+    return Fraction(1, tree.density())
+
 
 def _kahan(tree):
     'Directly from Owren'  # TODO: Test
-    if isTall(tree):
-        return 2 ** (1-order(tree))
+    if tree.is_Tall():
+        return 2 ** (1-tree.order())
     else:
         return 0
 
+
 def _AVF(self, tree, a):
     'Directly from Owren'  # TODO: Test
-    if order(tree) == 1:
+    if tree.order() == 1:
         return 1
-    elif not isBinary(tree):
+    elif not tree.is_Binary():
         return 0
     else:
-        if number_of_children(tree) == 1:
+        if tree.number_of_children() == 1:
             return _AVF(tree.keys()[0], a)/2.0
-        elif number_of_children(tree) == 2:
+        elif tree.number_of_children() == 2:
             alpha = Fraction(2*a + 1, 4)
             return alpha * _AVF(tree.keys()[0], a) * \
                 _AVF(tree.keys()[1], a)

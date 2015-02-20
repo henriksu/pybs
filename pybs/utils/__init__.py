@@ -5,4 +5,4 @@ from miscellaneous import \
 from multiset import \
     Multiset, \
     FrozenMultiset
-from clonable_multiset import ClonableMultiset, ClonableMultisets
+from clonable_multiset import ClonableMultiset

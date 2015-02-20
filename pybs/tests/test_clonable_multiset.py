@@ -1,7 +1,8 @@
 import unittest
-from pybs.utils import ClonableMultiset, ClonableMultisets
+from pybs.utils import ClonableMultiset
 
-Multiset = ClonableMultisets()
+Multiset = ClonableMultiset
+
 
 class simple_multisets(unittest.TestCase):
     def test_empty(self):
@@ -42,9 +43,8 @@ class simple_multisets(unittest.TestCase):
         with self.assertRaises(AttributeError):
             a._ms = []
         self.assertEqual(repr(a), 'ClonableMultiset()')
-        self.assertEqual(a._latex_(), '\\emptyset')
         #
-        self.assertTrue(a.is_finite())
+        self.assertFalse(bool(a))
 
     def test_one_element(self):
         a = Multiset()
@@ -95,7 +95,6 @@ class simple_multisets(unittest.TestCase):
         with self.assertRaises(AttributeError):
             b._ms = []
         self.assertEqual(repr(b), "ClonableMultiset({'a': 1})")
-        self.assertEqual(b._latex_(), "\\left[\\text{\\texttt{a}} ^{ 1 }\\right]")
         self.assertTrue('a' in b)
         self.assertFalse('b' in b)
 
@@ -152,4 +151,3 @@ class simple_multisets(unittest.TestCase):
         with self.assertRaises(AttributeError):
             c._ms = []
         self.assertEqual(repr(c), "ClonableMultiset({'a': 2})")
-        self.assertEqual(c._latex_(), "\\left[\\text{\\texttt{a}} ^{ 2 }\\right]")

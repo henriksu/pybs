@@ -1,33 +1,43 @@
 from operator import itemgetter
+from copy import copy
+from itertools import ifilter
 import math
 import operator
-import sage.all
-from sage.combinat.abstract_tree import AbstractClonableTree
-# from sage.combinat.rooted_tree import *
 from pybs.utils import ClonableMultiset
-
-from sage.structure.unique_representation import UniqueRepresentation
-from sage.structure.parent import Parent
-from sage.categories.sets_cat import Sets
-from sage.categories.sets_with_grading import SetsWithGrading
-from sage.sets.disjoint_union_enumerated_sets import \
-    DisjointUnionEnumeratedSets
-from sage.sets.non_negative_integers import NonNegativeIntegers
 
 
 class UnorderedTree(ClonableMultiset):
     # __slots__ = ('__weakref__',)
 
-    def __init__(self, parent, iterable=0, *args, **kwargs):
-        ClonableMultiset.__init__(self, parent, iterable, *args, **kwargs)
+    def __init__(self, arg=0):
+        if isinstance(arg, basestring):
+            if not (arg[0] == '[' and arg[-1] == ']'):
+                raise ValueError('Invalid string')
+            elif arg == '[]':
+                ClonableMultiset.__init__(self)
+            else:
+                arg = arg[1:-1].split(',')
+                childtrees = []
+                for elem in arg:
+                    childtrees.append(UnorderedTree(elem))
+                ClonableMultiset.__init__(self, childtrees)
+        elif arg == 0:
+            ClonableMultiset.__init__(self)
+        elif isinstance(arg, ClonableMultiset):
+            object.__setattr__(self, '_ms', copy(arg._ms))
+            object.__setattr__(self, '_hash', None)
+            self.set_immutable()
+        else:
+            arg = ifilter(lambda x: isinstance(x, UnorderedTree), arg)
+            ClonableMultiset.__init__(self, arg)
 
-    def is_empty(self):
+    def __bool__(self):
         return False
 
     multiplicities = ClonableMultiset.values
 
-    def __iter__(self):
-        return self.elements()
+#    def __iter__(self):
+#        return self.elements()
 
     def __str__(self):
         if self:  # if Non-empty
@@ -36,10 +46,10 @@ class UnorderedTree(ClonableMultiset):
         else:
             return '[]'  # TODO: Remove IF.
 
-    def _latex_(self):
+    def latex(self):
         return str(self)
 
-    def butcherproduct(self, other):
+    def butcher_product(self, other):
         if isinstance(other, type(self)):
             with self.clone() as result:
                 result.inplace_add(other)
@@ -47,9 +57,17 @@ class UnorderedTree(ClonableMultiset):
         else:
             raise TypeError
 
+    def __eq__(self, other):
+        if isinstance(other, UnorderedTree):
+            return ClonableMultiset.__eq__(self, other)
+        else:
+            return NotImplemented
+
     def __cmp__(self, other):  # lt
         'Ordering due to P.Leone (2000) PhD thesis.'
-        if self == other:
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        if ClonableMultiset.__eq__(self, other):
             return 0
         elif self.order() < other.order():
             return -1
@@ -82,7 +100,6 @@ class UnorderedTree(ClonableMultiset):
         for elem, mult in self.items():
             result += mult * elem.order()
         return result
-    grade = order  # Used by ...
 
     def number_of_children(self):
         'Number of children.'
@@ -112,7 +129,8 @@ class UnorderedTree(ClonableMultiset):
         if self.number_of_children() == 1:
             result += self.keys()[0].F()
         elif self.number_of_children() > 1:
-            result += '(' + ','.join([elem.F() for elem in self.elements()]) + ')'
+            result += '(' + ','.join([elem.F() for elem in self.elements()]) \
+                + ')'
         return result
 
     def is_binary(self):
@@ -132,93 +150,59 @@ class UnorderedTree(ClonableMultiset):
         return True
 
     def is_bushy(self):
-        if self == UnorderedTrees().leaf():
+        if self == leaf():
             return True
-        elif self.keys() == [UnorderedTrees().leaf()]:
+        elif self.keys() == [leaf()]:
             return True
         else:
             return False
 
-    # iter(T) itererer over barna.
-    # T.parent().labeled_trees() er "oensket".
-    # T.depth()
-    # T.node_number() Tilsvarer "order".
-    # T.subtrees() generator rekursivt over alle traer. (ikke kejnt for meg)
-    # T.tree_factorial()
-    # T.to/from_hexacode() kanskje?
 
-    # T.to_poset(root_to_leaf=False)
-    # T.to_undirected_graph()
-    # T.grade() = order(T)
+def leaf():
+    return UnorderedTree()
 
 
-class UnorderedTrees(UniqueRepresentation, Parent):
-    Element = UnorderedTree
-
-    def __init__(self):
-        Parent.__init__(self, category=SetsWithGrading())
-
-    def _element_constructor_(self, *args, **keywords):
-        return self.element_class(self, *args, **keywords)
-
-    def leaf(self):
-        return self.element_class(self)
-
-#    def generating_series(self):
-#        pass  # TODO: Do I need it?
-
-    def tree_generator(self, sort=False):
-        'Yields all trees by increasing order.'
-        oldSet = set([self.leaf()])
-        while True:
-            for tree in oldSet:
-                yield tree
-            newSet = set()
-            for tree in oldSet:
-                newSet.update(self.graft_leaf(tree))
-            if sort:
-                oldSet = sorted(newSet)
-            else:
-                oldSet = newSet
-
-    def graft_leaf_on_set(self, oldSet):
-        newSet = set()
-        for tree in oldSet:
-            newSet.update(self.graft_leaf(tree))
-        oldSet = newSet
-        return oldSet
-
-    def graft_leaf(self, tree):
-        result = set()
-        result.add(tree.butcherproduct(self.leaf()))
-        for subtree in tree.keys():
-            amputated_tree = tree.sub(subtree)
-            replacements = self.graft_leaf(subtree)
-            for replacement in replacements:
-                with amputated_tree.clone() as tmp:
-                    tmp.inplace_add(replacement)
-                result.add(tmp)
-        return result
-
-    def graded_component(self, grade, sort=False):
-        oldSet = set([self.leaf()])
-        for _ in range(grade-1):
-            oldSet = self.graft_leaf_on_set(oldSet)
-        if sort:
-            oldSet = sorted(oldSet)
+def tree_generator(sort=False):
+    'Yields all trees by increasing order.'
+    oldSet = set([leaf()])
+    while True:
         for tree in oldSet:
             yield tree
+        newSet = set()
+        for tree in oldSet:
+            newSet.update(_graft_leaf(tree))
+        if sort:
+            oldSet = sorted(newSet)
+        else:
+            oldSet = newSet
 
 
-class UnorderedTrees_all(DisjointUnionEnumeratedSets, UnorderedTrees):
+def trees_of_order(order, sort=False):
+    oldSet = set([leaf()])
+    for _ in range(order-1):
+        oldSet = _graft_leaf_on_set(oldSet)
+    if sort:
+        oldSet = sorted(oldSet)
+    for tree in oldSet:
+        yield tree
 
-    def __init__(self):
-        pass
-    # labeled_tree)() ?????
-    # WSunlabaled_trees()
+
+def _graft_leaf_on_set(oldSet):
+    newSet = set()
+    for tree in oldSet:
+        newSet.update(_graft_leaf(tree))
+    oldSet = newSet
+    return oldSet
 
 
-class UnorderedTrees_size(UnorderedTrees):
-    def __init__(self, ):
-        pass
-    # .cardinality() og .element_class() er de viktigste nye.
+def _graft_leaf(tree):
+    result = set()
+    result.add(tree.butcher_product(leaf()))
+    for subtree in tree.keys():
+        amputated_tree = tree.sub(subtree)
+        replacements = _graft_leaf(subtree)
+        for replacement in replacements:
+            with amputated_tree.clone() as tmp:
+                tmp.inplace_add(replacement)
+            result.add(tmp)
+    return result

@@ -1,6 +1,4 @@
-from forests import \
-    Forest, \
-    FrozenForest
+from forests import Forest, empty_tree
 from linearCombination import \
     LinearCombination
 from functions import \
@@ -8,6 +6,4 @@ from functions import \
     split, \
     differentiate, \
     linCombCommutator, \
-    treeCommutator, \
-    treeGenerator, \
-    trees_of_order
+    treeCommutator
