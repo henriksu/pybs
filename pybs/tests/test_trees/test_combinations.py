@@ -32,6 +32,12 @@ class test_commutator(unittest.TestCase):
 
 
 class test_subtrees(unittest.TestCase):
+    def test_empty(self):
+        a = empty_tree()
+        result = subtrees(a)
+        print result
+        self.assertTrue(True)
+
     def test_first(self):
         a = leaf()
         result = subtrees(a)
@@ -40,6 +46,18 @@ class test_subtrees(unittest.TestCase):
 
     def test_second(self):
         a = UnorderedTree('[[]]')
+        result = subtrees(a)
+        print result
+        self.assertTrue(True)
+
+    def test_third(self):
+        a = UnorderedTree('[[[]]]')
+        result = subtrees(a)
+        print result
+        self.assertTrue(False)
+
+    def test_fourth(self):
+        a = UnorderedTree('[[],[]]')
         result = subtrees(a)
         print result
         self.assertTrue(False)

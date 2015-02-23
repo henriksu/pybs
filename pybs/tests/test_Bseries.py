@@ -5,7 +5,7 @@ from pybs.combinations import Forest, LinearCombination
 from pybs.combinations.linearCombination import make_rule
 from pybs.series.Bseries import zero, exponential
 from pybs.combinations import Forest, differentiate as D, graft, treeCommutator, split, treeGenerator
-from pybs.series import hf_composition, modifiedEquation
+from pybs.series import hf_composition, modified_equation
 
 from itertools import islice
 
@@ -36,7 +36,7 @@ class simple_series(unittest.TestCase):
 
     def test_modified(self):
         a = exponential
-        c = modifiedEquation(a)
+        c = modified_equation(a)
         n = 10
         computed = list(c(tree) for tree in islice(treeGenerator(), 0, n))
         expected = [0,1] + [0]*(n-2)
@@ -50,5 +50,5 @@ class simple_series(unittest.TestCase):
         t = ButcherTree(Forest([tmp, ButcherTree.basetree()]))
         split(t)
         a = exponential
-        c = modifiedEquation(a)
+        c = modified_equation(a)
 

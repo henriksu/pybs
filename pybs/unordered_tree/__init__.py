@@ -1,8 +1,8 @@
-from operator import itemgetter
+from operator import itemgetter, __mul__
 from copy import copy
 from itertools import ifilter
-import math
-import operator
+from math import factorial
+
 from pybs.utils import ClonableMultiset
 
 
@@ -25,6 +25,10 @@ class UnorderedTree(ClonableMultiset):
             ClonableMultiset.__init__(self)
         elif isinstance(arg, ClonableMultiset):
             object.__setattr__(self, '_ms', copy(arg._ms))
+            object.__setattr__(self, '_hash', None)
+            self.set_immutable()
+        elif isinstance(arg, dict):
+            object.__setattr__(self, '_ms', copy(arg))
             object.__setattr__(self, '_hash', None)
             self.set_immutable()
         else:
@@ -114,12 +118,12 @@ class UnorderedTree(ClonableMultiset):
     def symmetry(self):
         def _subtree_contribution((tree, multiplicity)):
             return tree.symmetry() ** multiplicity * \
-                math.factorial(multiplicity)
-        return reduce(operator.__mul__,
+                factorial(multiplicity)
+        return reduce(__mul__,
                       map(_subtree_contribution, self.items()), 1)
 
     def alpha(self):
-        return math.factorial(self.order()) / \
+        return factorial(self.order()) / \
             (self.symmetry() * self.density())
     # Will always come out integer.
 

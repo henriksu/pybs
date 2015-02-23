@@ -20,7 +20,7 @@ class ClonableMultiset(Clonable):
         pass
 
     def __copy__(self):
-        result = self.__class__(self._ms)
+        result = self.__class__(self)
         result._set_mutable()
         return result
 

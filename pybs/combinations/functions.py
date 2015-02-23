@@ -51,21 +51,23 @@ def _split(tree):
     return result
 
 
-def subtrees(tree):
+def subtrees(tree):  # HCK comporudct.
+    result = LinearCombination()  # changed from Multiset()
     if tree == empty_tree():
-        raise ValueError('Can not split the empty tree') # TODO: THIS IS WRONG!!!!
-    result = Multiset()
-
-    result[(empty_tree(), FrozenForest((tree,)))] = 1
-    tmp = [subtrees(sub_tree) for sub_tree in tree.elements()]
+        result += (empty_tree(), empty_tree())
+        return result  # TODO: IS THIS NECESSARY?
+    result[(Forest((tree,)), empty_tree())] = 1
+    tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
     if tmp:
         for item in product(*tmp):  # iterator over all combinations.
-            to_be_grafted, cuttings = zip(*item)
-            new_forest_of_cuttings = \
-                reduce(Forest.inplace_multiset_sum, cuttings, Forest())
-            result.inplace_add((UnorderedTree(to_be_grafted), FrozenForest(new_forest_of_cuttings)))
+            cuttings, to_be_grafted = zip(*item)
+            with Forest().clone() as forest_of_cuttings:
+                for forest in cuttings:
+                    forest_of_cuttings.inplace_multiset_sum(forest)
+                #reduce(Forest.inplace_multiset_sum, cuttings, forest_of_cuttings)
+            result += (forest_of_cuttings, UnorderedTree(to_be_grafted))
     else:
-        result[(tree, FrozenForest())] = 1
+        result[(empty_tree(), tree)] = 1
     return result
         # TODO: Is there a missing multiplicity?
 
