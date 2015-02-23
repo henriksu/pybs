@@ -1,3 +1,4 @@
+from operator import __mul__
 from itertools import product
 from pybs.utils import ClonableMultiset as Multiset, memoized
 from pybs.unordered_tree import UnorderedTree, leaf
@@ -59,13 +60,20 @@ def subtrees(tree):  # HCK comporudct.
     result[(Forest((tree,)), empty_tree())] = 1
     tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
     if tmp:
-        for item in product(*tmp):  # iterator over all combinations.
-            cuttings, to_be_grafted = zip(*item)
+        tmp2 = [elem.items() for elem in tmp]  # TODO: Try using iterators.
+        for item in product(*tmp2):  # iterator over all combinations.
+            tensorproducts, factors = zip(*item)
+            multiplicity = 1
+            for factor in factors:
+                multiplicity *= factor
+            cuttings, to_be_grafted = zip(*tensorproducts)
             with Forest().clone() as forest_of_cuttings:
                 for forest in cuttings:
                     forest_of_cuttings.inplace_multiset_sum(forest)
                 #reduce(Forest.inplace_multiset_sum, cuttings, forest_of_cuttings)
-            result += (forest_of_cuttings, UnorderedTree(to_be_grafted))
+#            result += (forest_of_cuttings, UnorderedTree(to_be_grafted))
+            result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += multiplicity
+
     else:
         result[(empty_tree(), tree)] = 1
     return result

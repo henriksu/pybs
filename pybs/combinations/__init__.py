@@ -4,6 +4,7 @@ from linearCombination import \
 from functions import \
     graft, \
     split, \
+    subtrees, \
     differentiate, \
     linCombCommutator, \
     treeCommutator

@@ -5,7 +5,7 @@ import numpy as np
 
 from pybs.utils import memoized as memoized
 from pybs.combinations import empty_tree
-from pybs.series.Bseries import exponential
+from pybs.series.Bseries import BseriesRule, exponential
 from pybs.series.functions import equal_up_to_order
 #  Note the use of dtype=object. It allows for exact algebra.
 #  However it is much slower since numpy will call Python code.
@@ -29,11 +29,13 @@ class RK_method(object):
         b = self.phi
         return equal_up_to_order(a, b)
 
-    def phi(self, tree):
-        'elementary weight'
-        if tree == empty_tree():
-            return 1  # We haven't even allowed for non-consistent RK-methods.
-        return np.dot(self.b, self.g_vector(tree))[0]
+    def phi(self):
+        def rule(tree):
+            'elementary weight'
+            if tree == empty_tree():
+                return 1  # We haven't even allowed for non-consistent RK-methods.
+            return np.dot(self.b, self.g_vector(tree))[0]
+        return BseriesRule(rule)
 
     @memoized
     def g_vector(self, tree):

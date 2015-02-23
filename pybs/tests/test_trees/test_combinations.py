@@ -2,7 +2,7 @@
 from itertools import islice
 import unittest
 
-from pybs.unordered_tree import UnorderedTree, leaf
+from pybs.unordered_tree import UnorderedTree, leaf, tree_generator
 from pybs.combinations.forests import empty_tree
 from pybs.combinations import Forest, LinearCombination, differentiate as D, \
     treeCommutator
@@ -32,40 +32,105 @@ class test_commutator(unittest.TestCase):
 
 
 class test_subtrees(unittest.TestCase):
+    def setUp(self):
+        a = tree_generator(sort=True)
+        self.et = empty_tree()
+        self.t1_1 = a.next()  # []
+        self.t2_1 = a.next()  # [[]]
+        self.t3_1 = a.next()  # [[[]]]
+        self.t3_2 = a.next()  # [[],[]]
+        self.t4_1 = a.next()  # [[[[]]]]
+        self.t4_2 = a.next()  # [[[],[]]]
+        self.t4_3 = a.next()  # [[[]],[]]
+        self.t4_4 = a.next()  # [[],[],[]]
+
     def test_empty(self):
-        a = empty_tree()
-        result = subtrees(a)
-        print result
-        self.assertTrue(True)
+        result = subtrees(self.et)
+        expected = LinearCombination()
+        expected[(self.et, self.et)] = 1
+        self.assertEqual(expected, result)
 
     def test_first(self):
-        a = leaf()
-        result = subtrees(a)
-        print result
-        self.assertTrue(True)  # Todo make proper test.
+        result = subtrees(self.t1_1)
+        expected = LinearCombination()
+        expected[(self.et, self.t1_1)] = 1
+        expected[(Forest((self.t1_1,)), self.et)] = 1
+        self.assertEqual(expected, result)
 
     def test_second(self):
-        a = UnorderedTree('[[]]')
-        result = subtrees(a)
-        print result
-        self.assertTrue(True)
+        result = subtrees(self.t2_1)
+        expected = LinearCombination()
+        expected[(self.et, self.t2_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t1_1)] = 1
+        expected[(Forest((self.t2_1,)), self.et)] = 1
+        self.assertEqual(expected, result)
 
     def test_third(self):
-        a = UnorderedTree('[[[]]]')
-        result = subtrees(a)
-        print result
-        self.assertTrue(False)
+        result = subtrees(self.t3_1)
+        expected = LinearCombination()
+        expected[(Forest((self.t3_1,)), self.et)] = 1
+        expected[(Forest((self.t2_1,)), self.t1_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t2_1)] = 1
+        expected[(self.et, self.t3_1)] = 1
+        self.assertEqual(expected, result)
 
     def test_fourth(self):
-        a = UnorderedTree('[[],[]]')
-        result = subtrees(a)
+        result = subtrees(self.t3_2)
+        expected = LinearCombination()
+        expected[(Forest((self.t3_2,)), self.et)] = 1
+        expected[(Forest((self.t1_1, self.t1_1)), self.t1_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t2_1)] = 2
+        expected[(self.et, self.t3_2)] = 1
+        self.assertEqual(expected, result)
+
+    def test_fifth(self):
+        result = subtrees(self.t4_1)
+        expected = LinearCombination()
+        expected[(Forest((self.t4_1,)), self.et)] = 1
+        expected[(Forest((self.t3_1,)), self.t1_1)] = 1
+        expected[(Forest((self.t2_1,)), self.t2_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t3_1)] = 1
+        expected[(self.et, self.t4_1)] = 1
+        self.assertEqual(expected, result)
+
+    def test_sixth(self):
+        result = subtrees(self.t4_2)
+        expected = LinearCombination()
+        expected[(Forest((self.t4_2,)), self.et)] = 1
+        expected[(Forest((self.t3_2,)), self.t1_1)] = 1
+        expected[(Forest((self.t1_1, self.t1_1)), self.t2_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t3_1)] = 2
+        expected[(self.et, self.t4_2)] = 1
+        print expected
         print result
-        self.assertTrue(False)
+        self.assertEqual(expected, result)
+
+    def test_seventh(self):
+        result = subtrees(self.t4_3)
+        expected = LinearCombination()
+        expected[(Forest((self.t4_3,)), self.et)] = 1
+        expected[(Forest((self.t2_1, self.t1_1)), self.t1_1)] = 1
+        expected[(Forest((self.t2_1,)), self.t2_1)] = 1
+        expected[(Forest((self.t1_1, self.t1_1)), self.t2_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t3_2)] = 1
+        expected[(Forest((self.t1_1,)), self.t3_1)] = 1
+        expected[(self.et, self.t4_3)] = 1
+        self.assertEqual(expected, result)
+
+    def test_eighth(self):
+        result = subtrees(self.t4_4)
+        expected = LinearCombination()
+        expected[(Forest((self.t4_4,)), self.et)] = 1
+        expected[(Forest((self.t1_1, self.t1_1, self.t1_1)), self.t1_1)] = 1
+        expected[(Forest((self.t1_1, self.t1_1)), self.t2_1)] = 3
+        expected[(Forest((self.t1_1,)), self.t3_2)] = 3
+        expected[(self.et, self.t4_4)] = 1
+        self.assertEqual(expected, result)
 
 
 class test_Butcher_forest(unittest.TestCase):
     def setUp(self):
-        self.basetree = UnorderedTree(Forest())
+        self.basetree = leaf()
 
     def test_first(self):
         self.assertEqual('[]', str(self.basetree))

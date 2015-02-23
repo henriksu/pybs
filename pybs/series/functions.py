@@ -5,14 +5,16 @@ from functools import partial
 
 from pybs.utils import memoized
 from pybs.unordered_tree import tree_generator, trees_of_order, leaf
-from pybs.combinations import split, empty_tree
-from pybs.series.Bseries import exponential
+from pybs.combinations import split, empty_tree, subtrees
+from pybs.series.Bseries import BseriesRule
 
 
 def equal_up_to_order(a, b, max_order=None):
     if not a(empty_tree()) == b(empty_tree()):
         return 0
     for tree in tree_generator():
+        a_val = a(tree);
+        b_val = b(tree)
         if max_order and tree.order() > max_order:
             return max_order
         elif not a(tree) == b(tree):
@@ -32,7 +34,7 @@ def hf_composition(baseRule):
             for subtree, multiplicity in tree.items():
                 result *= baseRule(subtree) ** multiplicity
             return result
-    return newRule
+    return BseriesRule(newRule)
 
 
 def lie_derivative(c, b, truncate=False):
@@ -48,7 +50,7 @@ def lie_derivative(c, b, truncate=False):
         for pair, multiplicity in pairs.items():
             result += multiplicity * c(pair[0]) * b(pair[1])
         return result
-    return newRule
+    return BseriesRule(newRule)
 
 
 def modified_equation(a):
@@ -68,7 +70,45 @@ def modified_equation(a):
             c = lie_derivative(c, newRule, True)
             result -= Fraction(c(tree), factorial(j))
         return result
-    return newRule
+    return BseriesRule(newRule)
+
+
+def composition_ssa(a, b):
+    if a(empty_tree()) != 1:
+        raise ValueError(
+            'Composition can only be performed on consistent B-series.')
+
+    def subRule(pair):
+        return a(pair[0]) * b(pair[1])
+
+    @memoized
+    def newRule(tree):
+        sub_trees = subtrees(tree)
+        result = 0
+        for pair, multiplicity in sub_trees.items():
+            result += subRule(pair) * multiplicity
+        return Fraction(result, 2 ** tree.order())
+
+    return BseriesRule(newRule)
+
+
+def composition(a, b):
+    if a(empty_tree()) != 1:
+        raise ValueError(
+            'Composition can only be performed on consistent B-series.')
+
+    def subRule(pair):
+        return a(pair[0]) * b(pair[1])
+
+    @memoized
+    def newRule(tree):
+        sub_trees = subtrees(tree)
+        result = 0
+        for pair, multiplicity in sub_trees.items():
+            result += subRule(pair) * multiplicity
+        return result
+
+    return BseriesRule(newRule)
 
 
 def symplectic_up_to_order(a, max_order=None):
@@ -93,6 +133,7 @@ def _symplecticity_condition(a, tree1, tree2):
         == a(tree1) * a(tree2)
 
 if __name__ == '__main__':
+    from pybs.series.Bseries import exponential
     modified = modified_equation(exponential)
 #    from forest.differentiation import TreeGenerator
     print modified(empty_tree())

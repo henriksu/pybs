@@ -97,10 +97,3 @@ class LinearCombination(dict):
             return '%s()' % self.__class__.__name__
         items = ', '.join(map('%r: %r'.__mod__, self.most_common()))
         return '%s({%s})' % (self.__class__.__name__, items)
-
-
-def make_rule(linear_combination):
-    # TODO: Check that ther eare only trees in the linear_combination.
-    def rule(tree):
-        return linear_combination[tree]
-    return rule
