@@ -25,9 +25,9 @@ class RK_method(object):
     @property
     @memoized
     def order(self):
-        a = exponential
-        b = self.phi
-        return equal_up_to_order(a, b)
+#        a = exponential
+        b = self.phi()
+        return equal_up_to_order(exponential, b)
 
     def phi(self):
         def rule(tree):

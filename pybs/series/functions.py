@@ -11,10 +11,8 @@ from pybs.series.Bseries import BseriesRule
 
 def equal_up_to_order(a, b, max_order=None):
     if not a(empty_tree()) == b(empty_tree()):
-        return 0
+        return None
     for tree in tree_generator():
-        a_val = a(tree);
-        b_val = b(tree)
         if max_order and tree.order() > max_order:
             return max_order
         elif not a(tree) == b(tree):
@@ -97,17 +95,12 @@ def composition(a, b):
         raise ValueError(
             'Composition can only be performed on consistent B-series.')
 
-    def subRule(pair):
-        return a(pair[0]) * b(pair[1])
-
     @memoized
     def newRule(tree):
-        sub_trees = subtrees(tree)
         result = 0
-        for pair, multiplicity in sub_trees.items():
-            result += subRule(pair) * multiplicity
+        for pair, multiplicity in subtrees(tree).items():
+            result += a(pair[0]) * b(pair[1]) * multiplicity
         return result
-
     return BseriesRule(newRule)
 
 
@@ -131,6 +124,30 @@ def _symplecticity_condition(a, tree1, tree2):
     'Symmetric function in tree1, tree2.'
     return a(tree1.butcher_product(tree2)) + a(tree2.butcher_product(tree1)) \
         == a(tree1) * a(tree2)
+
+
+# DANGER VERY UNCERTAIN
+def hamiltonian_up_to_order(a, max_order=None):
+    orders = count(start=2)
+    if max_order:
+        orders = islice(orders, max_order)
+    _hamCond = partial(_hamilton_condition, a)
+    for order in orders:
+        max_check_order = order / 2  # Intentional truncation in division.
+        for order1 in islice(count(1), max_check_order):
+            order2 = order - order1
+            for tree1 in trees_of_order(order1):
+                for tree2 in trees_of_order(order2):
+                    if not _hamCond(tree1, tree2):
+                        return order - 1
+    return max_order
+
+
+def _hamilton_condition(a, tree1, tree2):
+    return a(tree1.butcher_product(tree2)) + \
+           a(tree2.butcher_product(tree1)) == 0
+
+
 
 if __name__ == '__main__':
     from pybs.series.Bseries import exponential

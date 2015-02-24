@@ -12,7 +12,7 @@ def graft(base, other):
     result = LinearCombination()
     if base == empty_tree():
         result += other
-        return result  # Just to make sure it is Lincomb.
+        return result
     elif other == empty_tree():
         result += base
         return result
@@ -22,17 +22,13 @@ def graft(base, other):
             amputated_tree = base.sub(subtree)
             replacements = graft(subtree, other)
             for replacement, multiplicity2 in replacements.items():
-#                multiset_of_new_children = amputated_tree.add(replacement)
-#                new_tree = type(base)(multiset_of_new_children)
                 new_tree = amputated_tree.add(replacement)
-                #result2 = LinearCombination()
-                #result2[new_tree] = multiplicity1 * multiplicity2
                 result[new_tree] += multiplicity1 * multiplicity2
         return result
 
 
 def split(tree, truncate=False):
-    "Splits a tree."
+    "Splits a tree."  # TODO: Check that this is the right way around!!!!!!
     result = _split(tree)
     if not truncate:
         result[(empty_tree(), tree)] = 1
@@ -53,7 +49,7 @@ def _split(tree):
 
 
 def subtrees(tree):  # HCK comporudct.
-    result = LinearCombination()  # changed from Multiset()
+    result = LinearCombination()
     if tree == empty_tree():
         result += (empty_tree(), empty_tree())
         return result  # TODO: IS THIS NECESSARY?
@@ -70,14 +66,10 @@ def subtrees(tree):  # HCK comporudct.
             with Forest().clone() as forest_of_cuttings:
                 for forest in cuttings:
                     forest_of_cuttings.inplace_multiset_sum(forest)
-                #reduce(Forest.inplace_multiset_sum, cuttings, forest_of_cuttings)
-#            result += (forest_of_cuttings, UnorderedTree(to_be_grafted))
             result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += multiplicity
-
     else:
         result[(empty_tree(), tree)] = 1
     return result
-        # TODO: Is there a missing multiplicity?
 
 
 def differentiate(thing):
