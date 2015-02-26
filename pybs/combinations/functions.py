@@ -31,7 +31,7 @@ def split(tree, truncate=False):
     "Splits a tree."  # TODO: Check that this is the right way around!!!!!!
     result = _split(tree)
     if not truncate:
-        result[(empty_tree(), tree)] = 1
+        result[(tree, empty_tree())] = 1
     return result
 
 
@@ -39,11 +39,11 @@ def _split(tree):
     result = LinearCombination()
     for childtree, multiplicity in tree.items():
         amputated_tree = tree.sub(childtree)
-        result[(amputated_tree, childtree)] = multiplicity
+        result[(childtree, amputated_tree)] = multiplicity
         childSplits = _split(childtree)
         for pair, multiplicity2 in childSplits.items():
-            new_tree = amputated_tree.add(pair[0])
-            new_pair = (new_tree, pair[1])
+            new_tree = amputated_tree.add(pair[1])
+            new_pair = (pair[0], new_tree)
             result[new_pair] = multiplicity * multiplicity2
     return result
 

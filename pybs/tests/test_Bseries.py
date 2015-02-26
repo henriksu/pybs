@@ -76,7 +76,7 @@ class simple_series(unittest.TestCase):
     def test_symplectic(self):
         max_order = 7
         euler = RKeuler.phi()
-        print "euler: ", symplectic_up_to_order(euler, max_order), " ", RKeuler.order
+        print "euler: ", symplectic_up_to_order(euler), " ", RKeuler.order
         impl_euler = RKimplicitEuler.phi()
         print "implicit euler: ", symplectic_up_to_order(impl_euler, max_order), " ", RKimplicitEuler.order
         midpoint = RKmidpoint.phi()
@@ -106,29 +106,29 @@ class simple_series(unittest.TestCase):
     def test_hamiltonian(self):
         max_order = 7
         euler = RKeuler.phi()
-        print "euler: ", hamiltonian_up_to_order(euler, max_order), " ", RKeuler.order
+        print "euler: ", hamiltonian_up_to_order(modified_equation(euler), max_order), " ", RKeuler.order
         impl_euler = RKimplicitEuler.phi()
-        print "implicit euler: ", hamiltonian_up_to_order(impl_euler, max_order), " ", RKimplicitEuler.order
+        print "implicit euler: ", hamiltonian_up_to_order(modified_equation(impl_euler), max_order), " ", RKimplicitEuler.order
         midpoint = RKmidpoint.phi()
-        print "midpoint: ", hamiltonian_up_to_order(midpoint, max_order), " ", RKmidpoint.order
+        print "midpoint: ", hamiltonian_up_to_order(modified_equation(midpoint), max_order), " ", RKmidpoint.order
         impl_midpoint = RKimplicitMidpoint.phi()
-        print "implicit midpoint: ", hamiltonian_up_to_order(impl_midpoint, max_order), " ", RKimplicitMidpoint.order  # hamiltonian all the way? Yes
+        print "implicit midpoint: ", hamiltonian_up_to_order(modified_equation(impl_midpoint), max_order), " ", RKimplicitMidpoint.order  # hamiltonian all the way? Yes
         impl_trap = RKimplicitTrapezoidal.phi()
-        print "implicit trapezoidal: ", hamiltonian_up_to_order(impl_trap, max_order), " ", RKimplicitTrapezoidal.order
+        print "implicit trapezoidal: ", hamiltonian_up_to_order(modified_equation(impl_trap), max_order), " ", RKimplicitTrapezoidal.order
         runge1 = RKrunge1.phi()
-        print "runge1: ", hamiltonian_up_to_order(runge1, max_order), " ", RKrunge1.order
+        print "runge1: ", hamiltonian_up_to_order(modified_equation(runge1), max_order), " ", RKrunge1.order
         runge2 = RKrunge2.phi()
-        print "runge2: ", hamiltonian_up_to_order(runge2, max_order), " ", RKrunge2.order
+        print "runge2: ", hamiltonian_up_to_order(modified_equation(runge2), max_order), " ", RKrunge2.order
         rk4 = RK4.phi()
-        print "RK4: ", hamiltonian_up_to_order(rk4, max_order), " ", RK4.order
+        print "RK4: ", hamiltonian_up_to_order(modified_equation(rk4), max_order), " ", RK4.order
         rk38 = RK38rule.phi()
-        print "RK38rule: ", hamiltonian_up_to_order(rk38, max_order), " ", RK38rule.order
+        print "RK38rule: ", hamiltonian_up_to_order(modified_equation(rk38), max_order), " ", RK38rule.order
         lobattoIIIA4 = RKlobattoIIIA4.phi()
-        print "lobattoIIIA4: ", hamiltonian_up_to_order(lobattoIIIA4, max_order), " ", RKlobattoIIIA4.order
+        print "lobattoIIIA4: ", hamiltonian_up_to_order(modified_equation(lobattoIIIA4), max_order), " ", RKlobattoIIIA4.order
         lobattoIIIB4 = RKlobattoIIIB4.phi()
-        print "lobattoIIIB4: ", hamiltonian_up_to_order(lobattoIIIB4, max_order), " ", RKlobattoIIIB4.order
+        print "lobattoIIIB4: ", hamiltonian_up_to_order(modified_equation(lobattoIIIB4), max_order), " ", RKlobattoIIIB4.order
         cashKarp = RKcashKarp.phi()
-        print "cashKarp: ", hamiltonian_up_to_order(cashKarp, max_order), " ", RKcashKarp.order
+        print "cashKarp: ", hamiltonian_up_to_order(modified_equation(cashKarp), max_order), " ", RKcashKarp.order
         # exponential
-        print "exact: ", hamiltonian_up_to_order(exponential, max_order)
+        print "exact: ", hamiltonian_up_to_order(modified_equation(exponential), max_order)
         self.assertTrue(False)

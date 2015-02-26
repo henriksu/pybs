@@ -40,15 +40,16 @@ def lie_derivative(c, b, truncate=False):
         raise ValueError(
             'The second argument does not satisfy b(ButcherEmptyTree()) == 0.')
 
-    def newRule(tree):
+    @memoized
+    def new_rule(tree):
         result = 0
         if tree == empty_tree():
             return result
         pairs = split(tree, truncate)
         for pair, multiplicity in pairs.items():
-            result += multiplicity * c(pair[0]) * b(pair[1])
+            result += multiplicity * b(pair[0]) * c(pair[1])
         return result
-    return BseriesRule(newRule)
+    return BseriesRule(new_rule)
 
 
 def modified_equation(a):
@@ -57,18 +58,16 @@ def modified_equation(a):
             'Can not calculate the modified equation for this BseriesRule.')
 
     @memoized
-    def newRule(tree):
+    def new_rule(tree):
         if tree == empty_tree():
             return 0
-        elif tree == leaf():
-            return 1
         result = a(tree)
-        c = newRule  # This is a BseriesRule. Caution: Recursive!
+        c = new_rule  # This is a BseriesRule. Caution: Recursive!
         for j in range(2, tree.order() + 1):
-            c = lie_derivative(c, newRule, True)
+            c = lie_derivative(c, new_rule, True)
             result -= Fraction(c(tree), factorial(j))
         return result
-    return BseriesRule(newRule)
+    return BseriesRule(new_rule)
 
 
 def composition_ssa(a, b):
@@ -105,17 +104,19 @@ def composition(a, b):
 
 
 def symplectic_up_to_order(a, max_order=None):
+    if a(empty_tree()) != 1:
+        return None
     orders = count(start=2)
     if max_order:
         orders = islice(orders, max_order)
-    _sympCond = partial(_symplecticity_condition, a)
+    _symp_cond = partial(_symplecticity_condition, a)
     for order in orders:
         max_check_order = order / 2  # Intentional truncation in division.
         for order1 in islice(count(1), max_check_order):
             order2 = order - order1
             for tree1 in trees_of_order(order1):
                 for tree2 in trees_of_order(order2):
-                    if not _sympCond(tree1, tree2):
+                    if not _symp_cond(tree1, tree2):
                         return order - 1
     return max_order
 
@@ -126,26 +127,28 @@ def _symplecticity_condition(a, tree1, tree2):
         == a(tree1) * a(tree2)
 
 
-# DANGER VERY UNCERTAIN
+# DANGER: NOT TESTED
 def hamiltonian_up_to_order(a, max_order=None):
+    if a(empty_tree()) != 0 or a(leaf()) == 0:
+        return None  # Not hamiltonian at all.
     orders = count(start=2)
     if max_order:
         orders = islice(orders, max_order)
-    _hamCond = partial(_hamilton_condition, a)
+    _ham_cond = partial(_hamilton_condition, a)
     for order in orders:
         max_check_order = order / 2  # Intentional truncation in division.
         for order1 in islice(count(1), max_check_order):
             order2 = order - order1
             for tree1 in trees_of_order(order1):
                 for tree2 in trees_of_order(order2):
-                    if not _hamCond(tree1, tree2):
+                    if not _ham_cond(tree1, tree2):
                         return order - 1
     return max_order
 
 
 def _hamilton_condition(a, tree1, tree2):
     return a(tree1.butcher_product(tree2)) + \
-           a(tree2.butcher_product(tree1)) == 0
+        a(tree2.butcher_product(tree1)) == 0
 
 
 
