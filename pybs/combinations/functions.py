@@ -8,7 +8,7 @@ from pybs.combinations import empty_tree
 
 
 @memoized
-def graft(base, other):
+def graft(base, other):  # TODO: change order of base and other. Fix all uses too!
     result = LinearCombination()
     if base == empty_tree():
         result += other
@@ -69,6 +69,50 @@ def subtrees(tree):  # HCK comporudct.
             result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += multiplicity
     else:
         result[(empty_tree(), tree)] = 1
+    return result
+
+
+def _subtrees_for_antipode(tree):
+    result = LinearCombination()
+    tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
+    if tmp:
+        tmp2 = [elem.items() for elem in tmp]  # TODO: Try using iterators.
+        for item in product(*tmp2):  # iterator over all combinations.
+            tensorproducts, factors = zip(*item)
+            multiplicity = 1
+            for factor in factors:
+                multiplicity *= factor
+            cuttings, to_be_grafted = zip(*tensorproducts)
+            with Forest().clone() as forest_of_cuttings:
+                for forest in cuttings:
+                    forest_of_cuttings.inplace_multiset_sum(forest)
+            result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += multiplicity
+    result[(empty_tree(), tree)] = 0  # TODO: FIND NICER WAY.
+    return result
+
+
+# TODO: Should be memoized, but linearCOmbination is mutable.
+# Make LinComb clonable??
+def antipode_ck(tree):
+    result = LinearCombination()
+    if tree == empty_tree():
+        result[empty_tree()] = 1
+        return result
+    elif isinstance(tree, Forest):
+        result[empty_tree()] = 1
+        for tree1, multiplicity in tree.items():
+            for i in range(multiplicity):
+                tmp = LinearCombination()
+                for forest1, multiplicity1 in antipode_ck(tree1).items():
+                    for forest2, multiplicity2 in result.items():
+                        tmp[forest1 * forest2] += multiplicity1 * multiplicity2
+                result = tmp
+        return result
+        # TODO: implement multiplication of LinComb.
+    result[Forest((tree,))] -= 1
+    for (forest, subtree), multiplicity in _subtrees_for_antipode(tree).items():
+        for forest2, coefficient in antipode_ck(forest).items():
+            result[forest2.add(subtree)] -= coefficient * multiplicity
     return result
 
 

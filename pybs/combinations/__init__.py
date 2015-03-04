@@ -7,4 +7,5 @@ from functions import \
     subtrees, \
     differentiate, \
     linCombCommutator, \
-    treeCommutator
+    treeCommutator, \
+    antipode_ck

@@ -5,7 +5,8 @@ from functools import partial
 
 from pybs.utils import memoized
 from pybs.unordered_tree import tree_generator, trees_of_order, leaf
-from pybs.combinations import split, empty_tree, subtrees
+from pybs.combinations import split, empty_tree, subtrees, antipode_ck, \
+    LinearCombination, treeCommutator as tree_commutator
 from pybs.series.Bseries import BseriesRule
 
 
@@ -95,12 +96,49 @@ def composition(a, b):
             'Composition can only be performed on consistent B-series.')
 
     @memoized
-    def newRule(tree):
+    def new_rule(tree):
         result = 0
         for pair, multiplicity in subtrees(tree).items():
             result += a(pair[0]) * b(pair[1]) * multiplicity
         return result
-    return BseriesRule(newRule)
+    return BseriesRule(new_rule)
+
+
+def inverse(a):
+    "The inverse of 'a' in the Butcher group."
+    def new_rule(tree):
+        return a(antipode_ck(tree))
+    return BseriesRule(new_rule)
+
+
+def adjoint(a):
+    "The adjoint is the inverse with reversed time step."
+    b = inverse(a)
+
+    def new_rule(tree):
+        return (-1)**tree.order() * b(tree)
+    return BseriesRule(new_rule)
+
+
+def series_commutator(a, b):
+    orders = set((0,))  # the coefficient of the empty tree is always 0.
+    storage = LinearCombination()
+
+    def new_rule(tree):
+        order = tree.order()
+        if order in orders:
+            return storage[tree]
+        else:
+            result = LinearCombination()
+            for order1 in range(1, order):
+                order2 = order - order1
+                for tree1 in trees_of_order(order1):
+                    for tree2 in trees_of_order(order2):
+                        result += (a(tree1) * b(tree2)) * \
+                            tree_commutator(tree1, tree2)
+            orders.add(order)
+            storage += result
+    return BseriesRule(new_rule)
 
 
 def symplectic_up_to_order(a, max_order=None):
@@ -112,7 +150,7 @@ def symplectic_up_to_order(a, max_order=None):
     _symp_cond = partial(_symplecticity_condition, a)
     for order in orders:
         max_check_order = order / 2  # Intentional truncation in division.
-        for order1 in islice(count(1), max_check_order):
+        for order1 in range(1, max_check_order + 1):
             order2 = order - order1
             for tree1 in trees_of_order(order1):
                 for tree2 in trees_of_order(order2):
@@ -137,7 +175,7 @@ def hamiltonian_up_to_order(a, max_order=None):
     _ham_cond = partial(_hamilton_condition, a)
     for order in orders:
         max_check_order = order / 2  # Intentional truncation in division.
-        for order1 in islice(count(1), max_check_order):
+        for order1 in range(1, max_check_order + 1):
             order2 = order - order1
             for tree1 in trees_of_order(order1):
                 for tree2 in trees_of_order(order2):
@@ -149,8 +187,6 @@ def hamiltonian_up_to_order(a, max_order=None):
 def _hamilton_condition(a, tree1, tree2):
     return a(tree1.butcher_product(tree2)) + \
         a(tree2.butcher_product(tree1)) == 0
-
-
 
 if __name__ == '__main__':
     from pybs.series.Bseries import exponential

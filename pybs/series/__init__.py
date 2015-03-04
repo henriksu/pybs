@@ -6,4 +6,6 @@ from functions import \
     modified_equation, \
     composition_ssa, \
     composition, \
-    symplectic_up_to_order
+    symplectic_up_to_order, \
+    inverse, \
+    adjoint

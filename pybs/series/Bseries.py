@@ -22,6 +22,11 @@ class BseriesRule(object):
                 result *= self._call(tree) ** multiplicity
                 # TODO: Use reduce() or something?
             return result
+        elif isinstance(arg, LinearCombination):
+            result = 0
+            for elem, multiplicity in arg.items():
+                result += self(elem) * multiplicity
+            return result
 
 
 def _zero(tree):
@@ -65,3 +70,4 @@ def _AVF(self, tree, a):
 
 exponential = BseriesRule(_exact)
 zero = BseriesRule(_zero)
+unit = BseriesRule(_unit)

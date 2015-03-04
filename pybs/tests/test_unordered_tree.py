@@ -15,7 +15,7 @@ class simple_tree(unittest.TestCase):
         print gen.next()
         print gen.next()
         print gen.next()
-        self.assertTrue(False)
+#        self.assertTrue(False)
 
     def test_graded_component(self):
         print "graded component"

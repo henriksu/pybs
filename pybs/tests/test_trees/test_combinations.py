@@ -1,12 +1,12 @@
 # This Python file uses the following encoding: utf-8
-from itertools import islice
 import unittest
 
 from pybs.unordered_tree import UnorderedTree, leaf, tree_generator
 from pybs.combinations.forests import empty_tree
 from pybs.combinations import Forest, LinearCombination, differentiate as D, \
     treeCommutator
-from pybs.combinations.functions import subtrees
+from pybs.combinations.functions import subtrees, \
+    _subtrees_for_antipode, antipode_ck
 
 
 class test_commutator(unittest.TestCase):
@@ -125,6 +125,135 @@ class test_subtrees(unittest.TestCase):
         expected[(Forest((self.t1_1, self.t1_1)), self.t2_1)] = 3
         expected[(Forest((self.t1_1,)), self.t3_2)] = 3
         expected[(self.et, self.t4_4)] = 1
+        self.assertEqual(expected, result)
+
+
+class test_subtrees_for_antipode(unittest.TestCase):
+    def setUp(self):
+        a = tree_generator(sort=True)
+        self.et = empty_tree()
+        self.t1_1 = a.next()  # []
+        self.t2_1 = a.next()  # [[]]
+        self.t3_1 = a.next()  # [[[]]]
+        self.t3_2 = a.next()  # [[],[]]
+        self.t4_1 = a.next()  # [[[[]]]]
+        self.t4_2 = a.next()  # [[[],[]]]
+        self.t4_3 = a.next()  # [[[]],[]]
+        self.t4_4 = a.next()  # [[],[],[]]
+
+    def test_empty(self):
+        result = _subtrees_for_antipode(self.et)
+        expected = LinearCombination()
+        self.assertEqual(expected, result)
+
+    def test_first(self):
+        result = _subtrees_for_antipode(self.t1_1)
+        expected = LinearCombination()
+        self.assertEqual(expected, result)
+
+    def test_second(self):
+        result = _subtrees_for_antipode(self.t2_1)
+        expected = LinearCombination()
+        expected[(Forest((self.t1_1,)), self.t1_1)] = 1
+        self.assertEqual(expected, result)
+
+    def test_third(self):
+        result = _subtrees_for_antipode(self.t3_1)
+        expected = LinearCombination()
+        expected[(Forest((self.t2_1,)), self.t1_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t2_1)] = 1
+        self.assertEqual(expected, result)
+
+    def test_fourth(self):
+        result = _subtrees_for_antipode(self.t3_2)
+        expected = LinearCombination()
+        expected[(Forest((self.t1_1, self.t1_1)), self.t1_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t2_1)] = 2
+        self.assertEqual(expected, result)
+
+    def test_fifth(self):
+        result = _subtrees_for_antipode(self.t4_1)
+        expected = LinearCombination()
+        expected[(Forest((self.t3_1,)), self.t1_1)] = 1
+        expected[(Forest((self.t2_1,)), self.t2_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t3_1)] = 1
+        self.assertEqual(expected, result)
+
+    def test_sixth(self):
+        result = _subtrees_for_antipode(self.t4_2)
+        expected = LinearCombination()
+        expected[(Forest((self.t3_2,)), self.t1_1)] = 1
+        expected[(Forest((self.t1_1, self.t1_1)), self.t2_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t3_1)] = 2
+        print expected
+        print result
+        self.assertEqual(expected, result)
+
+    def test_seventh(self):
+        result = _subtrees_for_antipode(self.t4_3)
+        expected = LinearCombination()
+        expected[(Forest((self.t2_1, self.t1_1)), self.t1_1)] = 1
+        expected[(Forest((self.t2_1,)), self.t2_1)] = 1
+        expected[(Forest((self.t1_1, self.t1_1)), self.t2_1)] = 1
+        expected[(Forest((self.t1_1,)), self.t3_2)] = 1
+        expected[(Forest((self.t1_1,)), self.t3_1)] = 1
+        self.assertEqual(expected, result)
+
+    def test_eighth(self):
+        result = _subtrees_for_antipode(self.t4_4)
+        expected = LinearCombination()
+        expected[(Forest((self.t1_1, self.t1_1, self.t1_1)), self.t1_1)] = 1
+        expected[(Forest((self.t1_1, self.t1_1)), self.t2_1)] = 3
+        expected[(Forest((self.t1_1,)), self.t3_2)] = 3
+        self.assertEqual(expected, result)
+
+
+class test_antipode(unittest.TestCase):
+    def setUp(self):
+        a = tree_generator(sort=True)
+        self.et = empty_tree()
+        self.t1_1 = a.next()  # []
+        self.t2_1 = a.next()  # [[]]
+        self.t3_1 = a.next()  # [[[]]]
+        self.t3_2 = a.next()  # [[],[]]
+        self.t4_1 = a.next()  # [[[[]]]]
+        self.t4_2 = a.next()  # [[[],[]]]
+        self.t4_3 = a.next()  # [[[]],[]]
+        self.t4_4 = a.next()  # [[],[],[]]
+
+    def test_empty(self):
+        result = antipode_ck(self.et)
+        expected = LinearCombination()
+        expected[empty_tree()] = 1
+        self.assertEqual(expected, result)
+
+    def test_first(self):
+        result = antipode_ck(self.t1_1)
+        expected = LinearCombination()
+        expected[Forest((leaf(),))] = -1
+        self.assertEqual(expected, result)
+
+    def test_second(self):
+        result = antipode_ck(self.t2_1)
+        expected = LinearCombination()
+        expected[Forest((self.t2_1,))] = -1
+        expected[Forest((self.t1_1, self.t1_1))] = 1
+        self.assertEqual(expected, result)
+
+    def test_third(self):
+        result = antipode_ck(self.t3_1)
+        expected = LinearCombination()
+        expected[Forest((self.t3_1,))] = -1
+        expected[Forest((self.t2_1, self.t1_1))] = 2
+        expected[Forest((self.t1_1, self.t1_1, self.t1_1))] = -1
+        self.assertEqual(expected, result)
+
+    def test_fourth(self):
+        result = antipode_ck(self.t3_2)
+        expected = LinearCombination()
+        expected[Forest((self.t3_2,))] = -1
+        expected[Forest((self.t2_1, self.t1_1))] = 2
+        expected[Forest((self.t1_1, self.t1_1, self.t1_1))] = -1
         self.assertEqual(expected, result)
 
 

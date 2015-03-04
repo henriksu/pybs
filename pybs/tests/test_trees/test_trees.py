@@ -42,7 +42,7 @@ from pybs.combinations import Forest
 #     def test_elementary_differential(self):
 #         tree1 = ButcherTree.emptytree()
 #         self.assertEqual('y', tree1.F)
-
+@unittest.skip
 class first_order_tree(unittest.TestCase):
     # Does NOT test derivation, grafting and other operations.
     def test_initialisation(self):
@@ -91,6 +91,7 @@ class first_order_tree(unittest.TestCase):
         self.assertTrue(isBushy(tree1))
 
 
+@unittest.skip
 class Second_order_tree(unittest.TestCase):
     # Does NOT test derivation, grafting and other operations.
     def setUp(self):
@@ -136,6 +137,7 @@ class Second_order_tree(unittest.TestCase):
         self.assertTrue(isBushy(self.tree))
 
 
+@unittest.skip
 class Third_order_tree_no1(unittest.TestCase):
     # Does NOT test derivation, grafting and other operations.
     def setUp(self):
