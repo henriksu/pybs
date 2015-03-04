@@ -8,4 +8,7 @@ from functions import \
     composition, \
     symplectic_up_to_order, \
     inverse, \
-    adjoint
+    adjoint, \
+    tree_pairs_of_order, \
+    symplecticity_matrix, \
+    conjugate_to_symplectic

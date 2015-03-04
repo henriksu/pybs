@@ -6,7 +6,7 @@ from pybs.combinations.forests import empty_tree
 from pybs.combinations import Forest, LinearCombination, differentiate as D, \
     treeCommutator
 from pybs.combinations.functions import subtrees, \
-    _subtrees_for_antipode, antipode_ck
+    _subtrees_for_antipode, antipode_ck, symp_split
 
 
 class test_commutator(unittest.TestCase):
@@ -254,6 +254,143 @@ class test_antipode(unittest.TestCase):
         expected[Forest((self.t3_2,))] = -1
         expected[Forest((self.t2_1, self.t1_1))] = 2
         expected[Forest((self.t1_1, self.t1_1, self.t1_1))] = -1
+        self.assertEqual(expected, result)
+
+
+class test_symp_split(unittest.TestCase):
+    def setUp(self):
+        a = tree_generator(sort=True)
+        self.et = empty_tree()
+        self.t1_1 = a.next()  # []
+        self.t2_1 = a.next()  # [[]]
+        self.t3_1 = a.next()  # [[[]]]
+        self.t3_2 = a.next()  # [[],[]]
+        self.t4_1 = a.next()  # [[[[]]]]
+        self.t4_2 = a.next()  # [[[],[]]]
+        self.t4_3 = a.next()  # [[[]],[]]
+        self.t4_4 = a.next()  # [[],[],[]]
+        self.t5_1 = a.next()  # [[[[[]]]]]
+        self.t5_2 = a.next()  # [[[[],[]]]]
+        self.t5_3 = a.next()  # [[[[]],[]]]
+        self.t5_4 = a.next()  # [[[],[],[]]]
+        self.t5_5 = a.next()  # [[[[]]],[]
+        self.t5_6 = a.next()  # [[[],[]],[]]
+        self.t5_7 = a.next()  # [[[]],[[]]]
+        self.t5_8 = a.next()  # [[[]],[],[]]
+        self.t5_9 = a.next()  # [[],[],[],[]]
+
+    def test_first(self):
+        result = symp_split(self.t1_1)
+        expected = LinearCombination()  # TODO: right way to do it?
+        self.assertEqual(expected, result)
+
+    def test_second(self):
+        result = symp_split(self.t2_1)
+        expected = LinearCombination()
+        expected += self.t1_1
+        self.assertEqual(expected, result)
+
+    def test_third(self):
+        result = symp_split(self.t3_1)
+        expected = LinearCombination()
+        expected[self.t2_1] = 1
+        self.assertEqual(expected, result)
+
+    def test_fourth(self):
+        result = symp_split(self.t3_2)
+        expected = LinearCombination()
+        expected[self.t2_1] = 2
+        self.assertEqual(expected, result)
+
+    def test_fifth(self):
+        result = symp_split(self.t4_1)
+        expected = LinearCombination()
+        expected[self.t3_1] = 1
+        self.assertEqual(expected, result)
+
+    def test_sixth(self):
+        result = symp_split(self.t4_2)
+        expected = LinearCombination()
+        expected[self.t3_1] = 2
+        self.assertEqual(expected, result)
+
+    def test_seventh(self):
+        result = symp_split(self.t4_3)
+        expected = LinearCombination()
+        expected[self.t3_1] = 1
+        expected[self.t3_2] = 1
+        self.assertEqual(expected, result)
+
+    def test_eighth(self):
+        result = symp_split(self.t4_4)
+        expected = LinearCombination()
+        expected[self.t3_2] = 3
+        self.assertEqual(expected, result)
+
+    def test_ninth(self):
+        result = symp_split(self.t5_1)
+        expected = LinearCombination()
+        expected[self.t4_1] = 1
+        self.assertEqual(expected, result)
+
+    def test_tenth(self):
+        result = symp_split(self.t5_2)
+        expected = LinearCombination()
+        expected[self.t4_1] = 2
+        self.assertEqual(expected, result)
+
+    def test_eleventh(self):
+        result = symp_split(self.t5_3)
+        expected = LinearCombination()
+        expected[self.t4_1] = 1
+        expected[self.t4_2] = 1
+        self.assertEqual(expected, result)
+
+    def test_twelfth(self):
+        result = symp_split(self.t5_4)
+        expected = LinearCombination()
+        expected[self.t4_2] = 3
+        self.assertEqual(expected, result)
+
+    def test_thirteenth(self):
+        result = symp_split(self.t5_5)
+        expected = LinearCombination()
+        expected[self.t4_1] = 1
+        expected[self.t4_3] = 1
+        self.assertEqual(expected, result)
+
+    def test_fourteenth(self):
+        result = symp_split(self.t5_6)
+        expected = LinearCombination()
+        expected[self.t4_2] = 1
+        expected[self.t4_3] = 2
+        self.assertEqual(expected, result)
+
+    def test_fifthteenth(self):
+        result = symp_split(self.t5_7)
+        expected = LinearCombination()
+        expected[self.t4_3] = 2
+        self.assertEqual(expected, result)
+
+    def test_sixthteenth(self):
+        result = symp_split(self.t5_8)
+        expected = LinearCombination()
+        expected[self.t4_4] = 1
+        expected[self.t4_3] = 2
+        self.assertEqual(expected, result)
+
+    def test_seventeenth(self):
+        result = symp_split(self.t5_9)
+        expected = LinearCombination()
+        expected[self.t4_4] = 4
+        self.assertEqual(expected, result)
+
+    def test_last(self):
+        t1 = UnorderedTree([self.t3_2, self.t3_2])
+        result = symp_split(t1)
+        t2 = UnorderedTree([self.t3_2, self.t2_1])
+        expected = LinearCombination()
+        expected[t2] = 4
         self.assertEqual(expected, result)
 
 

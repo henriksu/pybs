@@ -8,4 +8,5 @@ from functions import \
     differentiate, \
     linCombCommutator, \
     treeCommutator, \
-    antipode_ck
+    antipode_ck, \
+    symp_split

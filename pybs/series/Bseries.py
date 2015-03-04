@@ -48,8 +48,10 @@ def _exact(tree):
 
 def _kahan(tree):
     'Directly from Owren'  # TODO: Test
-    if tree.is_Tall():
-        return 2 ** (1-tree.order())
+    if tree == empty_tree():
+        return 1
+    if tree.is_tall():
+        return Fraction(1, 2 ** (tree.order()-1))
     else:
         return 0
 
@@ -58,7 +60,7 @@ def _AVF(self, tree, a):
     'Directly from Owren'  # TODO: Test
     if tree.order() == 1:
         return 1
-    elif not tree.is_Binary():
+    elif not tree.is_binary():
         return 0
     else:
         if tree.number_of_children() == 1:

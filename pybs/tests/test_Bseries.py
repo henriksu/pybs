@@ -1,10 +1,13 @@
 import unittest
 
+from pybs.utils import number_of_tree_pairs_of_total_order as m
 from pybs.unordered_tree import UnorderedTree, leaf, tree_generator
 from pybs.combinations import Forest, LinearCombination, empty_tree
-from pybs.series.Bseries import zero, exponential, unit, BseriesRule
+from pybs.series.Bseries import zero, exponential, unit, BseriesRule, _kahan
 from pybs.combinations import Forest, differentiate as D, graft, treeCommutator, split
-from pybs.series import hf_composition, modified_equation, composition_ssa, inverse, adjoint
+from pybs.series import hf_composition, modified_equation, \
+    composition_ssa, inverse, adjoint, tree_pairs_of_order, \
+    symplecticity_matrix, conjugate_to_symplectic
 from pybs.rungekutta.methods import RKeuler, RKimplicitEuler, RKimplicitMidpoint,\
     RKimplicitTrapezoidal, RKmidpoint, RKrunge1, RKrunge2, RK4, \
     RK38rule, RKlobattoIIIA4, RKlobattoIIIB4, RKcashKarp
@@ -211,3 +214,96 @@ class adjoint_series(unittest.TestCase):
         b = adjoint(a)
         result = equal_up_to_order(b, RKeuler.phi(), self.max_order)
         self.assertEqual(result, self.max_order)
+
+
+class test_conjugate_to_symplectic(unittest.TestCase):
+    def test_pairs(self):
+        result = len(tree_pairs_of_order(0))
+        expected = m(0)
+        self.assertEqual(expected, result)
+        result = len(tree_pairs_of_order(1))
+        expected = m(1)
+        self.assertEqual(expected, result)
+        result = len(tree_pairs_of_order(2))
+        expected = m(2)
+        self.assertEqual(expected, result)
+        result = len(tree_pairs_of_order(3))
+        expected = m(3)
+        self.assertEqual(expected, result)
+        result = len(tree_pairs_of_order(4))
+        expected = m(4)
+        self.assertEqual(expected, result)
+        result = len(tree_pairs_of_order(5))
+        expected = m(5)
+        self.assertEqual(expected, result)
+        result = len(tree_pairs_of_order(6))
+        expected = m(6)
+        self.assertEqual(expected, result)
+#         result = len(tree_pairs_of_order(7))
+#         expected = m(7)
+#         self.assertEqual(expected, result)
+#         result = len(tree_pairs_of_order(8))
+#         expected = m(8)
+#         self.assertEqual(expected, result)
+#         result = len(tree_pairs_of_order(9))
+#         expected = m(9)
+#         self.assertEqual(expected, result)
+#         result = len(tree_pairs_of_order(10))
+#         expected = m(10)
+#         self.assertEqual(expected, result)
+#         result = len(tree_pairs_of_order(11))
+#         expected = m(11)
+#         self.assertEqual(expected, result)
+#         result = len(tree_pairs_of_order(12))
+#         expected = m(12)
+#         self.assertEqual(expected, result)
+
+    def test_matrix(self):
+        from numpy import array
+        from numpy.linalg import svd
+        A = symplecticity_matrix(0)
+        self.assertEqual(0, len(A))
+
+        A = symplecticity_matrix(1)
+        self.assertEqual(0, len(A))
+
+        A = symplecticity_matrix(2)
+        self.assertEqual(1, len(A))
+        self.assertEqual(0, len(A[0]))
+
+        A = symplecticity_matrix(3)
+        self.assertEqual(1, len(A))
+        self.assertEqual(1, len(A[0]))
+
+        A = symplecticity_matrix(4)
+        self.assertEqual(3, len(A))
+        self.assertEqual(1, len(A[0]))
+
+        A = symplecticity_matrix(5)
+        self.assertEqual(6, len(A))
+        self.assertEqual(3, len(A[0]))
+
+        A = symplecticity_matrix(6)
+        self.assertEqual(16, len(A))
+        self.assertEqual(6, len(A[0]))
+
+        A = symplecticity_matrix(7)
+        self.assertEqual(37, len(A))
+        self.assertEqual(16, len(A[0]))
+
+    def test_it(self):
+        method = RKimplicitMidpoint.phi()
+        result = conjugate_to_symplectic(method, 6)
+        self.assertEqual(4, result)
+
+        method = RKlobattoIIIA4.phi()
+        result = conjugate_to_symplectic(method, 8)
+        self.assertEqual(6, result)
+
+        method = RKlobattoIIIB4.phi()
+        result = conjugate_to_symplectic(method, 6)
+        self.assertEqual(4, result)
+
+        method = BseriesRule(_kahan)
+        result = conjugate_to_symplectic(method, 6)
+        self.assertEqual(4, result)

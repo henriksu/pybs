@@ -229,6 +229,14 @@ def _s(n, k):
 # Joe Riel (joer(AT)san.rr.com), Jun 23 2008
 
 
+def number_of_tree_pairs_of_total_order(n):
+    "Needed for conjugate symplectic check. Known as m_n. \
+    Taken from Hairer et al. \
+    On Conjugate symplecticity of B-series integrators"
+    # TODO: Implement general formula instead of table lookup.
+    table = [0, 0, 1, 1, 3, 6, 16, 37, 96, 239, 622, 1607, 4235]
+    return table[n]
+
 def number_of_trees_up_to_order(n):
     '''Number of trees up to and including order n.'''
     return reduce(_add, _imap(number_of_trees_of_order, xrange(n + 1)), 0)

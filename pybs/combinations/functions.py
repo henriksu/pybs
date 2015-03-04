@@ -48,6 +48,20 @@ def _split(tree):
     return result
 
 
+def symp_split(tree):
+    result = LinearCombination()
+    for childtree, multiplicity in tree.items():
+        amputated_tree = tree.sub(childtree)
+        if childtree == leaf():
+            result[amputated_tree] += multiplicity
+        else:
+            child_splits = symp_split(childtree)
+            for tree2, multiplicity2 in child_splits.items():
+                new_tree = amputated_tree.add(tree2)
+                result[new_tree] += multiplicity * multiplicity2
+    return result
+
+
 def subtrees(tree):  # HCK comporudct.
     result = LinearCombination()
     if tree == empty_tree():
