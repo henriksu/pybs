@@ -1,17 +1,19 @@
 from fractions import Fraction
 
 from pybs.combinations import empty_tree, LinearCombination, Forest
-from pybs.unordered_tree import UnorderedTree
+from pybs.unordered_tree import UnorderedTree, leaf
 
 
 class BseriesRule(object):
-    def __init__(self, arg=None, a=0):
+    def __init__(self, arg=None, quadratic_vectorfield=False):
         if arg is None:
             self._call = lambda x: 0
         elif isinstance(arg, LinearCombination):
             self._call = lambda tree: arg[tree]  # TODO: Check that there are no non-trees.
         elif callable(arg):
             self._call = arg
+
+            self.quadratic_vectorfield = quadratic_vectorfield
 
     def __call__(self, arg):
         if isinstance(arg, UnorderedTree) or arg == empty_tree():
@@ -51,12 +53,12 @@ def _kahan(tree):
     if tree == empty_tree():
         return 1
     if tree.is_tall():
-        return Fraction(1, 2 ** (tree.order()-1))
+        return Fraction(1, (2 ** (tree.order()-1)) * tree.symmetry())
     else:
         return 0
 
 
-def _AVF(self, tree, a):
+def _AVF(tree, a):
     'Directly from Owren'  # TODO: Test
     if tree.order() == 1:
         return 1
@@ -70,6 +72,13 @@ def _AVF(self, tree, a):
             return alpha * _AVF(tree.keys()[0], a) * \
                 _AVF(tree.keys()[1], a)
 
+
+def _unit_field(tree):
+    if tree == leaf():
+        return 1
+    return 0
+
 exponential = BseriesRule(_exact)
 zero = BseriesRule(_zero)
 unit = BseriesRule(_unit)
+unit_field = BseriesRule(_unit_field)
