@@ -3,9 +3,10 @@ import unittest
 from pybs.utils import number_of_tree_pairs_of_total_order as m
 from pybs.unordered_tree import UnorderedTree, leaf, tree_generator
 from pybs.combinations import Forest, LinearCombination, empty_tree
-from pybs.series.Bseries import zero, exponential, unit, BseriesRule, _kahan
-from pybs.combinations import Forest, differentiate as D, graft, treeCommutator, split
-from pybs.series import hf_composition, modified_equation, \
+from pybs.series.Bseries import zero, exponential, unit, BseriesRule, \
+    _kahan, unit_field
+from pybs.combinations import split
+from pybs.series import modified_equation, \
     composition_ssa, inverse, adjoint, tree_pairs_of_order, \
     symplecticity_matrix, conjugate_to_symplectic
 from pybs.rungekutta.methods import RKeuler, RKimplicitEuler, RKimplicitMidpoint,\
@@ -13,7 +14,8 @@ from pybs.rungekutta.methods import RKeuler, RKimplicitEuler, RKimplicitMidpoint
     RK38rule, RKlobattoIIIA4, RKlobattoIIIB4, RKcashKarp
 
 from itertools import islice
-from pybs.series.functions import equal_up_to_order, symplectic_up_to_order, hamiltonian_up_to_order
+from pybs.series.functions import equal_up_to_order, \
+    symplectic_up_to_order, hamiltonian_up_to_order
 
 
 class simple_series(unittest.TestCase):
@@ -259,8 +261,6 @@ class test_conjugate_to_symplectic(unittest.TestCase):
 #         self.assertEqual(expected, result)
 
     def test_matrix(self):
-        from numpy import array
-        from numpy.linalg import svd
         A = symplecticity_matrix(0)
         self.assertEqual(0, len(A))
 
@@ -293,17 +293,24 @@ class test_conjugate_to_symplectic(unittest.TestCase):
 
     def test_it(self):
         method = RKimplicitMidpoint.phi()
-        result = conjugate_to_symplectic(method, 6)
+        result = conjugate_to_symplectic(method)
         self.assertEqual(4, result)
 
         method = RKlobattoIIIA4.phi()
-        result = conjugate_to_symplectic(method, 8)
+        result = conjugate_to_symplectic(method)
         self.assertEqual(6, result)
 
         method = RKlobattoIIIB4.phi()
-        result = conjugate_to_symplectic(method, 6)
+        result = conjugate_to_symplectic(method)
         self.assertEqual(4, result)
 
-        method = BseriesRule(_kahan)
-        result = conjugate_to_symplectic(method, 6)
+        method = BseriesRule(_kahan, quadratic_vectorfield=True)
+        result = conjugate_to_symplectic(method)
         self.assertEqual(4, result)
+
+
+class test_modified_(unittest.TestCase):
+    def test(self):
+        modified = modified_equation(exponential)
+        result = equal_up_to_order(modified, unit_field, 8)
+        self.assertEqual(8, result)

@@ -2,8 +2,7 @@ from math import factorial
 from fractions import Fraction
 from itertools import count, islice
 from functools import partial
-from numpy import matrix
-from numpy.linalg import solve, norm
+from numpy.linalg import lstsq
 
 from pybs.utils import memoized, number_of_tree_pairs_of_total_order as m
 from pybs.unordered_tree import tree_generator, trees_of_order, leaf
@@ -27,29 +26,39 @@ def convergence_order(a):
     return equal_up_to_order(a, exponential)
 
 
-def conjugate_to_symplectic(a, max_order=None):
-    result = convergence_order(a)  # Known minimum.
-    max_order = min(max_order, 2*result)  # TODO: Check if 2*result is a limit.
+def symmetric_up_to_order(a, max_order=None):
+    #  TODO: make memoization use "best so far" to improve on it later.
+    # Use some weak dict.
+    # Prepare it to work with "quadratic tree generator"?
+    # Will need new tree generator.
+    b = adjoint(a)
+    return equal_up_to_order(a, b, max_order)
+    # TODO: check convergence order and exploit it. efficiency.
+
+
+def conjugate_to_symplectic(a, max_order=float("inf")):
+    conv_order = convergence_order(a)  # Known minimum.
+    # Methods of order 2 are always conjugate to symplectic up to order 3:
+    first_order_checked = conv_order + 1 + (conv_order == 2)
+    # TODO: Find out why max order is 2*convergence_order. Simplification?
+    max_order = min(max_order, 2*conv_order)
+    orders = xrange(first_order_checked, max_order+1)
+
+    # FOllowing is slow and abandoned,
+    # because it usually checks too far.
+    # symmetry_order = symmetric_up_to_order(a, max_order)
     _alpha = modified_equation(a)
 
     def alpha(u, v):
         return _alpha(u.butcher_product(v)) - _alpha(v.butcher_product(u))
-    # TODO: Check for symmetry and exploit it.
-    for order in range(result+1, max_order+1):  # TODO: Respect max_order.
+    for order in orders:
+        if symmetric_up_to_order(a, order) == order and order % 2 == 0:
+            continue
         A = symplecticity_matrix(order)
         b = [alpha(u, v) for u, v in tree_pairs_of_order(order)]
-        # TODO: Clean up the use of NumPy.
-        # symplectic_matrix must return a numpy.matrix,
-        # and the list comprehension for b should possibly
-        # also give a matrix/vector directly.
-        A_1 = matrix(A)
-        b_1 = matrix(b)
-        b_1 = b_1.T
-        A_2 = A_1.T*A_1
-        b_2 = A_1.T*b_1
-        x_1 = solve(A_2, b_2)  # TODO: Use lstsq (least squares) directly on A?
-        r_1 = A_1*x_1 - b_1
-        if norm(r_1) > 10.0**(-10):
+        # lstsq "wants" NumPy-matrices, but eats Python-lists OK.
+        res = lstsq(A, b)[1]  # square of 2-norm in a 1x1 matrix/ndarray.
+        if res > 10.0**(-14):  # TODO: Choose a good tolerance.
             return order - 1
     return max_order
 
@@ -64,7 +73,8 @@ def symplecticity_matrix(order):
         tmp = [0] * m(order-1)  # TODO: vector of m_(order-1) zeros.
         for tree, multiplicity in symp_split(pair[0]).items():
             try:
-                # Not sure it will help to sort them, due to the way duplication of pairs is avoided.
+                # TODO: Not sure it will help to sort them,
+                # due to the way duplication of pairs is avoided.
                 the_number = list_of_pairs2.index((tree, pair[1]))
             except ValueError:
                 the_number = list_of_pairs2.index((pair[1], tree))
@@ -82,7 +92,8 @@ def symplecticity_matrix(order):
 
 
 def tree_pairs_of_order(order):
-    "Returns tuples of trees. Each unordered pair is returned exactly once."
+    "Returns a list of tuples of trees. \
+    Each tuple considered as an unordered pair is returned exactly once."
     result = []
     max_order = order / 2  # Intentional truncation in division.
     for order1 in range(1, max_order + 1):
@@ -144,6 +155,21 @@ def modified_equation(a):
             c = lie_derivative(c, new_rule, True)
             result -= Fraction(c(tree), factorial(j))
         return result
+    result = BseriesRule(new_rule)
+    if a.quadratic_vectorfield:
+        result = remove_non_binary(result)
+    return result
+
+
+def remove_non_binary(a):
+    base_rule = a._call
+    et = empty_tree()
+
+    def new_rule(tree):
+        if tree == et or tree.is_binary():
+            return base_rule(tree)
+        else:
+            return 0
     return BseriesRule(new_rule)
 
 
@@ -218,6 +244,7 @@ def series_commutator(a, b):
 
 
 def symplectic_up_to_order(a, max_order=None):
+    # TODO: Find convergence order and check only from there upwards.
     if a(empty_tree()) != 1:
         return None
     orders = count(start=2)
@@ -243,6 +270,8 @@ def _symplecticity_condition(a, tree1, tree2):
 
 # DANGER: NOT TESTED
 def hamiltonian_up_to_order(a, max_order=None):
+    # TODO: Check convergence order (equal to 01000...)
+    # and check only from there upwards.
     if a(empty_tree()) != 0 or a(leaf()) == 0:
         return None  # Not hamiltonian at all.
     orders = count(start=2)
@@ -263,15 +292,3 @@ def hamiltonian_up_to_order(a, max_order=None):
 def _hamilton_condition(a, tree1, tree2):
     return a(tree1.butcher_product(tree2)) + \
         a(tree2.butcher_product(tree1)) == 0
-
-if __name__ == '__main__':
-    from pybs.series.Bseries import exponential
-    modified = modified_equation(exponential)
-#    from forest.differentiation import TreeGenerator
-    print modified(empty_tree())
-    for tree in tree_generator():
-        if tree.order() > 8:
-            break
-        #print tree
-        print modified(tree)
-    print 'Finished'
