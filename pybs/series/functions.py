@@ -8,7 +8,7 @@ from pybs.utils import memoized, number_of_tree_pairs_of_total_order as m
 from pybs.unordered_tree import tree_generator, trees_of_order, leaf
 from pybs.combinations import split, empty_tree, subtrees, antipode_ck, \
     LinearCombination, treeCommutator as tree_commutator, symp_split
-from pybs.series.Bseries import BseriesRule, ForestRule, exponential
+from pybs.series.Bseries import BseriesRule, ForestRule, VectorfieldRule, exponential
 
 
 def equal_up_to_order(a, b, max_order=None):
@@ -182,7 +182,7 @@ def log(a):
 #            c = stepsize_adjustment(b, Fraction(1, n))  # TODO: Remove.
             result += ((-1)**(n+1)) * Fraction(b(tree), n)
         return result
-    return BseriesRule(new_rule)
+    return VectorfieldRule(new_rule)  # TODO: is VectorfieldRUle always right??
 #    result = BseriesRule(new_rule)
 #    if a.quadratic_vectorfield:
 #        result = remove_non_binary(result)

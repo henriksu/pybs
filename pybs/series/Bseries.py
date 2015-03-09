@@ -34,6 +34,33 @@ class BseriesRule(object):
             return result
 
 
+class VectorfieldRule(object):
+    def __init__(self, arg=None, quadratic_vectorfield=False):
+        if arg is None:
+            self._call = lambda x: 0
+        elif isinstance(arg, LinearCombination):
+            self._call = lambda tree: arg[tree]  # TODO: Check that this is reasonable.
+        elif callable(arg):
+            self._call = arg
+
+            self.quadratic_vectorfield = quadratic_vectorfield
+
+    def __call__(self, arg):
+        if isinstance(arg, UnorderedTree) or arg == empty_tree():
+            return self._call(arg)
+        elif isinstance(arg, Forest):
+            if arg.number_of_trees() == 1:  # TODO: Do nicer.
+                for elem in arg:
+                    return self._call(elem)
+            else:
+                return 0
+        elif isinstance(arg, LinearCombination):
+            result = 0
+            for elem, multiplicity in arg.items():
+                result += self(elem) * multiplicity
+            return result
+
+
 class ForestRule(object):
 #  Results on forests are not deducable from results on trees.
     def __init__(self, arg=None, quadratic_vectorfield=False):
