@@ -19,16 +19,45 @@ class BseriesRule(object):
         if isinstance(arg, UnorderedTree) or arg == empty_tree():
             return self._call(arg)
         elif isinstance(arg, Forest):
+#            if self._call(empty_tree()) == 1 or arg.number_of_trees() == 1:  # TODO: Do nicer.
             result = 1
             for tree, multiplicity in arg.items():
                 result *= self._call(tree) ** multiplicity
                 # TODO: Use reduce() or something?
             return result
+#            else:
+#                return 0
         elif isinstance(arg, LinearCombination):
             result = 0
             for elem, multiplicity in arg.items():
                 result += self(elem) * multiplicity
             return result
+
+
+class ForestRule(object):
+#  Results on forests are not deducable from results on trees.
+    def __init__(self, arg=None, quadratic_vectorfield=False):
+        if arg is None:
+            self._call = lambda x: 0
+        elif isinstance(arg, LinearCombination):
+            self._call = lambda forest: arg[forest]
+        elif callable(arg):
+            self._call = arg
+
+            self.quadratic_vectorfield = quadratic_vectorfield
+
+    def __call__(self, arg):
+        if isinstance(arg, (UnorderedTree, Forest)):
+            return self._call(arg)
+        elif isinstance(arg, LinearCombination):
+            result = 0
+            for elem, multiplicity in arg.items():
+                result += self(elem) * multiplicity
+            return result
+
+
+
+
 
 
 def _zero(tree):

@@ -67,6 +67,28 @@ def subtrees(tree):  # HCK comporudct.
     if tree == empty_tree():
         result += (empty_tree(), empty_tree())
         return result  # TODO: IS THIS NECESSARY?
+    elif isinstance(tree, Forest):
+        if tree.number_of_trees() == 1:
+            for elem in tree:
+                return subtrees(elem)
+        else:  # several trees.
+            for elem in tree:
+                amputated_forest = tree.sub(elem)
+                break
+            result = LinearCombination()
+            for pair1, multiplicity1 in subtrees(elem).items():
+                for pair2, multiplicity2 in subtrees(amputated_forest).items():
+                    if isinstance(pair1[1], UnorderedTree):
+                        pair1_1 = Forest((pair1[1],))
+                    else:
+                        pair1_1 = pair1[1]
+                    if isinstance(pair2[1], UnorderedTree):
+                        pair2_1 = Forest((pair2[1],))
+                    else:
+                        pair2_1 = pair2[1]  # TODO: Nasty workaround.
+                    pair = (pair1[0] * pair2[0], pair1_1 * pair2_1)
+                    result[pair] += multiplicity1 * multiplicity2
+            return result
     result[(Forest((tree,)), empty_tree())] = 1
     tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
     if tmp:

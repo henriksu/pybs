@@ -8,16 +8,20 @@ from pybs.utils import memoized, number_of_tree_pairs_of_total_order as m
 from pybs.unordered_tree import tree_generator, trees_of_order, leaf
 from pybs.combinations import split, empty_tree, subtrees, antipode_ck, \
     LinearCombination, treeCommutator as tree_commutator, symp_split
-from pybs.series.Bseries import BseriesRule, exponential
+from pybs.series.Bseries import BseriesRule, ForestRule, exponential
 
 
 def equal_up_to_order(a, b, max_order=None):
+    tmp1 = a(empty_tree())  # TODO: Remove
+    tmp2 = b(empty_tree())
     if not a(empty_tree()) == b(empty_tree()):
         return None
     for tree in tree_generator():
         if max_order and tree.order() > max_order:
             return max_order
         elif not a(tree) == b(tree):
+            a = a(tree)  # TODO: Remove line
+            b = b(tree)  # TODO: Remove line
             return tree.order() - 1
 
 
@@ -141,7 +145,7 @@ def lie_derivative(c, b, truncate=False):
 
 
 def modified_equation(a):
-    if a(empty_tree()) != 1 or a(leaf()) != 1:
+    if a(empty_tree()) != 1 or a(leaf()) != 1:  # TODO: Check last condition.
         raise ValueError(
             'Can not calculate the modified equation for this BseriesRule.')
 
@@ -152,8 +156,53 @@ def modified_equation(a):
         result = a(tree)
         c = new_rule  # This is a BseriesRule. Caution: Recursive!
         for j in range(2, tree.order() + 1):
-            c = lie_derivative(c, new_rule, True)
+            c = lie_derivative(c, new_rule, True)  # TODO: Is this memoized?
             result -= Fraction(c(tree), factorial(j))
+        return result
+    result = BseriesRule(new_rule)
+    if a.quadratic_vectorfield:
+        result = remove_non_binary(result)
+    return result
+
+
+def log(a):
+    if a(empty_tree()) != 1:
+        raise ValueError(
+            'Can not calculate the logarithm for this BseriesRule.')
+
+    @memoized
+    def new_rule(tree):
+        if tree == empty_tree():
+            return 0
+        a_2 = remove_empty_tree(a)
+        result = a_2(tree)
+        b = a_2
+        for n in range(2, tree.order() + 1):
+            b = composition(b, a_2)
+#            c = stepsize_adjustment(b, Fraction(1, n))  # TODO: Remove.
+            result += ((-1)**(n+1)) * Fraction(b(tree), n)
+        return result
+    return BseriesRule(new_rule)
+#    result = BseriesRule(new_rule)
+#    if a.quadratic_vectorfield:
+#        result = remove_non_binary(result)
+#    return result
+
+
+def exp(a):
+    if a(empty_tree()) != 0:
+        raise ValueError(
+            'Can not calculate the exponential for this BseriesRule.')
+
+    @memoized
+    def new_rule(tree):
+        if tree == empty_tree():
+            return 1
+        result = a(tree)
+        b = a
+        for n in range(2, tree.order() + 1):
+            b = composition(b, a)
+            result += Fraction(b(tree), factorial(n))
         return result
     result = BseriesRule(new_rule)
     if a.quadratic_vectorfield:
@@ -170,6 +219,18 @@ def remove_non_binary(a):
             return base_rule(tree)
         else:
             return 0
+    return BseriesRule(new_rule)
+
+
+def remove_empty_tree(a):
+    base_rule = a._call
+    et = empty_tree()
+
+    def new_rule(tree):
+        if tree == et:
+            return 0
+        else:
+            return base_rule(tree)
     return BseriesRule(new_rule)
 
 
@@ -190,20 +251,28 @@ def composition_ssa(a, b):
         return Fraction(result, 2 ** tree.order())
 
     return BseriesRule(new_rule)
+    # TODO: account for ForestRule.
+
+
+def stepsize_adjustment(a, A):
+    base_rule = a._call
+
+    def new_rule(tree):
+        return A * base_rule(tree)
+    return BseriesRule(new_rule)
 
 
 def composition(a, b):
-    if a(empty_tree()) != 1:
-        raise ValueError(
-            'Composition can only be performed on consistent B-series.')
-
     @memoized
-    def new_rule(tree):
+    def new_rule(arg):  # arg is tree or forest.
         result = 0
-        for pair, multiplicity in subtrees(tree).items():
+        for pair, multiplicity in subtrees(arg).items():
             result += a(pair[0]) * b(pair[1]) * multiplicity
         return result
-    return BseriesRule(new_rule)
+    if a(empty_tree()) != 1:
+        return ForestRule(new_rule)
+    else:
+        return BseriesRule(new_rule)
 
 
 def inverse(a):

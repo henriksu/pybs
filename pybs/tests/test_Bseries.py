@@ -14,7 +14,7 @@ from pybs.rungekutta.methods import RKeuler, RKimplicitEuler, RKimplicitMidpoint
     RK38rule, RKlobattoIIIA4, RKlobattoIIIB4, RKcashKarp
 
 from itertools import islice
-from pybs.series.functions import equal_up_to_order, \
+from pybs.series.functions import equal_up_to_order, exp, log, \
     symplectic_up_to_order, hamiltonian_up_to_order
 
 
@@ -314,3 +314,27 @@ class test_modified_(unittest.TestCase):
         modified = modified_equation(exponential)
         result = equal_up_to_order(modified, unit_field, 8)
         self.assertEqual(8, result)
+
+
+class test_exp_log(unittest.TestCase):
+    def setUp(self):
+        self.max_order = 5
+
+    def test_log_explicit_euler(self):
+        a = RKeuler.phi()
+        alpha_1 = modified_equation(a)
+        alpha_2 = log(a)
+        result = equal_up_to_order(alpha_1, alpha_2, self.max_order)
+        self.assertEqual(self.max_order, result)
+
+    def test_exp_explicit_euler(self):
+        a = RKeuler.phi()
+        alpha_2 = log(a)
+        a_2 = exp(alpha_2)
+        result = equal_up_to_order(a, a_2, self.max_order)
+        self.assertEqual(self.max_order, result)
+
+
+#        should_be_a = exp(alpha_1)
+#        result = equal_up_to_order(a, should_be_a, self.max_order)
+#        self.assertEqual(self.max_order, result)
