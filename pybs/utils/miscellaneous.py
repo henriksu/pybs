@@ -62,7 +62,7 @@ class FrozenCounter(_Mapping):
 
     def elements(self):
         for value, multiplicity in self.iteritems():
-            for i in xrange(multiplicity):  # TODO: Repeat yield without for?
+            for _ in xrange(multiplicity):  # TODO: Repeat yield without for?
                 yield value
 
     def __eq__(self, other):  # TODO: Check that this is a good implementation.
@@ -123,7 +123,10 @@ class WeakKeyValueDict(object):
         self._d[key] = self._create_value(key, value)
 
     def __delitem__(self, key):
-        del self._d[key]
+        if key is not None:
+        # Something about my use demands this if clause.
+        # None cannot be weakly referenced anyways...
+            del self._d[key]
 
     def __len__(self):
         return len(self._d)

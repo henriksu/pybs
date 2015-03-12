@@ -5,6 +5,9 @@ from math import factorial
 
 from pybs.utils import ClonableMultiset
 
+# TODO: Move everything but this to a new file...
+from pybs.unordered_tree.freeTrees import get_free_tree
+
 
 class UnorderedTree(ClonableMultiset):
     # __slots__ = ('__weakref__',)
