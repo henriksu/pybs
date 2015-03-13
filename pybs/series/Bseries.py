@@ -16,10 +16,10 @@ class BseriesRule(object):
             self.quadratic_vectorfield = quadratic_vectorfield
 
     def __call__(self, arg):
-        if isinstance(arg, UnorderedTree) or arg == empty_tree():
+        if isinstance(arg, UnorderedTree) or arg == empty_tree:
             return self._call(arg)
         elif isinstance(arg, Forest):
-#            if self._call(empty_tree()) == 1 or arg.number_of_trees() == 1:  # TODO: Do nicer.
+#            if self._call(empty_tree) == 1 or arg.number_of_trees() == 1:  # TODO: Do nicer.
             result = 1
             for tree, multiplicity in arg.items():
                 result *= self._call(tree) ** multiplicity
@@ -46,7 +46,7 @@ class VectorfieldRule(object):
             self.quadratic_vectorfield = quadratic_vectorfield
 
     def __call__(self, arg):
-        if isinstance(arg, UnorderedTree) or arg == empty_tree():
+        if isinstance(arg, UnorderedTree) or arg == empty_tree:
             return self._call(arg)
         elif isinstance(arg, Forest):
             if arg.number_of_trees() == 1:  # TODO: Do nicer.
@@ -92,21 +92,21 @@ def _zero(tree):
 
 
 def _unit(tree):
-    if tree == empty_tree():
+    if tree == empty_tree:
         return 1
     else:
         return 0
 
 
 def _exact(tree):
-    if tree == empty_tree():
+    if tree == empty_tree:
         return 1
     return Fraction(1, tree.density())
 
 
 def _kahan(tree):
     'Directly from Owren'  # TODO: Test
-    if tree == empty_tree():
+    if tree == empty_tree:
         return 1
     if tree.is_tall():
         return Fraction(1, (2 ** (tree.order()-1)) * tree.symmetry())
@@ -130,7 +130,7 @@ def _AVF(tree, a):
 
 
 def _unit_field(tree):
-    if tree == leaf():
+    if tree == leaf:
         return 1
     return 0
 

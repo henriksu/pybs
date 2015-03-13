@@ -41,5 +41,4 @@ class Forest(ClonableMultiset):
     # __bool__, __iter__,  is inherited from multiset.
 
 
-def empty_tree():
-    return Forest()
+empty_tree = Forest()

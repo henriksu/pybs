@@ -4,7 +4,8 @@ from itertools import count, islice
 from functools import partial
 from numpy.linalg import lstsq
 
-from pybs.utils import memoized, number_of_tree_pairs_of_total_order as m
+from pybs.utils import memoized
+from pybs.unordered_tree.trees import number_of_tree_pairs_of_total_order as m
 from pybs.unordered_tree import tree_generator, trees_of_order, leaf
 from pybs.combinations import split, empty_tree, subtrees, antipode_ck, \
     LinearCombination, treeCommutator as tree_commutator, symp_split
@@ -12,9 +13,9 @@ from pybs.series.Bseries import BseriesRule, ForestRule, VectorfieldRule, expone
 
 
 def equal_up_to_order(a, b, max_order=None):
-    tmp1 = a(empty_tree())  # TODO: Remove
-    tmp2 = b(empty_tree())
-    if not a(empty_tree()) == b(empty_tree()):
+    tmp1 = a(empty_tree)  # TODO: Remove
+    tmp2 = b(empty_tree)
+    if not a(empty_tree) == b(empty_tree):
         return None
     for tree in tree_generator():
         if max_order and tree.order() > max_order:
@@ -112,12 +113,12 @@ def tree_pairs_of_order(order):
 
 
 def hf_composition(baseRule):
-    if baseRule(empty_tree()) != 1:
+    if baseRule(empty_tree) != 1:
         raise ValueError(
             'Composition can only be performed on consistent B-series.')
 
     def new_rule(tree):
-        if tree == empty_tree():
+        if tree == empty_tree:
             return 0
         else:
             result = 1
@@ -128,14 +129,14 @@ def hf_composition(baseRule):
 
 
 def lie_derivative(c, b, truncate=False):
-    if b(empty_tree()) != 0:
+    if b(empty_tree) != 0:
         raise ValueError(
             'The second argument does not satisfy b(ButcherEmptyTree()) == 0.')
 
     @memoized
     def new_rule(tree):
         result = 0
-        if tree == empty_tree():
+        if tree == empty_tree:
             return result
         pairs = split(tree, truncate)
         for pair, multiplicity in pairs.items():
@@ -145,13 +146,13 @@ def lie_derivative(c, b, truncate=False):
 
 
 def modified_equation(a):
-    if a(empty_tree()) != 1 or a(leaf()) != 1:  # TODO: Check last condition.
+    if a(empty_tree) != 1 or a(leaf) != 1:  # TODO: Check last condition.
         raise ValueError(
             'Can not calculate the modified equation for this BseriesRule.')
 
     @memoized
     def new_rule(tree):
-        if tree == empty_tree():
+        if tree == empty_tree:
             return 0
         result = a(tree)
         c = new_rule  # This is a BseriesRule. Caution: Recursive!
@@ -166,13 +167,13 @@ def modified_equation(a):
 
 
 def log(a):
-    if a(empty_tree()) != 1:
+    if a(empty_tree) != 1:
         raise ValueError(
             'Can not calculate the logarithm for this BseriesRule.')
 
     @memoized
     def new_rule(tree):
-        if tree == empty_tree():
+        if tree == empty_tree:
             return 0
         a_2 = remove_empty_tree(a)
         result = a_2(tree)
@@ -190,13 +191,13 @@ def log(a):
 
 
 def exp(a):
-    if a(empty_tree()) != 0:
+    if a(empty_tree) != 0:
         raise ValueError(
             'Can not calculate the exponential for this BseriesRule.')
 
     @memoized
     def new_rule(tree):
-        if tree == empty_tree():
+        if tree == empty_tree:
             return 1
         result = a(tree)
         b = a
@@ -212,7 +213,7 @@ def exp(a):
 
 def remove_non_binary(a):
     base_rule = a._call
-    et = empty_tree()
+    et = empty_tree
 
     def new_rule(tree):
         if tree == et or tree.is_binary():
@@ -224,7 +225,7 @@ def remove_non_binary(a):
 
 def remove_empty_tree(a):
     base_rule = a._call
-    et = empty_tree()
+    et = empty_tree
 
     def new_rule(tree):
         if tree == et:
@@ -235,7 +236,7 @@ def remove_empty_tree(a):
 
 
 def composition_ssa(a, b):
-    if a(empty_tree()) != 1:
+    if a(empty_tree) != 1:
         raise ValueError(
             'Composition can only be performed on consistent B-series.')
 
@@ -269,7 +270,7 @@ def composition(a, b):
         for pair, multiplicity in subtrees(arg).items():
             result += a(pair[0]) * b(pair[1]) * multiplicity
         return result
-    if a(empty_tree()) != 1:
+    if a(empty_tree) != 1:
         return ForestRule(new_rule)
     else:
         return BseriesRule(new_rule)
@@ -314,7 +315,7 @@ def series_commutator(a, b):
 
 def symplectic_up_to_order(a, max_order=None):
     # TODO: Find convergence order and check only from there upwards.
-    if a(empty_tree()) != 1:
+    if a(empty_tree) != 1:
         return None
     orders = count(start=2)
     if max_order:
@@ -341,7 +342,7 @@ def _symplecticity_condition(a, tree1, tree2):
 def hamiltonian_up_to_order(a, max_order=None):
     # TODO: Check convergence order (equal to 01000...)
     # and check only from there upwards.
-    if a(empty_tree()) != 0 or a(leaf()) == 0:
+    if a(empty_tree) != 0 or a(leaf) == 0:
         return None  # Not hamiltonian at all.
     orders = count(start=2)
     if max_order:

@@ -11,17 +11,17 @@ from pybs.combinations.functions import subtrees, \
 
 class test_commutator(unittest.TestCase):
     def test_empty(self):
-        tree = empty_tree()
+        tree = empty_tree
         self.assertEqual(treeCommutator(tree, tree), LinearCombination())
 
     def test_first_and_empty(self):
-        tree1 = empty_tree()
-        tree2 = leaf()
+        tree1 = empty_tree
+        tree2 = leaf
         self.assertEqual(treeCommutator(tree1, tree2), LinearCombination())
         self.assertEqual(treeCommutator(tree2, tree2), LinearCombination())
 
     def test_first_second(self):
-        tree1 = leaf()
+        tree1 = leaf
         tree2 = D(tree1).keys()[0]
         expected = LinearCombination()
         forest1 = Forest([tree1, tree1])
@@ -34,7 +34,7 @@ class test_commutator(unittest.TestCase):
 class test_subtrees(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)
-        self.et = empty_tree()
+        self.et = empty_tree
         self.t1_1 = a.next()  # []
         self.t2_1 = a.next()  # [[]]
         self.t3_1 = a.next()  # [[[]]]
@@ -131,7 +131,7 @@ class test_subtrees(unittest.TestCase):
 class test_subtrees_for_antipode(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)
-        self.et = empty_tree()
+        self.et = empty_tree
         self.t1_1 = a.next()  # []
         self.t2_1 = a.next()  # [[]]
         self.t3_1 = a.next()  # [[[]]]
@@ -211,7 +211,7 @@ class test_subtrees_for_antipode(unittest.TestCase):
 class test_antipode(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)
-        self.et = empty_tree()
+        self.et = empty_tree
         self.t1_1 = a.next()  # []
         self.t2_1 = a.next()  # [[]]
         self.t3_1 = a.next()  # [[[]]]
@@ -224,13 +224,13 @@ class test_antipode(unittest.TestCase):
     def test_empty(self):
         result = antipode_ck(self.et)
         expected = LinearCombination()
-        expected[empty_tree()] = 1
+        expected[empty_tree] = 1
         self.assertEqual(expected, result)
 
     def test_first(self):
         result = antipode_ck(self.t1_1)
         expected = LinearCombination()
-        expected[Forest((leaf(),))] = -1
+        expected[Forest((leaf,))] = -1
         self.assertEqual(expected, result)
 
     def test_second(self):
@@ -260,7 +260,7 @@ class test_antipode(unittest.TestCase):
 class test_symp_split(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)
-        self.et = empty_tree()
+        self.et = empty_tree
         self.t1_1 = a.next()  # []
         self.t2_1 = a.next()  # [[]]
         self.t3_1 = a.next()  # [[[]]]
@@ -396,7 +396,7 @@ class test_symp_split(unittest.TestCase):
 
 class test_Butcher_forest(unittest.TestCase):
     def setUp(self):
-        self.basetree = leaf()
+        self.basetree = leaf
 
     def test_first(self):
         self.assertEqual('[]', str(self.basetree))

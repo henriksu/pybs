@@ -32,7 +32,7 @@ class RK_method(object):
     def phi(self):
         def rule(tree):
             'elementary weight'
-            if tree == empty_tree():
+            if tree == empty_tree:
                 return 1  # We haven't even allowed for non-consistent RK-methods.
             return np.dot(self.b, self.g_vector(tree))[0]
         return BseriesRule(rule)

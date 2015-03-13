@@ -8,7 +8,7 @@ from pybs.unordered_tree.freeTrees import get_free_tree, \
 class find_representative(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)  # TODO: Implement indexing of trees.
-        self.et = empty_tree()
+        self.et = empty_tree
         self.t1_1 = a.next()  # []
         self.t2_1 = a.next()  # [[]]
         self.t3_1 = a.next()  # [[[]]]
@@ -154,7 +154,7 @@ class find_partition(unittest.TestCase):
 
     def test_sixth_order(self):
         result = partition_into_free_trees(trees_of_order(6))
-        self.assertEqual(6, len(result))  # TODO: Gets 7.
+        self.assertEqual(6, len(result))
 
     def test_seventh_order(self):
         result = partition_into_free_trees(trees_of_order(7))
@@ -162,7 +162,7 @@ class find_partition(unittest.TestCase):
 
     def test_eighth_order(self):
         result = partition_into_free_trees(trees_of_order(8))
-        self.assertEqual(23, len(result))  # TODO: Gets 29
+        self.assertEqual(23, len(result))
 
     def test_ninth_order(self):
         result = partition_into_free_trees(trees_of_order(9))
@@ -170,7 +170,7 @@ class find_partition(unittest.TestCase):
 
     def test_tenth_order(self):
         result = partition_into_free_trees(trees_of_order(10))
-        self.assertEqual(106, len(result))  # TODO: Gets 142
+        self.assertEqual(106, len(result))
 
     def test_eleventh_order(self):
         result = partition_into_free_trees(trees_of_order(11))
@@ -178,4 +178,4 @@ class find_partition(unittest.TestCase):
 
     def test_twelfth_order(self):
         result = partition_into_free_trees(trees_of_order(12))
-        self.assertEqual(551, len(result))  # TODO: Gets 741
+        self.assertEqual(551, len(result))

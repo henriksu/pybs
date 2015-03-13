@@ -1,6 +1,6 @@
 import unittest
 
-from pybs.utils import number_of_tree_pairs_of_total_order as m
+from pybs.unordered_tree.trees import number_of_tree_pairs_of_total_order as m
 from pybs.unordered_tree import UnorderedTree, leaf, tree_generator
 from pybs.combinations import Forest, LinearCombination, empty_tree
 from pybs.series.Bseries import zero, exponential, unit, BseriesRule, \
@@ -21,22 +21,22 @@ from pybs.series.functions import equal_up_to_order, exp, log, \
 class simple_series(unittest.TestCase):
     def test_zero_series(self):
         rule1 = zero
-        tree1 = leaf()
+        tree1 = leaf
         self.assertEqual(0, rule1(tree1))
 
     def test_sum_series(self):
         thesum = LinearCombination()
-        thesum += leaf()
+        thesum += leaf
         rule1 = BseriesRule(thesum)
-        self.assertEqual(0, rule1(empty_tree()))
-        self.assertEqual(1, rule1(leaf()))
+        self.assertEqual(0, rule1(empty_tree))
+        self.assertEqual(1, rule1(leaf))
 
     def test_RK_series(self):
         import pybs.rungekutta.methods
         rule1 = pybs.rungekutta.methods.RKeuler.phi()
-        self.assertEqual(1, rule1(empty_tree()))
-        self.assertEqual(1, rule1(leaf()))
-        tree2 = leaf()
+        self.assertEqual(1, rule1(empty_tree))
+        self.assertEqual(1, rule1(leaf))
+        tree2 = leaf
         forest2 = Forest([tree2])
         tree3 = UnorderedTree(forest2)
         result = rule1(tree3)
@@ -46,7 +46,7 @@ class simple_series(unittest.TestCase):
         a = exponential
         c = modified_equation(a)
         n = 10
-        self.assertEqual(c(empty_tree()), 0)
+        self.assertEqual(c(empty_tree), 0)
         computed = list(c(tree) for tree in islice(tree_generator(), 0, n))
         expected = [1] + [0]*(n-1)
         self.assertEqual(computed, expected)
@@ -72,8 +72,8 @@ class simple_series(unittest.TestCase):
         """
         Performing a split has an influence on the modified equation computation?
         """
-        tmp = UnorderedTree(Forest([leaf()]))
-        t = UnorderedTree(Forest([tmp, leaf()]))
+        tmp = UnorderedTree(Forest([leaf]))
+        t = UnorderedTree(Forest([tmp, leaf]))
         split(t)
         a = exponential
         c = modified_equation(a)

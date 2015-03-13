@@ -10,10 +10,10 @@ from pybs.combinations import empty_tree
 @memoized
 def graft(base, other):  # TODO: change order of base and other. Fix all uses too!
     result = LinearCombination()
-    if base == empty_tree():
+    if base == empty_tree:
         result += other
         return result
-    elif other == empty_tree():
+    elif other == empty_tree:
         result += base
         return result
     else:
@@ -31,7 +31,7 @@ def split(tree, truncate=False):
     "Splits a tree."  # TODO: Check that this is the right way around!!!!!!
     result = _split(tree)
     if not truncate:
-        result[(tree, empty_tree())] = 1
+        result[(tree, empty_tree)] = 1
     return result
 
 
@@ -52,7 +52,7 @@ def symp_split(tree):
     result = LinearCombination()
     for childtree, multiplicity in tree.items():
         amputated_tree = tree.sub(childtree)
-        if childtree == leaf():
+        if childtree == leaf:
             result[amputated_tree] += multiplicity
         else:
             child_splits = symp_split(childtree)
@@ -64,8 +64,8 @@ def symp_split(tree):
 
 def subtrees(tree):  # HCK comporudct.
     result = LinearCombination()
-    if tree == empty_tree():
-        result += (empty_tree(), empty_tree())
+    if tree == empty_tree:
+        result += (empty_tree, empty_tree)
         return result  # TODO: IS THIS NECESSARY?
     elif isinstance(tree, Forest):
         if tree.number_of_trees() == 1:
@@ -89,7 +89,7 @@ def subtrees(tree):  # HCK comporudct.
                     pair = (pair1[0] * pair2[0], pair1_1 * pair2_1)
                     result[pair] += multiplicity1 * multiplicity2
             return result
-    result[(Forest((tree,)), empty_tree())] = 1
+    result[(Forest((tree,)), empty_tree)] = 1
     tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
     if tmp:
         tmp2 = [elem.items() for elem in tmp]  # TODO: Try using iterators.
@@ -104,7 +104,7 @@ def subtrees(tree):  # HCK comporudct.
                     forest_of_cuttings.inplace_multiset_sum(forest)
             result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += multiplicity
     else:
-        result[(empty_tree(), tree)] = 1
+        result[(empty_tree, tree)] = 1
     return result
 
 
@@ -123,7 +123,7 @@ def _subtrees_for_antipode(tree):
                 for forest in cuttings:
                     forest_of_cuttings.inplace_multiset_sum(forest)
             result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += multiplicity
-    result[(empty_tree(), tree)] = 0  # TODO: FIND NICER WAY.
+    result[(empty_tree, tree)] = 0  # TODO: FIND NICER WAY.
     return result
 
 
@@ -131,11 +131,11 @@ def _subtrees_for_antipode(tree):
 # Make LinComb clonable??
 def antipode_ck(tree):
     result = LinearCombination()
-    if tree == empty_tree():
-        result[empty_tree()] = 1
+    if tree == empty_tree:
+        result[empty_tree] = 1
         return result
     elif isinstance(tree, Forest):
-        result[empty_tree()] = 1
+        result[empty_tree] = 1
         for tree1, multiplicity in tree.items():
             for i in range(multiplicity):
                 tmp = LinearCombination()
@@ -159,22 +159,22 @@ def differentiate(thing):
             result += treeD(tree) * factor
     elif isinstance(thing, UnorderedTree):
         result = treeD(thing)
-    elif thing == empty_tree():
+    elif thing == empty_tree:
         result = LinearCombination()
-        result += leaf()
+        result += leaf
     return result
 
 
 def treeD(tree):
-    return graft(tree, leaf())
+    return graft(tree, leaf)
 
 
 def linCombCommutator(op1, op2, max_order=None):
-    if isinstance(op1, UnorderedTree) or op1 == empty_tree():
+    if isinstance(op1, UnorderedTree) or op1 == empty_tree:
         tmp = LinearCombination()
         tmp += op1
         op1 = tmp
-    if isinstance(op2, UnorderedTree) or op2 == empty_tree():
+    if isinstance(op2, UnorderedTree) or op2 == empty_tree:
         tmp = LinearCombination()
         tmp += op2
         op2 = tmp

@@ -47,46 +47,46 @@ from pybs.combinations import Forest
 class first_order_tree(unittest.TestCase):
     # Does NOT test derivation, grafting and other operations.
     def test_initialisation(self):
-        self.assertIsInstance(leaf(), UnorderedTree)
+        self.assertIsInstance(leaf, UnorderedTree)
         self.assertIsInstance(UnorderedTree(), UnorderedTree)
 
     def test_str(self):
-        tree1 = leaf()
+        tree1 = leaf
         self.assertEqual('[]', str(tree1))
         tree2 = UnorderedTree()
         self.assertEqual(str(tree1), str(tree2))
 
     def test_equality(self):
-        tree1 = leaf()
+        tree1 = leaf
         tree2 = UnorderedTree()
         self.assertEqual(tree1, tree2)
 
     def test_number_of_subtrees(self):
-        tree1 = leaf()
+        tree1 = leaf
         self.assertEqual(0, tree1.number_of_children())
 
     def test_order(self):
-        tree1 = leaf()
+        tree1 = leaf
         self.assertEqual(1, tree1.order())
 
     def test_density(self):
-        tree1 = leaf()
+        tree1 = leaf
         self.assertEqual(1, tree1.density())
 
     def test_symmetry(self):
-        tree1 = leaf()
+        tree1 = leaf
         self.assertEqual(1, tree1.symmetry())
 
     def test_alpha(self):
-        tree1 = leaf()
+        tree1 = leaf
         self.assertEqual(1, tree1.alpha())
 
     def test_elementary_differential(self):
-        tree1 = leaf()
+        tree1 = leaf
         self.assertEqual('f', tree1.F())
 
     def test_properties(self):
-        tree1 = leaf()
+        tree1 = leaf
         self.assertTrue(tree1.is_binary())
         self.assertTrue(tree1.is_tall())
         self.assertTrue(tree1.is_bushy())
@@ -95,7 +95,7 @@ class first_order_tree(unittest.TestCase):
 class Second_order_tree(unittest.TestCase):
     # Does NOT test derivation, grafting and other operations.
     def setUp(self):
-        tree1 = leaf()
+        tree1 = leaf
         forest1 = Forest([tree1])
         self.tree = UnorderedTree(forest1)
 
@@ -106,7 +106,7 @@ class Second_order_tree(unittest.TestCase):
         self.assertEqual('[[]]', str(self.tree))
 
     def test_equality(self):
-        tree2 = leaf()
+        tree2 = leaf
         forest2 = Forest([tree2])
         tree3 = UnorderedTree(forest2)
         self.assertEqual(tree3, self.tree)
@@ -140,7 +140,7 @@ class Second_order_tree(unittest.TestCase):
 class Third_order_tree_no1(unittest.TestCase):
     # Does NOT test derivation, grafting and other operations.
     def setUp(self):
-        tree1 = leaf()
+        tree1 = leaf
         forest1 = Forest([tree1, tree1])
         self.tree = UnorderedTree(forest1)
 
