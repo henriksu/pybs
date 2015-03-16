@@ -10,5 +10,5 @@ from functions import \
     inverse, \
     adjoint, \
     tree_pairs_of_order, \
-    symplecticity_matrix, \
+    conjugate_symplecticity_matrix, \
     conjugate_to_symplectic

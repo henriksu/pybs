@@ -3,10 +3,14 @@ from fractions import Fraction
 from itertools import count, islice
 from functools import partial
 from numpy.linalg import lstsq
+from scipy import sparse
+from scipy.sparse.linalg import lsqr
+import numpy as np
 
 from pybs.utils import memoized
-from pybs.unordered_tree.trees import number_of_tree_pairs_of_total_order as m
-from pybs.unordered_tree import tree_generator, trees_of_order, leaf
+from pybs.unordered_tree.functions import number_of_tree_pairs_of_total_order as m
+from pybs.unordered_tree import tree_generator, leaf, the_trees, number_of_trees_of_order
+from pybs.unordered_tree import trees_of_order
 from pybs.combinations import split, empty_tree, subtrees, antipode_ck, \
     LinearCombination, treeCommutator as tree_commutator, symp_split
 from pybs.series.Bseries import BseriesRule, ForestRule, VectorfieldRule, exponential
@@ -59,7 +63,7 @@ def conjugate_to_symplectic(a, max_order=float("inf")):
     for order in orders:
         if symmetric_up_to_order(a, order) == order and order % 2 == 0:
             continue
-        A = symplecticity_matrix(order)
+        A = conjugate_symplecticity_matrix(order)
         b = [alpha(u, v) for u, v in tree_pairs_of_order(order)]
         # lstsq "wants" NumPy-matrices, but eats Python-lists OK.
         res = lstsq(A, b)[1]  # square of 2-norm in a 1x1 matrix/ndarray.
@@ -68,7 +72,7 @@ def conjugate_to_symplectic(a, max_order=float("inf")):
     return max_order
 
 
-def symplecticity_matrix(order):
+def conjugate_symplecticity_matrix(order):
     "An m_(order) by m_(order-1) matrix of integers. \
     Independent of the method under consideration."
     A = []
@@ -97,7 +101,7 @@ def symplecticity_matrix(order):
 
 
 def tree_pairs_of_order(order):
-    "Returns a list of tuples of trees. \
+    "Returns a list of tuples of functions. \
     Each tuple considered as an unordered pair is returned exactly once."
     result = []
     max_order = order / 2  # Intentional truncation in division.
@@ -362,3 +366,41 @@ def hamiltonian_up_to_order(a, max_order=None):
 def _hamilton_condition(a, tree1, tree2):
     return a(tree1.butcher_product(tree2)) + \
         a(tree2.butcher_product(tree1)) == 0
+
+
+def new_hamiltonian_up_to_order(a, max_order=None):
+    if a(empty_tree) != 0 or a(leaf) == 0:
+        return None  # Not hamiltonian at all. TODO: exception.
+    orders = count(start=2)  # TODO: start at 2 ? why not? no conditions?
+    if max_order:
+        orders = islice(orders, max_order)
+    for order in orders:
+        A = hamiltonian_matrix(order)
+        b = np.asarray(map(a, trees_of_order(order, sort=True)), dtype=np.float64)  # TODO: does NP have arraymap? this is slow
+#        b = b.transpose()
+        # lstsq "wants" NumPy-matrices, but eats Python-lists OK.
+        if not np.any(b):
+            continue  # b is zero vector, no need to check further.
+        if order == 2:
+            return 1
+        res = lsqr(A, b)  # square of 2-norm in a 1x1 matrix/ndarray.
+        if res[1] != 1 and (res[1] == 2 or res[3] > 10.0**(-14)):
+            # res[1] = 0: x=0, special case for trivial solution.
+            # res[1] = 1: Found (approx) solution to Ax = b.
+            # res[1] = 2: Not in colspan, lst.sq. approximation was found.
+            return order - 1
+    return max_order
+
+
+@memoized
+def hamiltonian_matrix(order):
+    nsft = the_trees[order].non_superfluous_trees(sort=True)
+    n = number_of_trees_of_order(order)
+    m = len(nsft)
+    result = sparse.lil_matrix((n, m), dtype=np.float64)  # dtype general, but slow.
+    for free_tree in nsft:
+        j = the_trees[order].non_superfluous_index(free_tree)
+        for tree, sign in free_tree._rooted_trees.items():  # TODO: dont acces private.
+            i = the_trees[order].index(tree)
+            result[i, j] = sign
+    return result

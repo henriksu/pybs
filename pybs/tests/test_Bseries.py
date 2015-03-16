@@ -1,6 +1,6 @@
 import unittest
 
-from pybs.unordered_tree.trees import number_of_tree_pairs_of_total_order as m
+from pybs.unordered_tree.functions import number_of_tree_pairs_of_total_order as m
 from pybs.unordered_tree import UnorderedTree, leaf, tree_generator
 from pybs.combinations import Forest, LinearCombination, empty_tree
 from pybs.series.Bseries import zero, exponential, unit, BseriesRule, \
@@ -8,14 +8,14 @@ from pybs.series.Bseries import zero, exponential, unit, BseriesRule, \
 from pybs.combinations import split
 from pybs.series import modified_equation, \
     composition_ssa, inverse, adjoint, tree_pairs_of_order, \
-    symplecticity_matrix, conjugate_to_symplectic
+    conjugate_symplecticity_matrix, conjugate_to_symplectic
 from pybs.rungekutta.methods import RKeuler, RKimplicitEuler, RKimplicitMidpoint,\
     RKimplicitTrapezoidal, RKmidpoint, RKrunge1, RKrunge2, RK4, \
     RK38rule, RKlobattoIIIA4, RKlobattoIIIB4, RKcashKarp
 
 from itertools import islice
 from pybs.series.functions import equal_up_to_order, exp, log, \
-    symplectic_up_to_order, hamiltonian_up_to_order
+    symplectic_up_to_order, hamiltonian_up_to_order, new_hamiltonian_up_to_order
 
 
 class simple_series(unittest.TestCase):
@@ -107,35 +107,52 @@ class simple_series(unittest.TestCase):
         # exponential
         self.assertEqual(symplectic_up_to_order(exponential, max_order), max_order)  # hamiltonian
 
-    @unittest.skip
+#    @unittest.skip
     def test_hamiltonian(self):
         max_order = 7
         euler = RKeuler.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(euler), max_order), 1)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(euler), max_order), 1)  # ==order
         impl_euler = RKimplicitEuler.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(impl_euler), max_order), 1)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(impl_euler), max_order), 1)  # ==order
         midpoint = RKmidpoint.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(midpoint), max_order), 2)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(midpoint), max_order), 2)  # ==order
         impl_midpoint = RKimplicitMidpoint.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(impl_midpoint), max_order), max_order)  # hamiltonian
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(impl_midpoint), max_order), max_order)  # hamiltonian
         impl_trap = RKimplicitTrapezoidal.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(impl_trap), max_order), 2)  # ==order
-        runge1 = RKrunge1.phi()
-        self.assertEqual(hamiltonian_up_to_order(modified_equation(runge1), max_order), 3)  # == order + 1
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(impl_trap), max_order), 2)  # ==order
         runge2 = RKrunge2.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(runge2), max_order), 2)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(runge2), max_order), 2)  # ==order
         rk4 = RK4.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(rk4), max_order), 4)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(rk4), max_order), 4)  # ==order
         rk38 = RK38rule.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(rk38), max_order), 4)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(rk38), max_order), 4)  # ==order
         lobattoIIIA4 = RKlobattoIIIA4.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(lobattoIIIA4), max_order), 4)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(lobattoIIIA4), max_order), 4)  # ==order
         lobattoIIIB4 = RKlobattoIIIB4.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(lobattoIIIB4), max_order), 4)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(lobattoIIIB4), max_order), 4)  # ==order
         cashKarp = RKcashKarp.phi()
         self.assertEqual(hamiltonian_up_to_order(modified_equation(cashKarp), max_order), 5)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(cashKarp), max_order), 5)  # ==order
         # exponential
         self.assertEqual(hamiltonian_up_to_order(modified_equation(exponential), max_order), max_order)  # hamiltonian
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(exponential), max_order), max_order)  # hamiltonian
+
+    def test_hamiltonian_problem(self):
+        max_order = 7
+
+        runge1 = RKrunge1.phi()
+        self.assertEqual(hamiltonian_up_to_order(modified_equation(runge1), max_order), 3)  # == order + 1
+        self.assertEqual(new_hamiltonian_up_to_order(modified_equation(runge1), max_order), 3)  # == order + 1
 
 
 class inverse_series(unittest.TestCase):
@@ -261,33 +278,33 @@ class test_conjugate_to_symplectic(unittest.TestCase):
 #         self.assertEqual(expected, result)
 
     def test_matrix(self):
-        A = symplecticity_matrix(0)
+        A = conjugate_symplecticity_matrix(0)
         self.assertEqual(0, len(A))
 
-        A = symplecticity_matrix(1)
+        A = conjugate_symplecticity_matrix(1)
         self.assertEqual(0, len(A))
 
-        A = symplecticity_matrix(2)
+        A = conjugate_symplecticity_matrix(2)
         self.assertEqual(1, len(A))
         self.assertEqual(0, len(A[0]))
 
-        A = symplecticity_matrix(3)
+        A = conjugate_symplecticity_matrix(3)
         self.assertEqual(1, len(A))
         self.assertEqual(1, len(A[0]))
 
-        A = symplecticity_matrix(4)
+        A = conjugate_symplecticity_matrix(4)
         self.assertEqual(3, len(A))
         self.assertEqual(1, len(A[0]))
 
-        A = symplecticity_matrix(5)
+        A = conjugate_symplecticity_matrix(5)
         self.assertEqual(6, len(A))
         self.assertEqual(3, len(A[0]))
 
-        A = symplecticity_matrix(6)
+        A = conjugate_symplecticity_matrix(6)
         self.assertEqual(16, len(A))
         self.assertEqual(6, len(A[0]))
 
-        A = symplecticity_matrix(7)
+        A = conjugate_symplecticity_matrix(7)
         self.assertEqual(37, len(A))
         self.assertEqual(16, len(A[0]))
 
