@@ -2,31 +2,42 @@ from math import factorial
 from fractions import Fraction
 from itertools import count, islice
 from functools import partial
+
 from numpy.linalg import lstsq
 from scipy import sparse
 from scipy.sparse.linalg import lsqr
 import numpy as np
 
-from pybs.utils import memoized
-from pybs.unordered_tree.functions import number_of_tree_pairs_of_total_order as m
-from pybs.unordered_tree import tree_generator, leaf, the_trees, number_of_trees_of_order
-from pybs.unordered_tree import trees_of_order
-from pybs.combinations import split, empty_tree, subtrees, antipode_ck, \
-    LinearCombination, treeCommutator as tree_commutator, symp_split
-from pybs.series.Bseries import BseriesRule, ForestRule, VectorfieldRule, exponential
+from pybs.utils import \
+    memoized
+from pybs.unordered_tree import \
+    leaf, \
+    number_of_trees_of_order, \
+    number_of_tree_pairs_of_total_order as m,\
+    the_trees, \
+    tree_generator, \
+    trees_of_order
+from pybs.combinations import \
+    empty_tree, \
+    LinearCombination, \
+    split, \
+    subtrees, antipode_ck, \
+    symp_split, \
+    treeCommutator as tree_commutator
+from pybs.series.Bseries import \
+    BseriesRule, \
+    exponential, \
+    ForestRule, \
+    VectorfieldRule
 
 
 def equal_up_to_order(a, b, max_order=None):
-    tmp1 = a(empty_tree)  # TODO: Remove
-    tmp2 = b(empty_tree)
     if not a(empty_tree) == b(empty_tree):
         return None
     for tree in tree_generator():
         if max_order and tree.order() > max_order:
             return max_order
         elif not a(tree) == b(tree):
-            a = a(tree)  # TODO: Remove line
-            b = b(tree)  # TODO: Remove line
             return tree.order() - 1
 
 
@@ -263,7 +274,7 @@ def stepsize_adjustment(a, A):
     base_rule = a._call
 
     def new_rule(tree):
-        return A * base_rule(tree)
+        return A**tree.order() * base_rule(tree)
     return BseriesRule(new_rule)
 
 
@@ -287,6 +298,11 @@ def inverse(a):
     return BseriesRule(new_rule)
 
 
+def conjugate(a, c):
+    "The conjugate of 'a' with change of coordinates 'c'."
+    return BseriesRule(composition(inverse(c), composition(a, c)))
+
+
 def adjoint(a):
     "The adjoint is the inverse with reversed time step."
     b = inverse(a)
@@ -297,6 +313,7 @@ def adjoint(a):
 
 
 def series_commutator(a, b):
+    # TODO: TEST ME!
     orders = set((0,))  # the coefficient of the empty tree is always 0.
     storage = LinearCombination()
 
@@ -323,7 +340,7 @@ def symplectic_up_to_order(a, max_order=None):
         return None
     orders = count(start=2)
     if max_order:
-        orders = islice(orders, max_order)
+        orders = islice(orders, max_order - 1)
     _symp_cond = partial(_symplecticity_condition, a)
     for order in orders:
         max_check_order = order / 2  # Intentional truncation in division.
@@ -350,7 +367,7 @@ def hamiltonian_up_to_order(a, max_order=None):
         return None  # Not hamiltonian at all.
     orders = count(start=2)
     if max_order:
-        orders = islice(orders, max_order)
+        orders = islice(orders, max_order - 1)
     _ham_cond = partial(_hamilton_condition, a)
     for order in orders:
         max_check_order = order / 2  # Intentional truncation in division.
@@ -370,24 +387,21 @@ def _hamilton_condition(a, tree1, tree2):
 
 def new_hamiltonian_up_to_order(a, max_order=None):
     if a(empty_tree) != 0 or a(leaf) == 0:
-        return None  # Not hamiltonian at all. TODO: exception.
+        return None  # Not vectorfield at all. TODO: exception.
     orders = count(start=2)  # TODO: start at 2 ? why not? no conditions?
     if max_order:
-        orders = islice(orders, max_order)
+        orders = islice(orders, max_order - 1)
     for order in orders:
         A = hamiltonian_matrix(order)
-        b = np.asarray(map(a, trees_of_order(order, sort=True)), dtype=np.float64)  # TODO: does NP have arraymap? this is slow
+        b = np.asarray(map(a, trees_of_order(order, sort=True)),
+                       dtype=np.float64)
 #        b = b.transpose()
         # lstsq "wants" NumPy-matrices, but eats Python-lists OK.
         if not np.any(b):
             continue  # b is zero vector, no need to check further.
         if order == 2:
             return 1
-        res = lsqr(A, b)  # square of 2-norm in a 1x1 matrix/ndarray.
-        if res[1] != 1 and (res[1] == 2 or res[3] > 10.0**(-14)):
-            # res[1] = 0: x=0, special case for trivial solution.
-            # res[1] = 1: Found (approx) solution to Ax = b.
-            # res[1] = 2: Not in colspan, lst.sq. approximation was found.
+        if not_in_colspan(A, b):
             return order - 1
     return max_order
 
@@ -395,12 +409,89 @@ def new_hamiltonian_up_to_order(a, max_order=None):
 @memoized
 def hamiltonian_matrix(order):
     nsft = the_trees[order].non_superfluous_trees(sort=True)
-    n = number_of_trees_of_order(order)
-    m = len(nsft)
-    result = sparse.lil_matrix((n, m), dtype=np.float64)  # dtype general, but slow.
+    m = number_of_trees_of_order(order)
+    n = len(nsft)
+    result = sparse.lil_matrix((m, n), dtype=np.int8)
     for free_tree in nsft:
         j = the_trees[order].non_superfluous_index(free_tree)
-        for tree, sign in free_tree._rooted_trees.items():  # TODO: dont acces private.
+        for tree, sign in free_tree._rooted_trees.items():
+            # TODO: dont acces private.
             i = the_trees[order].index(tree)
             result[i, j] = sign
     return result
+
+
+def energy_preserving_upto_order(a, max_order=None):
+    "Input: vector field/Lie ALGEBRA element"
+    if a(empty_tree) != 0 or a(leaf) == 0:
+        return None  # Not vectorfield at all. TODO: exception.
+    orders = count(start=2)  # TODO: start at 2 ? why not 1? no conditions?
+    if max_order:
+        orders = islice(orders, max_order - 1)
+    for order in orders:
+        if not is_energy_preserving_of_order(a, order):
+            return order - 1
+    return max_order
+
+
+def is_energy_preserving_of_order(a, order):
+    forbidden_trees, interesting_trees = _get_tree_sets(order)
+    for tree in forbidden_trees:
+        if a(tree) != 0:
+            return False
+    for free_tree, collection in interesting_trees.items():
+        collection = sorted(collection)
+        A = get_energy_matrix(free_tree, collection)
+        b = np.asarray(map(a, collection), dtype=np.float64)
+        if not_in_colspan(A, b):
+            return False
+    return True
+
+
+# @memoized TODO: Find a way of hashing input.
+def get_energy_matrix(free_tree, collection):
+    # collection = sorted(collection)
+    le = len(collection)
+    A = sparse.lil_matrix((le, le-1), dtype=np.int64)
+    A[0, :] = Fraction(-collection[0].symmetry(),
+                       free_tree._rooted_trees[
+                       leaf.butcher_product(collection[0])])
+    for tree in collection[1:]:
+        i = collection.index(tree)
+        A[i, i-1] = Fraction(tree.symmetry(),
+                             free_tree._rooted_trees[
+                             leaf.butcher_product(tree)])
+    return A
+    # TODO: avoid performing BP twice.
+
+
+@memoized
+def _get_tree_sets(order):
+    # uninteresting_trees = set()  # Energy preservation does not care.
+    forbidden_trees = set()  # Never found in energy preserving series.
+    interesting_trees = dict()  # included in a non trivial basis vector.
+    for tree in the_trees[order].trees():
+        free_tree = leaf.butcher_product(tree).get_free_tree()
+        if free_tree.superfluous:  # a) in FCM, Celledoni et al.
+            pass  # Don't store them
+            # uninteresting_trees.add(tree)
+        elif free_tree.is_symmetric():  # b)
+            forbidden_trees.add(tree)
+        elif free_tree in interesting_trees:
+            interesting_trees[free_tree].add(tree)
+        else:
+            interesting_trees[free_tree] = set((tree,))
+    return forbidden_trees, interesting_trees
+
+
+def not_in_colspan(A, b):
+    try:
+        res = lsqr(A, b)
+    except ZeroDivisionError:
+        print "ZeroDivisionError ignored."
+        return False  # TODO: File BUG report.
+    # res[1] = 0: x=0, special case for trivial solution.
+    # res[1] = 1: Found (approx) solution to Ax = b.
+    # res[1] = 2: Not in colspan, lst.sq. approximation was found.
+#    return res[1] != 1 and (res[1] == 2 or res[3] > 10.0**(-5))
+    return res[1] != 1 and (res[1] == 2 or res[3] > 10.0**(-10))

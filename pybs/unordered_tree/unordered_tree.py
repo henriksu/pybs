@@ -5,7 +5,7 @@ from copy import copy
 from itertools import ifilter, count as _count
 
 from pybs.utils import ClonableMultiset
-from pybs.unordered_tree import FreeTree, treeType, number_of_trees_up_to_order
+from pybs.unordered_tree import treeType, number_of_trees_up_to_order
 
 
 class UnorderedTree(ClonableMultiset):
@@ -160,6 +160,16 @@ class UnorderedTree(ClonableMultiset):
             return True
         elif self.keys() == [leaf]:
             return True
+        else:
+            return False
+
+    def _is_symmetric(self):
+        if len(self._ms) == 1:
+            for tree in self:
+                if tree._is_symmetric():
+                    return True
+                else:
+                    return False
         else:
             return False
 
@@ -409,3 +419,61 @@ def _graft_leaf(tree):
                 tmp.inplace_add(replacement)
             result.add(tmp)
     return result
+
+
+class FreeTree(object):
+    def __init__(self, representative, superfluous=None):
+        # TODO: check that representative IS indeed a representative.
+        if superfluous is None:
+            # TODO: Make sure the free tree is completed.
+            representative = representative.get_free_tree()
+            self.representative = representative.representative
+            self.superfluous = representative.superfluous
+        else:
+            self.representative = representative
+            self.superfluous = superfluous
+        # TODO: representative.free_tree() = self ?!?
+        # TODO: are any properties like symmetry shared by all equivalent trees?
+        self._rooted_trees = {self.representative: 1}  # key = euivalent tree, value = binary cappa kappa relative the representative.
+        # Gets strange error message from _rooted_trees if key is not in it... THROW something.
+        self.complete = False  # False signifies incomplete OR unknown.
+        self._symmetric = None
+    # TODO: implement member check?
+    # TODO: implement a complete_me(self)
+    # TODO: inherit comparison and order from the representative. Implement!
+
+    def __eq__(self, other):
+        return self.representative == other.representative
+
+    def __ne__(self, other):
+        return self.representative != other.representative
+
+    def __str__(self):
+        return str(self.representative)
+
+    def __cmp__(self, other):
+        'Ordering based on ordering of representative.'
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        if self is other:
+            return 0
+        else:
+            return self.representative.__cmp__(other.representative)
+
+    def order(self):
+        return self.representative.order()
+
+    def is_symmetric(self):
+        if self._symmetric is not None:
+            return self._symmetric
+        else:
+            if not the_trees[self.order()]._free_trees_are_complete:
+                    the_trees[self.order()].free_trees(False)  # Complete them for symmetry check.
+                    # TODO: Make is_symmetric() force completion of free_tree.
+            for tree in self._rooted_trees:
+                if tree._is_symmetric():
+                    self._symmetric = True
+                    return True
+            else:  # This else-clause is on the for-loop.
+                self._symmetric = False
+                return False

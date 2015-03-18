@@ -83,10 +83,6 @@ class ForestRule(object):
             return result
 
 
-
-
-
-
 def _zero(tree):
     return 0
 
@@ -114,19 +110,37 @@ def _kahan(tree):
         return 0
 
 
-def _AVF(tree, a):
+def _AVF_old(a, tree):
     'Directly from Owren'  # TODO: Test
-    if tree.order() == 1:
+    if tree == empty_tree:
+        return 1
+    if tree == leaf:
         return 1
     elif not tree.is_binary():
         return 0
     else:
         if tree.number_of_children() == 1:
-            return _AVF(tree.keys()[0], a)/2.0
+            return Fraction(_AVF(a, tree.keys()[0]), 2)
         elif tree.number_of_children() == 2:
             alpha = Fraction(2*a + 1, 4)
-            return alpha * _AVF(tree.keys()[0], a) * \
-                _AVF(tree.keys()[1], a)
+            if len(tree._ms) == 2:
+                return alpha * _AVF(a, tree.keys()[0]) * \
+                    _AVF(a, tree.keys()[1])
+            else:
+                return alpha * _AVF(a, tree.keys()[0]) ** 2
+
+
+def _AVF(tree):
+    "According to ENERGY-PRESERVING RUNGE-KUTTA METHODS, Celledoni et al."
+    if tree == empty_tree:
+        return 1
+    if tree == leaf:
+        return 1
+    else:
+        result = Fraction(1, tree.number_of_children() + 1)
+        for child_tree, multiplicity in tree.items():
+            result *= _AVF(child_tree) ** multiplicity
+        return result
 
 
 def _unit_field(tree):
@@ -138,3 +152,4 @@ exponential = BseriesRule(_exact)
 zero = BseriesRule(_zero)
 unit = BseriesRule(_unit)
 unit_field = BseriesRule(_unit_field)
+AVF = BseriesRule(_AVF)
