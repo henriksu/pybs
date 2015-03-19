@@ -174,7 +174,7 @@ class simple_series(unittest.TestCase):
             exponential, max_order), max_order)
         # hamiltonian
 
-#    @unittest.skip
+    @unittest.skip
     def test_hamiltonian(self):
         max_order = 7
         euler = RKeuler.phi()
@@ -246,15 +246,89 @@ class simple_series(unittest.TestCase):
         self.assertEqual(new_hamiltonian_up_to_order(
             modified_equation(exponential), max_order), max_order)
         # hamiltonian
-
-    def test_hamiltonian_problem(self):
-        max_order = 7
-
         runge1 = RKrunge1.phi()
         self.assertEqual(hamiltonian_up_to_order(
             modified_equation(runge1), max_order), 3)  # == order + 1
         self.assertEqual(new_hamiltonian_up_to_order(
             modified_equation(runge1), max_order), 3)  # == order + 1
+
+#    @unittest.skip
+    def test_hamiltonian_2(self):
+        max_order = 7
+        euler = RKeuler.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(euler), max_order), 1)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(euler), max_order), 1)  # ==order
+        impl_euler = RKimplicitEuler.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(impl_euler), max_order), 1)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(impl_euler), max_order), 1)  # ==order
+        midpoint = RKmidpoint.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(midpoint), max_order), 2)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(midpoint), max_order), 2)  # ==order
+        impl_midpoint = RKimplicitMidpoint.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(impl_midpoint), max_order), max_order)
+        # hamiltonian
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(impl_midpoint), max_order), max_order)
+        # hamiltonian
+        impl_trap = RKimplicitTrapezoidal.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(impl_trap), max_order), 2)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(impl_trap), max_order), 2)  # ==order
+        runge2 = RKrunge2.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(runge2), max_order), 2)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(runge2), max_order), 2)  # ==order
+        runge1 = RKrunge1.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(runge1), max_order), 3)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(runge1), max_order), 3)  # ==order
+        rk4 = RK4.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(rk4), max_order), 4)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(rk4), max_order), 4)  # ==order
+        rk38 = RK38rule.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(rk38), max_order), 4)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(rk38), max_order), 4)  # ==order
+        lobattoIIIA4 = RKlobattoIIIA4.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(lobattoIIIA4), max_order), 4)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(lobattoIIIA4), max_order), 4)  # ==order
+        lobattoIIIB4 = RKlobattoIIIB4.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(lobattoIIIB4), max_order), 4)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(lobattoIIIB4), max_order), 4)  # ==order
+        cashKarp = RKcashKarp.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(cashKarp), max_order), 5)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(cashKarp), max_order), 5)  # ==order
+        # exponential
+        self.assertEqual(hamiltonian_up_to_order(
+            log(exponential), max_order), max_order)
+        # hamiltonian
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(exponential), max_order), max_order)
+        # hamiltonian
+        runge1 = RKrunge1.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            log(runge1), max_order), 3)  # == order + 1
+        self.assertEqual(new_hamiltonian_up_to_order(
+            log(runge1), max_order), 3)  # == order + 1
 
 
 class inverse_series(unittest.TestCase):
@@ -449,14 +523,17 @@ class test_exp_log(unittest.TestCase):
 
     def test_exp_explicit_euler(self):
         a = RKeuler.phi()
-        alpha_2 = log(a)
-        a_2 = exp(alpha_2)
-        result = equal_up_to_order(a, a_2, self.max_order)
+        alpha_1 = log(a)
+        a_1 = exp(alpha_1)
+        result = equal_up_to_order(a, a_1, self.max_order)
         self.assertEqual(self.max_order, result)
 
-        alpha_1 = modified_equation(a)
-        should_be_a = exp(alpha_1)
-        result = equal_up_to_order(a, should_be_a, self.max_order)
+        alpha_2 = modified_equation(a)
+        result = equal_up_to_order(alpha_1, alpha_2, self.max_order)
+        self.assertEqual(self.max_order, result)
+
+        a_2 = exp(alpha_2)
+        result = equal_up_to_order(a, a_2, self.max_order)
         self.assertEqual(self.max_order, result)
 
 

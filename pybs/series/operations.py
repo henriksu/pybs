@@ -13,6 +13,7 @@ from pybs.combinations import \
 from pybs.series import BseriesRule, VectorfieldRule, ForestRule
 # TODO: Include Sphinx in installation?
 
+
 def hf_composition(baseRule):
     if baseRule(empty_tree) != 1:
         raise ValueError(
@@ -61,13 +62,14 @@ def modified_equation(a):
             c = lie_derivative(c, new_rule, True)  # TODO: Is this memoized?
             result -= Fraction(c(tree), factorial(j))
         return result
-    result = BseriesRule(new_rule)
+    result = VectorfieldRule(new_rule)
     if a.quadratic_vectorfield:
         result = remove_non_binary(result)
     return result
 
 
 def log(a):
+    # TODO: The implementation with Lie derivative is MUCH faster. Why?
     if a(empty_tree) != 1:
         raise ValueError(
             'Can not calculate the logarithm for this BseriesRule.')
@@ -84,6 +86,7 @@ def log(a):
 #            c = stepsize_adjustment(b, Fraction(1, n))  # TODO: Remove.
             result += ((-1)**(n+1)) * Fraction(b(tree), n)
         return result
+#    return BseriesRule(new_rule)
     return VectorfieldRule(new_rule)  # TODO: is VectorfieldRUle always right??
 #    result = BseriesRule(new_rule)
 #    if a.quadratic_vectorfield:
@@ -121,7 +124,7 @@ def remove_non_binary(a):
             return base_rule(tree)
         else:
             return 0
-    return BseriesRule(new_rule)
+    return type(a)(new_rule)
 
 
 def remove_empty_tree(a):
@@ -133,7 +136,7 @@ def remove_empty_tree(a):
             return 0
         else:
             return base_rule(tree)
-    return BseriesRule(new_rule)
+    return type(a)(new_rule)
 
 
 def composition_ssa(a, b):
@@ -179,6 +182,7 @@ def composition(a, b):
 
 def inverse(a):
     "The inverse of 'a' in the Butcher group."
+    # TODO: Test that a is of the right kind.
     def new_rule(tree):
         return a(antipode_ck(tree))
     return BseriesRule(new_rule)

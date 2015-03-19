@@ -1,9 +1,7 @@
-from operator import __mul__
 from itertools import product
-from pybs.utils import ClonableMultiset as Multiset, memoized
+from pybs.utils import memoized
 from pybs.unordered_tree import UnorderedTree, leaf
 from pybs.combinations import LinearCombination, Forest as Forest
-from pybs.combinations import Forest as FrozenForest  # TODO: NASTY HACK
 from pybs.combinations import empty_tree
 
 
