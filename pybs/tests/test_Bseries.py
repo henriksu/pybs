@@ -38,7 +38,7 @@ from pybs.series import \
     _kahan, \
     unit_field, \
     AVF
-from pybs.series.functions import \
+from pybs.series.checks import \
     tree_pairs_of_order, \
     conjugate_symplecticity_matrix
 
@@ -209,6 +209,11 @@ class simple_series(unittest.TestCase):
             modified_equation(runge2), max_order), 2)  # ==order
         self.assertEqual(new_hamiltonian_up_to_order(
             modified_equation(runge2), max_order), 2)  # ==order
+        runge1 = RKrunge1.phi()
+        self.assertEqual(hamiltonian_up_to_order(
+            modified_equation(runge1), max_order), 3)  # ==order
+        self.assertEqual(new_hamiltonian_up_to_order(
+            modified_equation(runge1), max_order), 3)  # ==order
         rk4 = RK4.phi()
         self.assertEqual(hamiltonian_up_to_order(
             modified_equation(rk4), max_order), 4)  # ==order

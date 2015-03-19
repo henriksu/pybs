@@ -3,7 +3,8 @@ from itertools import repeat as _repeat, chain as _chain, starmap as _starmap
 import heapq as _heapq
 from collections import Mapping as _Mapping
 from operator import itemgetter as _itemgetter, __add__ as _add
-from pybs.utils.clonable import Clonable
+
+from clonable import Clonable
 
 
 class ClonableMultiset(Clonable):
