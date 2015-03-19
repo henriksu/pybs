@@ -1,3 +1,4 @@
+'This is the docstring of the PyBS-module. Hey Mum!'
 #from sage import *
 import utils
 import trees

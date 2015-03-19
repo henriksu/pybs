@@ -20,6 +20,10 @@ from pybs.series import exponential, adjoint, modified_equation
 
 
 def equal_up_to_order(a, b, max_order=None):
+    '''Checks that 'a' and 'b' give the exact same answer for all trees.
+    Returns n equals the largest order for which this is true.
+
+    More details'''
     if not a(empty_tree) == b(empty_tree):
         return None
     for tree in tree_generator():
@@ -191,6 +195,11 @@ def new_hamiltonian_up_to_order(a, max_order=None):
 
 @memoized
 def hamiltonian_matrix(order):
+    '''returns a matrix whose columns form a basis for \
+    Hamiltonian B-series of "order".
+
+    Details.
+    '''
     nsft = the_trees[order].non_superfluous_trees(sort=True)
     m = number_of_trees_of_order(order)
     n = len(nsft)
