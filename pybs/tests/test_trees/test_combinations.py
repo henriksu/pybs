@@ -1,9 +1,10 @@
 # This Python file uses the following encoding: utf-8
 import unittest
 
+from pybs.utils import LinearCombination
 from pybs.unordered_tree import UnorderedTree, leaf, tree_generator
 from pybs.combinations.forests import empty_tree
-from pybs.combinations import Forest, LinearCombination, differentiate as D, \
+from pybs.combinations import Forest, differentiate as D, \
     treeCommutator
 from pybs.combinations.functions import subtrees, \
     _subtrees_for_antipode, antipode_ck, symp_split
@@ -27,7 +28,7 @@ class test_commutator(unittest.TestCase):
         forest1 = Forest([tree1, tree1])
         tree3 = UnorderedTree(forest1)
         expected -= tree3
-        result = treeCommutator(tree1, tree2)
+        result = treeCommutator(tree2, tree1)
         self.assertEqual(result, expected)
 
 

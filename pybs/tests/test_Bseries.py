@@ -2,6 +2,7 @@ from fractions import Fraction
 from itertools import islice
 import unittest
 
+from pybs.utils import LinearCombination
 from pybs.unordered_tree import \
     UnorderedTree, \
     leaf, \
@@ -9,7 +10,6 @@ from pybs.unordered_tree import \
     tree_generator
 from pybs.combinations import \
     Forest, \
-    LinearCombination, \
     empty_tree, \
     split
 from pybs.series import \
@@ -20,6 +20,7 @@ from pybs.series import \
     adjoint, \
     stepsize_adjustment, \
     conjugate,\
+    conjugate_by_commutator, \
     exp, \
     log, \
 \
@@ -643,4 +644,15 @@ class test_conjugate(unittest.TestCase):
 #        half_exp_euler = stepsize_adjustment(RKeuler.phi(),\
 #                                             Fraction(1, 2))
         the_conjugate = conjugate(imp_midpoint, half_imp_euler)
+        equal_up_to_order(trapezoidal, the_conjugate, max_order)
+
+    def test_no_2(self):
+        max_order = 5
+        trapezoidal = RKimplicitTrapezoidal.phi()
+        imp_midpoint = RKimplicitMidpoint.phi()
+        half_imp_euler = stepsize_adjustment(RKimplicitEuler.phi(),
+                                             Fraction(1, 2))
+#        half_exp_euler = stepsize_adjustment(RKeuler.phi(),\
+#                                             Fraction(1, 2))
+        the_conjugate = conjugate_by_commutator(imp_midpoint, half_imp_euler)
         equal_up_to_order(trapezoidal, the_conjugate, max_order)

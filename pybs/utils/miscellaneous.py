@@ -3,7 +3,7 @@ from collections import \
     Hashable as _Hashable, \
     Counter as _Counter, \
     Mapping as _Mapping
-from functools import partial as _partial
+from functools import partial as _partial, wraps
 from weakref import WeakKeyDictionary as _WeakKeyDictionary, ref as _ref
 
 
@@ -38,6 +38,17 @@ class memoized(object):
         return _partial(self.__call__, obj)
 
 
+def memoized2(func):
+    @wraps(func)
+    def wrapper(*args):
+        if args in wrapper.cache:
+            return wrapper.cache[args]
+        else:
+            value = func(*args)
+            wrapper.cache[args] = value
+            return value
+    wrapper.cache = {}
+    return wrapper
 # Following is due to Mike Graham
 # (I exchanged dict for Counter and added elements)
 # Found at

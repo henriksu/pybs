@@ -11,19 +11,17 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   trees
+   forests
+   series
+   utils
+
+Generally about PyBS
+--------------------
 .. automodule:: pybs
    :members:
 
-.. automodule:: utils
-   :members:
-
-.. automodule:: utils.miscellaneous
-   :members:
-
-
-
-
-Hello World!
+.. THIS IS THE WAY TO DO IT ..include:: trees.rst
 
 Indices and tables
 ==================

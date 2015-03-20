@@ -1,21 +1,30 @@
 from fractions import Fraction
 from math import factorial
 
-from pybs.utils import memoized
-from pybs.unordered_tree import leaf, trees_of_order
+from pybs.utils import memoized2 as memoized, LinearCombination
+from pybs.unordered_tree import leaf
 from pybs.combinations import \
     empty_tree, \
     split, \
     subtrees, \
     antipode_ck, \
-    LinearCombination, \
     treeCommutator as tree_commutator
-from pybs.series import BseriesRule, VectorfieldRule, ForestRule
+from pybs.series import \
+    BseriesRule, \
+    VectorfieldRule, \
+    ForestRule, \
+    tree_tuples_of_order
 # TODO: Include Sphinx in installation?
 
 
-def hf_composition(baseRule):
-    if baseRule(empty_tree) != 1:
+def hf_composition(a):
+    r"""The composition :math:`a b`,
+    where :math:`b` is the B-series representing
+    the vector field of the exact solution.
+
+    That is :math:`b = \delta_{\circ}`.
+    """  # TODO: include some trees in the sphinx docs.
+    if a(empty_tree) != 1:
         raise ValueError(
             'Composition can only be performed on consistent B-series.')
 
@@ -25,12 +34,17 @@ def hf_composition(baseRule):
         else:
             result = 1
             for subtree, multiplicity in tree.items():
-                result *= baseRule(subtree) ** multiplicity
+                result *= a(subtree) ** multiplicity
             return result
     return BseriesRule(new_rule)
 
 
 def lie_derivative(c, b, truncate=False):
+    """The Lie-derivative of c with respect to b as
+    a new :class:`series.Bseries.BseriesRule`.
+
+    More!
+    """
     if b(empty_tree) != 0:
         raise ValueError(
             'The second argument does not satisfy b(ButcherEmptyTree()) == 0.')
@@ -48,6 +62,7 @@ def lie_derivative(c, b, truncate=False):
 
 
 def modified_equation(a):
+    """The modified equation. Mostely equivalent to :func:`log`."""
     if a(empty_tree) != 1 or a(leaf) != 1:  # TODO: Check last condition.
         raise ValueError(
             'Can not calculate the modified equation for this BseriesRule.')
@@ -69,6 +84,14 @@ def modified_equation(a):
 
 
 def log(a):
+    """Taking a character to an infinitesimal character.
+
+    .. note::
+       Much slower than :func:`modified_equation`.
+
+    This is the inverse? of :func:`exp`.
+    MORE
+    """
     # TODO: The implementation with Lie derivative is MUCH faster. Why?
     if a(empty_tree) != 1:
         raise ValueError(
@@ -95,6 +118,11 @@ def log(a):
 
 
 def exp(a):
+    """Taking an infinitesimal character to a character.
+
+    This is the inverse? of :func:`log`
+    MORE
+    """
     if a(empty_tree) != 0:
         raise ValueError(
             'Can not calculate the exponential for this BseriesRule.')
@@ -116,6 +144,7 @@ def exp(a):
 
 
 def remove_non_binary(a):
+    """Sets the value at all non-binary trees to zero. TO BE DEPRECATED!"""
     base_rule = a._call
     et = empty_tree
 
@@ -128,6 +157,7 @@ def remove_non_binary(a):
 
 
 def remove_empty_tree(a):
+    """Returns :math:`a - I`."""
     base_rule = a._call
     et = empty_tree
 
@@ -140,6 +170,11 @@ def remove_empty_tree(a):
 
 
 def composition_ssa(a, b):
+    """Same as :func:`composition`, except that it
+    halves the stepsize afterwards.
+
+    Equivalent to ``stepsize_adjustment(composition(a,b),Fraction(1, 2))``.
+    """
     if a(empty_tree) != 1:
         raise ValueError(
             'Composition can only be performed on consistent B-series.')
@@ -153,13 +188,14 @@ def composition_ssa(a, b):
         result = 0
         for pair, multiplicity in sub_trees.items():
             result += subRule(pair) * multiplicity
-        return Fraction(result, 2 ** tree.order())
+        return Fraction(result, 2**tree.order())
 
     return BseriesRule(new_rule)
     # TODO: account for ForestRule.
 
 
 def stepsize_adjustment(a, A):
+    """Corresponds to letting h -> A h."""
     base_rule = a._call
 
     def new_rule(tree):
@@ -168,6 +204,14 @@ def stepsize_adjustment(a, A):
 
 
 def composition(a, b):
+    """Composition of methods, b after a.
+
+    :param a: The first method.
+    :type a: BseriesRule, Lie-Group element.
+    :param b: The second B-series.
+    :type b: B-series? General dual element?
+    :rtype: B-seriesRule or ForestRule
+    """
     @memoized
     def new_rule(arg):  # arg is tree or forest.
         result = 0
@@ -181,20 +225,43 @@ def composition(a, b):
 
 
 def inverse(a):
-    "The inverse of 'a' in the Butcher group."
+    r"""Return the inverse of *a* in the Butcher group.
+
+    The returned BseriesRule is calculated as
+    :math:`\left((a \otimes a) \circ S\right)(\tau)`,
+    where :math:`S` denotes the :func:`antipode_ck`.
+    """
     # TODO: Test that a is of the right kind.
+    @memoized
     def new_rule(tree):
         return a(antipode_ck(tree))
     return BseriesRule(new_rule)
 
 
 def conjugate(a, c):
-    "The conjugate of 'a' with change of coordinates 'c'."
+    """The conjugate of 'a' with change of coordinates 'c'."""
     return BseriesRule(composition(inverse(c), composition(a, c)))
 
 
+def conjugate_by_commutator(a, c):
+    """Calculates the conjugate by means of the commutator.
+
+    TODO: Check if the order is right.
+    """
+    def new_rule(tree):
+        if tree == empty_tree:
+            return 0
+        tmp = a
+        result = 0
+        for n in range(tree.order() + 1):
+            result += Fraction((-1)**n, factorial(n)) * tmp(tree)
+            tmp = series_commutator(c, tmp)
+        return result
+    return BseriesRule(new_rule)
+
+
 def adjoint(a):
-    "The adjoint is the inverse with reversed time step."
+    """The adjoint is the inverse with reversed time step."""
     b = inverse(a)
 
     def new_rule(tree):
@@ -203,22 +270,24 @@ def adjoint(a):
 
 
 def series_commutator(a, b):
+    """Corresponds to tree commutator, just for series. TEST ME"""
     # TODO: TEST ME!
-    orders = set((0,))  # the coefficient of the empty tree is always 0.
-    storage = LinearCombination()
 
     def new_rule(tree):
         order = tree.order()
-        if order in orders:
-            return storage[tree]
+        if order in new_rule.orders:
+            return new_rule.storage[tree] * tree.symmetry()
+            # TODO: Move the correction by symmetry to initialisation.
         else:
             result = LinearCombination()
-            for order1 in range(1, order):
-                order2 = order - order1
-                for tree1 in trees_of_order(order1):
-                    for tree2 in trees_of_order(order2):
-                        result += (a(tree1) * b(tree2)) * \
-                            tree_commutator(tree1, tree2)
-            orders.add(order)
-            storage += result
+            for tree1, tree2 in tree_tuples_of_order(order):
+                result += \
+                    Fraction(a(tree1) * b(tree2),
+                             tree1.symmetry() * tree2.symmetry()) * \
+                    tree_commutator(tree1, tree2)
+            new_rule.orders.add(order)
+            new_rule.storage += result
+            return new_rule.storage[tree] * tree.symmetry()
+    new_rule.storage = LinearCombination()
+    new_rule.orders = set((0,))  # the coefficient of the empty tree is always 0.
     return BseriesRule(new_rule)

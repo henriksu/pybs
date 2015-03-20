@@ -3,6 +3,16 @@ from pybs.utils import ClonableMultiset
 
 
 class Forest(ClonableMultiset):
+    """A forest of trees
+
+    Forests are the basis-vectors in the XYZ algebra.
+
+    How to initialize:
+
+    How it is represented as string.
+
+    Multiplication as "concatenation".
+    """
     __slots__ = ()
     multiplicities = ClonableMultiset.values
     # TODO: Alias. "Correct" way of doing it?
@@ -21,6 +31,11 @@ class Forest(ClonableMultiset):
         return self.multiset_sum(other)
 
     def order(self):
+        """The order of the forest.
+
+        The order of a forest is defined to be the sum of the order of
+        the member trees, multiplicities included.
+        """
         result = 0
         for tree, multiplicity in self:
             result += tree.order() * multiplicity
@@ -37,8 +52,12 @@ class Forest(ClonableMultiset):
         return NotImplemented
 
     def number_of_trees(self):
+        "Return *k*, the number of **distinct** trees."
         return self.cardinality()
     # __bool__, __iter__,  is inherited from multiset.
 
 
+#: Shortand for the empty forest.
+#: It is also known as the "empty tree" and
+#: denoted :math:`\emptyset` in writing.
 empty_tree = Forest()

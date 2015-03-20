@@ -8,6 +8,9 @@ from Bseries import \
     _kahan, \
     unit_field, \
     AVF
+from functions import \
+    tree_pairs_of_order, \
+    tree_tuples_of_order
 from operations import \
     hf_composition, \
     lie_derivative, \
@@ -19,7 +22,9 @@ from operations import \
     stepsize_adjustment, \
     exp, \
     log, \
-    conjugate
+    conjugate, \
+    conjugate_by_commutator, \
+    series_commutator
 
 from checks import \
     equal_up_to_order, \
@@ -30,5 +35,4 @@ from checks import \
     new_hamiltonian_up_to_order, \
     conjugate_to_symplectic, \
     energy_preserving_upto_order, \
-    tree_pairs_of_order, \
     conjugate_symplecticity_matrix  # TODO: Needed? Private?

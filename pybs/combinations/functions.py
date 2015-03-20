@@ -1,12 +1,13 @@
 from itertools import product
-from pybs.utils import memoized
+from pybs.utils import memoized2 as memoized, LinearCombination
 from pybs.unordered_tree import UnorderedTree, leaf
-from pybs.combinations import LinearCombination, Forest as Forest
+from pybs.combinations import Forest as Forest
 from pybs.combinations import empty_tree
 
 
 @memoized
-def graft(base, other):  # TODO: change order of base and other. Fix all uses too!
+def graft(other, base):
+    r"""Grafting *other* :math:`\curvearrowright` *base*."""
     result = LinearCombination()
     if base == empty_tree:
         result += other
@@ -18,7 +19,7 @@ def graft(base, other):  # TODO: change order of base and other. Fix all uses to
         result += base.butcher_product(other)
         for subtree, multiplicity1 in base.items():
             amputated_tree = base.sub(subtree)
-            replacements = graft(subtree, other)
+            replacements = graft(other, subtree)
             for replacement, multiplicity2 in replacements.items():
                 new_tree = amputated_tree.add(replacement)
                 result[new_tree] += multiplicity1 * multiplicity2
@@ -26,27 +27,15 @@ def graft(base, other):  # TODO: change order of base and other. Fix all uses to
 
 
 def split(tree, truncate=False):
-    "Splits a tree."  # TODO: Check that this is the right way around!!!!!!
+    """Splits a tree."""  # TODO: Check that this is the right way around!!!!!!
     result = _split(tree)
     if not truncate:
         result[(tree, empty_tree)] = 1
     return result
 
 
-def _split(tree):
-    result = LinearCombination()
-    for childtree, multiplicity in tree.items():
-        amputated_tree = tree.sub(childtree)
-        result[(childtree, amputated_tree)] = multiplicity
-        childSplits = _split(childtree)
-        for pair, multiplicity2 in childSplits.items():
-            new_tree = amputated_tree.add(pair[1])
-            new_pair = (pair[0], new_tree)
-            result[new_pair] = multiplicity * multiplicity2
-    return result
-
-
 def symp_split(tree):
+    """Perform the split needed for symplecticity checks."""
     result = LinearCombination()
     for childtree, multiplicity in tree.items():
         amputated_tree = tree.sub(childtree)
@@ -60,7 +49,11 @@ def symp_split(tree):
     return result
 
 
-def subtrees(tree):  # HCK comporudct.
+def subtrees(tree):
+    """Returns the HCK coproduct
+
+    This is function does the heavy lifting when composing B-series.
+    """
     result = LinearCombination()
     if tree == empty_tree:
         result += (empty_tree, empty_tree)
@@ -88,7 +81,8 @@ def subtrees(tree):  # HCK comporudct.
                     result[pair] += multiplicity1 * multiplicity2
             return result
     result[(Forest((tree,)), empty_tree)] = 1
-    tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
+    tmp = [subtrees(child_tree) for child_tree in tree.elements()]
+    # TODO: more efficient looping.
     if tmp:
         tmp2 = [elem.items() for elem in tmp]  # TODO: Try using iterators.
         for item in product(*tmp2):  # iterator over all combinations.
@@ -100,34 +94,17 @@ def subtrees(tree):  # HCK comporudct.
             with Forest().clone() as forest_of_cuttings:
                 for forest in cuttings:
                     forest_of_cuttings.inplace_multiset_sum(forest)
-            result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += multiplicity
+            result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += \
+                multiplicity
     else:
         result[(empty_tree, tree)] = 1
     return result
 
 
-def _subtrees_for_antipode(tree):
-    result = LinearCombination()
-    tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
-    if tmp:
-        tmp2 = [elem.items() for elem in tmp]  # TODO: Try using iterators.
-        for item in product(*tmp2):  # iterator over all combinations.
-            tensorproducts, factors = zip(*item)
-            multiplicity = 1
-            for factor in factors:
-                multiplicity *= factor
-            cuttings, to_be_grafted = zip(*tensorproducts)
-            with Forest().clone() as forest_of_cuttings:
-                for forest in cuttings:
-                    forest_of_cuttings.inplace_multiset_sum(forest)
-            result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += multiplicity
-    result[(empty_tree, tree)] = 0  # TODO: FIND NICER WAY.
-    return result
-
-
-# TODO: Should be memoized, but linearCOmbination is mutable.
-# Make LinComb clonable??
 def antipode_ck(tree):
+    """Antipode in the HCK Hopf-algebra"""
+    # TODO: Should be memoized, but linearCOmbination is mutable.
+    # Make LinComb clonable??
     result = LinearCombination()
     if tree == empty_tree:
         result[empty_tree] = 1
@@ -151,6 +128,8 @@ def antipode_ck(tree):
 
 
 def differentiate(thing):
+    """performs grafting corresponding to
+    derivate once more with respect to *t*."""
     if isinstance(thing, LinearCombination):
         result = LinearCombination()
         for tree, factor in thing.iteritems():
@@ -164,10 +143,11 @@ def differentiate(thing):
 
 
 def treeD(tree):
-    return graft(tree, leaf)
+    return graft(leaf, tree)
 
 
 def linCombCommutator(op1, op2, max_order=None):
+    """Tree commutator for linear combinations of trees."""
     if isinstance(op1, UnorderedTree) or op1 == empty_tree:
         tmp = LinearCombination()
         tmp += op1
@@ -185,4 +165,38 @@ def linCombCommutator(op1, op2, max_order=None):
 
 
 def treeCommutator(op1, op2):
+    """Return :math:`op1 \curvearrowright op2 - op2 \curvearrowright op1`
+    as a :class:`LinearCombination`."""
     return graft(op1, op2) - graft(op2, op1)
+
+
+def _subtrees_for_antipode(tree):
+    result = LinearCombination()
+    tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
+    if tmp:
+        tmp2 = [elem.items() for elem in tmp]  # TODO: Try using iterators.
+        for item in product(*tmp2):  # iterator over all combinations.
+            tensorproducts, factors = zip(*item)
+            multiplicity = 1
+            for factor in factors:
+                multiplicity *= factor
+            cuttings, to_be_grafted = zip(*tensorproducts)
+            with Forest().clone() as forest_of_cuttings:
+                for forest in cuttings:
+                    forest_of_cuttings.inplace_multiset_sum(forest)
+            result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += multiplicity
+    result[(empty_tree, tree)] = 0  # TODO: FIND NICER WAY.
+    return result
+
+
+def _split(tree):
+    result = LinearCombination()
+    for childtree, multiplicity in tree.items():
+        amputated_tree = tree.sub(childtree)
+        result[(childtree, amputated_tree)] = multiplicity
+        childSplits = _split(childtree)
+        for pair, multiplicity2 in childSplits.items():
+            new_tree = amputated_tree.add(pair[1])
+            new_pair = (pair[0], new_tree)
+            result[new_pair] = multiplicity * multiplicity2
+    return result

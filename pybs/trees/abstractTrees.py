@@ -32,7 +32,7 @@ class AbstractUnorderedRootedTree(FrozenMultiset):
             new_self.inplace_add(other)
             return type(self)(new_self)
         elif isinstance(other, Number):
-            from pybs.combinations.linearCombination import LinearCombination
+            from pybs.utils.linearCombination import LinearCombination
             # TODO: Nasty work around
             tmp = LinearCombination()
             tmp[self] = other

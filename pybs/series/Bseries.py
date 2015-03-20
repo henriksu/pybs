@@ -1,10 +1,12 @@
 from fractions import Fraction
 
-from pybs.combinations import empty_tree, LinearCombination, Forest
+from pybs.utils import LinearCombination
+from pybs.combinations import empty_tree, Forest
 from pybs.unordered_tree import UnorderedTree, leaf
 
 
 class BseriesRule(object):
+    """This is the docstring for BseriesRule! YEA!!"""
     def __init__(self, arg=None, quadratic_vectorfield=False):
         if arg is None:
             self._call = lambda x: 0

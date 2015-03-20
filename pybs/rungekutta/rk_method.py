@@ -24,7 +24,7 @@ class RK_method(object):
     @property
     @memoized
     def order(self):
-#        a = exponential
+        # a = exponential
         b = self.phi()
         return equal_up_to_order(exponential, b)
 

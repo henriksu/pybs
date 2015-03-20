@@ -16,7 +16,10 @@ from pybs.unordered_tree import \
     leaf, \
     the_trees, \
     number_of_trees_of_order
-from pybs.series import exponential, adjoint, modified_equation
+from pybs.series import \
+    exponential, adjoint, \
+    modified_equation, \
+    tree_pairs_of_order
 
 
 def equal_up_to_order(a, b, max_order=None):
@@ -66,7 +69,7 @@ def conjugate_to_symplectic(a, max_order=float("inf")):
         if symmetric_up_to_order(a, order) == order and order % 2 == 0:
             continue
         A = conjugate_symplecticity_matrix(order)
-        b = [alpha(u, v) for u, v in tree_pairs_of_order(order)]
+        b = [alpha(u, v) for u, v in tree_pairs_of_order(order, sort=True)]
         # lstsq "wants" NumPy-matrices, but eats Python-lists OK.
         res = lstsq(A, b)[1]  # square of 2-norm in a 1x1 matrix/ndarray.
         if res > 10.0**(-14):  # TODO: Choose a good tolerance.
@@ -78,8 +81,8 @@ def conjugate_symplecticity_matrix(order):
     "An m_(order) by m_(order-1) matrix of integers. \
     Independent of the method under consideration."
     A = []
-    list_of_pairs1 = tree_pairs_of_order(order)
-    list_of_pairs2 = tree_pairs_of_order(order-1)
+    list_of_pairs1 = tree_pairs_of_order(order, sort=True)
+    list_of_pairs2 = tree_pairs_of_order(order-1, sort=True)
     for pair in list_of_pairs1:
         tmp = [0] * m(order-1)  # TODO: vector of m_(order-1) zeros.
         for tree, multiplicity in symp_split(pair[0]).items():
@@ -100,23 +103,6 @@ def conjugate_symplecticity_matrix(order):
 
         A.append(tmp)
     return A
-
-
-def tree_pairs_of_order(order):
-    "Returns a list of tuples of functions. \
-    Each tuple considered as an unordered pair is returned exactly once."
-    result = []
-    max_order = order / 2  # Intentional truncation in division.
-    for order1 in range(1, max_order + 1):
-        order2 = order - order1
-        # Sorting is important for reproducability.
-        for tree1 in trees_of_order(order1, sort=True):
-            for tree2 in trees_of_order(order2, sort=True):
-                # TODO: I think some trees are repeated! Merge with the other similar case.
-                if (order1 != order2) or \
-                   ((order1 == order2) and (tree2, tree1) not in result):
-                    result.append((tree1, tree2))
-    return result
 
 
 def symplectic_up_to_order(a, max_order=None):
