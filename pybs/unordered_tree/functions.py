@@ -1,11 +1,15 @@
 from operator import __add__ as _add
 from itertools import imap as _imap
 
-from pybs.utils import memoized
+from pybs.utils import memoized2 as memoized
 
 
 @memoized
 def number_of_trees_of_order(n):
+    """Returns the number of unordered rooted trees with exactly *n* vertices.
+
+    Uses the formula XYZ from Sloane OEIS.
+    """
     if n < 2:
         return n
     result = 0

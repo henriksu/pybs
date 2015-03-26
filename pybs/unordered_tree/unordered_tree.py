@@ -9,6 +9,13 @@ from pybs.unordered_tree import treeType, number_of_trees_up_to_order
 
 
 class UnorderedTree(ClonableMultiset):
+    r"""Class whose elements represents unabeled, unordered rooted trees.
+
+    A tree is represented as a multiset of *child trees*.
+    That is, the internal organization closely resemples the
+    notation :math:`\tau = [\tau_1^{m_1}, \dots, \tau_k^{m_k}]`
+    known from the literature.
+    """
     # __slots__ = ('__weakref__',)
 
     def __init__(self, arg=0):
@@ -38,6 +45,7 @@ class UnorderedTree(ClonableMultiset):
             ClonableMultiset.__init__(self, arg)
 
     def __bool__(self):
+        # TODO: Chek. SHouldnt it be "True"?
         return False
 
     multiplicities = ClonableMultiset.values
@@ -53,9 +61,16 @@ class UnorderedTree(ClonableMultiset):
             return '[]'  # TODO: Remove IF.
 
     def latex(self):
+        # TODO: Implement properly.
         return str(self)
 
     def butcher_product(self, other):
+        r"""Return the Butcher product
+        :math:`self \diamond other`
+
+        The Butcher product is formed by adding *other* to
+        the multiset of children of self.
+        """
         if isinstance(other, type(self)):
             with self.clone() as result:
                 result.inplace_add(other)
@@ -70,7 +85,12 @@ class UnorderedTree(ClonableMultiset):
             return NotImplemented
 
     def __cmp__(self, other):  # lt
-        'Ordering due to P.Leone (2000) PhD thesis.'
+        r"""Ordering due to P.Leone (2000) PhD thesis.
+
+        This is a total ordering.
+        For most purposes it is just used to define a suitable bijection
+        between :math:`T` and :math:`\mathbb{N}`.
+        """
         if not isinstance(other, type(self)):
             return NotImplemented
         if self is other or ClonableMultiset.__eq__(self, other):
@@ -452,7 +472,13 @@ class FreeTree(object):
         return str(self.representative)
 
     def __cmp__(self, other):
-        'Ordering based on ordering of representative.'
+        """Ordering based on ordering of representative.
+
+        This is the same as Murua's definition 8 in
+        "Formal series and numerical integrators, Part I:
+        Systems of ODEs and symplectic integrators",
+        except the representative and order conditions are not the same.
+        """
         if not isinstance(other, type(self)):
             return NotImplemented
         if self is other:
