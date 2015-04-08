@@ -8,7 +8,7 @@ from pybs.unordered_tree.functions import \
     number_of_trees_up_to_order, \
     number_of_tree_pairs_of_total_order
 # from pybs.unordered_tree.freeTrees import ?
-from pybs.unordered_tree.unordered_tree import \
+from pybs.unordered_tree.unordered_trees import \
     UnorderedTree, \
     leaf, \
     the_trees, \

@@ -25,11 +25,24 @@ class UnorderedTree(ClonableMultiset):
             elif arg == '[]':
                 ClonableMultiset.__init__(self)
             else:
-                arg = arg[1:-1].split(',')
-                childtrees = []
-                for elem in arg:
-                    childtrees.append(UnorderedTree(elem))
-                ClonableMultiset.__init__(self, childtrees)
+                arg = arg[1:-1]
+                count = 0
+                list_of_children = []
+                start = 0
+                stop = 0
+                for char in arg:
+                    if char == ',' and count == 0:
+                        list_of_children.append(UnorderedTree(arg[start:stop]))
+                        start = stop + 1
+                        stop = start
+                    else:
+                        stop += 1
+                        if char == '[':
+                            count += 1
+                        elif char == ']':
+                            count -= 1
+                list_of_children.append(UnorderedTree(arg[start:stop]))
+                ClonableMultiset.__init__(self, list_of_children)
         elif arg == 0:
             ClonableMultiset.__init__(self)
         elif isinstance(arg, ClonableMultiset):

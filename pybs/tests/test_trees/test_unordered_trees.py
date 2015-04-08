@@ -157,6 +157,7 @@ class Third_order_tree_no1(unittest.TestCase):
         self.assertEqual(tree3, self.tree)
         tree4 = UnorderedTree('[[],[]]')
         self.assertEqual(tree4, self.tree)
+        tree5 = UnorderedTree('[[[],[]]]')
 
     def test_number_of_subtrees(self):
         self.assertEqual(2, self.tree.number_of_children())
