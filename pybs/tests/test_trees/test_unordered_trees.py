@@ -53,6 +53,7 @@ class first_order_tree(unittest.TestCase):
     def test_str(self):
         tree1 = leaf
         self.assertEqual('[]', str(tree1))
+        self.assertEqual('b', tree1._planar_forest_str())
         tree2 = UnorderedTree()
         self.assertEqual(str(tree1), str(tree2))
 
@@ -104,6 +105,7 @@ class Second_order_tree(unittest.TestCase):
 
     def test_str(self):
         self.assertEqual('[[]]', str(self.tree))
+        self.assertEqual('b[b]', self.tree._planar_forest_str())
 
     def test_equality(self):
         tree2 = leaf
@@ -149,6 +151,7 @@ class Third_order_tree_no1(unittest.TestCase):
 
     def test_str(self):
         self.assertEqual('[[],[]]', str(self.tree))
+        self.assertEqual('b[b,b]', self.tree._planar_forest_str())
 
     def test_equality(self):
         tree2 = UnorderedTree(Forest())

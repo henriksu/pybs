@@ -7,3 +7,5 @@ from multiset import \
     FrozenMultiset
 from clonable_multiset import ClonableMultiset
 from linearCombination import LinearCombination
+from planarforest import generate_forest
+from tikz2svg import tikz2svg

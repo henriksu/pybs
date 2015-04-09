@@ -4,7 +4,7 @@ from fractions import Fraction
 from copy import copy
 from itertools import ifilter, count as _count
 
-from pybs.utils import ClonableMultiset
+from pybs.utils import ClonableMultiset, generate_forest, tikz2svg
 from pybs.unordered_tree import treeType, number_of_trees_up_to_order
 
 
@@ -73,9 +73,35 @@ class UnorderedTree(ClonableMultiset):
         else:
             return '[]'  # TODO: Remove IF.
 
-    def latex(self):
-        # TODO: Implement properly.
-        return str(self)
+    def _planar_forest_str(self):
+        if self:
+            return 'b[' + ','.join([elem._planar_forest_str() for elem in sorted(self.elements())]) + ']'
+        else:
+            return 'b'
+
+    def _repr_svg_(self):  # TODO: REMOVE THE l IN THE NAME!
+        # TODO: Implement properly. Rename tikz()?
+        the_string = self._planar_forest_str()
+        forest_thing = generate_forest(the_string)
+        tikz_string = str(forest_thing)
+        tikz_string = """\
+        \\tikzstyle planar forest=[scale=0.17, sibling distance=0, level distance=0, semithick]
+        \\tikzstyle planar forest node=[scale=0.28, shape=circle, semithick, draw]
+        \\tikzstyle b=[style=planar forest node, fill=black]
+        """ + tikz_string
+        svg_data = tikz2svg(tikz_string)
+        return svg_data
+
+#    def _repr_latex_(self):
+#        the_string = self._planar_forest_str()
+#        forest_thing = generate_forest(the_string)
+#        tikz_string = str(forest_thing)
+#        tikz_string = """\
+#        \\tikzstyle planar forest=[scale=0.17, sibling distance=0, level distance=0, semithick]
+#        \\tikzstyle planar forest node=[scale=0.28, shape=circle, semithick, draw]
+#        \\tikzstyle b=[style=planar forest node, fill=black]
+#        """ + tikz_string
+#        return '$' + tikz_string + '$'
 
     def butcher_product(self, other):
         r"""Return the Butcher product
