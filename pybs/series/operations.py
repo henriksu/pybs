@@ -262,6 +262,7 @@ def conjugate_by_commutator(a, c):
 
 def adjoint(a):
     """The adjoint is the inverse with reversed time step."""
+    # TODO: REFERENCE!
     b = inverse(a)
 
     def new_rule(tree):
