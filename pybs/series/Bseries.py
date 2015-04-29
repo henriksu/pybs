@@ -109,7 +109,7 @@ def _kahan(tree):
     if tree.is_tall():
         return Fraction(1, (2 ** (tree.order()-1)) * tree.symmetry())
     else:
-        return 0
+        return 0  # TODO: Necessary??
 
 
 def _AVF_old(a, tree):

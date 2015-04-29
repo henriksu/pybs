@@ -110,7 +110,7 @@ def log(a):
             result += ((-1)**(n+1)) * Fraction(b(tree), n)
         return result
 #    return BseriesRule(new_rule)
-    return VectorfieldRule(new_rule)  # TODO: is VectorfieldRUle always right??
+    return VectorfieldRule(new_rule)  # TODO: is VectorfieldRule always right??
 #    result = BseriesRule(new_rule)
 #    if a.quadratic_vectorfield:
 #        result = remove_non_binary(result)
@@ -268,6 +268,7 @@ def adjoint(a):
     def new_rule(tree):
         return (-1)**tree.order() * b(tree)
     return BseriesRule(new_rule)
+# TODO: Adjoint of a modified equation p. 324 HLW.
 
 
 def series_commutator(a, b):
