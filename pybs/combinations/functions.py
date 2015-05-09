@@ -102,7 +102,7 @@ def subtrees(tree):
 
 
 def antipode_ck(tree):
-    """Antipode in the HCK Hopf-algebra"""
+    """Antipode in the Butcher, Connes, Kreimer Hopf-algebra"""
     # TODO: Should be memoized, but linearCOmbination is mutable.
     # Make LinComb clonable??
     result = LinearCombination()

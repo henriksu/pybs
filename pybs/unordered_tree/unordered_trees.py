@@ -105,7 +105,7 @@ class UnorderedTree(ClonableMultiset):
 
     def butcher_product(self, other):
         r"""Return the Butcher product
-        :math:`self \diamond other`
+        :math:`self \circ other`
 
         The Butcher product is formed by adding *other* to
         the multiset of children of self.
@@ -239,6 +239,7 @@ class UnorderedTree(ClonableMultiset):
             half_order = Fraction(self.order(), 2)
             for childtree in self:
                 if childtree.order() > half_order:
+                    # Shift towards childtree.
                     amputated_tree = self.sub(childtree)
                     shifted_tree = childtree.butcher_product(amputated_tree)
                     free_tree = shifted_tree.get_free_tree()
@@ -296,6 +297,9 @@ class Trees(object):
                 self[order].index(tree) + 1
 
     def non_superfluous_index(self, tree):
+        """WHERE IS THIS USED?
+
+        """
         if tree.superfluous:
             raise ValueError
         order = tree.order()
@@ -319,7 +323,7 @@ class TreeOrder(object):  # TODO: Find an enum type.
         self._free_dict = dict()
         #self.tree_generator  # TODO: Needed?
 
-    def __hash__(self):  # It appears immutable.
+    def __hash__(self):  # OK, since ti does appears immutable to the outside.
         return hash((hash(self.order), hash(self.tree_type)))
 
     def __eq__(self, other):
@@ -442,16 +446,11 @@ def tree_generator(sort=False, tree_type=treeType.ordinary):
 
 
 def _ordinary_tree_generator(sort):
-    'Yields all _trees by increasing order.'
+    """Yields all _trees by increasing order.
+
+    """
     for order in _count(1):
-        try:
-            tree_order = the_trees[order]
-            for tree in tree_order.trees(sort):
-                yield tree
-        except KeyError:  # TreeOrder didn't exist.
-            tree_order = TreeOrder(order, treeType.ordinary)
-            the_trees[order] = tree_order
-            for tree in tree_order.trees(sort):
+            for tree in the_trees[order].trees(sort):
                 yield tree
 
 
@@ -513,10 +512,6 @@ class FreeTree(object):
     def __cmp__(self, other):
         """Ordering based on ordering of representative.
 
-        This is the same as Murua's definition 8 in
-        "Formal series and numerical integrators, Part I:
-        Systems of ODEs and symplectic integrators",
-        except the representative and order conditions are not the same.
         """
         if not isinstance(other, type(self)):
             return NotImplemented
@@ -529,6 +524,8 @@ class FreeTree(object):
         return self.representative.order()
 
     def is_symmetric(self):
+        """WHat the HELL is this?
+        """
         if self._symmetric is not None:
             return self._symmetric
         else:
