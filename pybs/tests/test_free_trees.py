@@ -2,7 +2,7 @@ import unittest
 from pybs.unordered_tree import tree_generator
 from pybs.unordered_tree import trees_of_order, the_trees
 from pybs.combinations.forests import empty_tree
-from pybs.unordered_tree.freeTrees import partition_into_free_trees
+from pybs.unordered_tree import partition_into_free_trees
 
 
 class find_representative(unittest.TestCase):

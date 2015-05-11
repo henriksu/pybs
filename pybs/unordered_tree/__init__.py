@@ -14,4 +14,5 @@ from pybs.unordered_tree.unordered_trees import \
     the_trees, \
     tree_generator, \
     trees_of_order, \
-    FreeTree
+    FreeTree,\
+    partition_into_free_trees

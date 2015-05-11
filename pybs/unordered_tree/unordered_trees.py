@@ -19,6 +19,11 @@ class UnorderedTree(ClonableMultiset):
     # __slots__ = ('__weakref__',)
 
     def __init__(self, arg=0):
+        """Initiate a tree from arguments.
+
+        Possible arguments include strings of the format ``[[],[]]``,
+        another :class:`UnorderedTree` and a list/tuple of trees.
+        """
         if isinstance(arg, basestring):
             if not (arg[0] == '[' and arg[-1] == ']'):
                 raise ValueError('Invalid string')
@@ -57,57 +62,47 @@ class UnorderedTree(ClonableMultiset):
             arg = ifilter(lambda x: isinstance(x, UnorderedTree), arg)
             ClonableMultiset.__init__(self, arg)
 
-    def __bool__(self):
-        # TODO: Chek. SHouldnt it be "True"?
-        return False
-
     multiplicities = ClonableMultiset.values
 
-#    def __iter__(self):
-#        return self.elements()
-
     def __str__(self):
-        if self:  # if Non-empty
-            return '[' + \
-                ','.join([str(elem) for elem in self.elements()]) + ']'
-        else:
-            return '[]'  # TODO: Remove IF.
+        """Return a string representation of the format ``[[],[]]``.
+        """
+        return '[' + \
+            ','.join([str(elem) for elem in self.elements()]) + ']'
 
     def _planar_forest_str(self):
+        """Return string for package planar forest.
+
+        Slightly different string representation, e.g. ``b[b,b]``.
+        """
         if self:
-            return 'b[' + ','.join([elem._planar_forest_str() for elem in sorted(self.elements())]) + ']'
+            return 'b[' + ','.join([elem._planar_forest_str() for elem in
+                                    sorted(self.elements())]) + ']'
         else:
             return 'b'
 
-    def _repr_svg_(self):  # TODO: REMOVE THE l IN THE NAME!
+    def _repr_svg_(self):
+        """Needed to make IPython draw trees.
+        """
         # TODO: Implement properly. Rename tikz()?
         the_string = self._planar_forest_str()
         forest_thing = generate_forest(the_string)
         tikz_string = str(forest_thing)
         tikz_string = """\
-        \\tikzstyle planar forest=[scale=0.17, sibling distance=0, level distance=0, semithick]
-        \\tikzstyle planar forest node=[scale=0.28, shape=circle, semithick, draw]
+        \\tikzstyle planar forest=[scale=0.17, sibling distance=0, \
+        level distance=0, semithick]
+        \\tikzstyle planar forest node=[scale=0.28, \
+        shape=circle, semithick, draw]
         \\tikzstyle b=[style=planar forest node, fill=black]
         """ + tikz_string
         svg_data = tikz2svg(tikz_string)
         return svg_data
 
-#    def _repr_latex_(self):
-#        the_string = self._planar_forest_str()
-#        forest_thing = generate_forest(the_string)
-#        tikz_string = str(forest_thing)
-#        tikz_string = """\
-#        \\tikzstyle planar forest=[scale=0.17, sibling distance=0, level distance=0, semithick]
-#        \\tikzstyle planar forest node=[scale=0.28, shape=circle, semithick, draw]
-#        \\tikzstyle b=[style=planar forest node, fill=black]
-#        """ + tikz_string
-#        return '$' + tikz_string + '$'
-
     def butcher_product(self, other):
         r"""Return the Butcher product
         :math:`self \circ other`
 
-        The Butcher product is formed by adding *other* to
+        The Butcher product is formed by adding ``other`` to
         the multiset of children of self.
         """
         if isinstance(other, type(self)):
@@ -118,12 +113,17 @@ class UnorderedTree(ClonableMultiset):
             raise TypeError
 
     def __eq__(self, other):
+        """Check if two UnorderedTrees are equal.
+
+        Done by checking that other is indeed an Unordered tree,
+        and the test equality as ClonableMultisets.
+        """
         if isinstance(other, UnorderedTree):
             return ClonableMultiset.__eq__(self, other)
         else:
             return NotImplemented
 
-    def __cmp__(self, other):  # lt
+    def __cmp__(self, other):
         r"""Ordering due to P.Leone (2000) PhD thesis.
 
         This is a total ordering.
@@ -161,22 +161,31 @@ class UnorderedTree(ClonableMultiset):
                         return -1
 
     def order(self):
+        """Return the total number of vertexes in a tree."""
         result = 1
         for elem, mult in self.items():
             result += mult * elem.order()
         return result
 
     def number_of_children(self):
-        'Number of children.'
+        """Return number of children of the root.
+
+        Multiplicities included. To find the number of different child trees
+        see ClonableMultiset.no_uniques().
+        """
         return sum(self.multiplicities())
 
     def density(self):
+        r"""Return the density, :math:`\gamma`, of a tree.
+        """
         result = self.order()
         for elem, mult in self.iteritems():
             result *= elem.density() ** mult
         return result
 
     def symmetry(self):
+        r"""Return the symmetry, :math:`\sigma`, of a tree.
+        """
         def _subtree_contribution((tree, multiplicity)):
             return tree.symmetry() ** multiplicity * \
                 factorial(multiplicity)
@@ -184,12 +193,17 @@ class UnorderedTree(ClonableMultiset):
                       map(_subtree_contribution, self.items()), 1)
 
     def alpha(self):
+        r"""Return the :math:`\alpha` of a tree.
+        """
         return factorial(self.order()) / \
             (self.symmetry() * self.density())
-    # Will always come out integer.
+        # Will always come out integer.
 
     def F(self):
-        'Elementary differential.'
+        """Return elementary differential as a string.
+
+        The returned string is not really suitable for further calculations.
+        """
         result = 'f' + "'" * self.number_of_children()
         if self.number_of_children() == 1:
             result += self.keys()[0].F()
@@ -199,6 +213,7 @@ class UnorderedTree(ClonableMultiset):
         return result
 
     def is_binary(self):
+        """Check if the :class:`UnorderedTree` is a binary tree."""
         if self.number_of_children() > 2:
             return False
         for subtree in self:
@@ -207,6 +222,7 @@ class UnorderedTree(ClonableMultiset):
         return True
 
     def is_tall(self):
+        """Check if the :class:`UnorderedTree` is a tall tree."""
         if self.number_of_children() > 1:
             return False
         for subtree in self:
@@ -215,6 +231,7 @@ class UnorderedTree(ClonableMultiset):
         return True
 
     def is_bushy(self):
+        """Check if the :class:`UnorderedTree` is a bushy tree."""
         if self == leaf:
             return True
         elif self.keys() == [leaf]:
@@ -223,6 +240,7 @@ class UnorderedTree(ClonableMultiset):
             return False
 
     def _is_symmetric(self):
+        """Used to check if free trees are symmetric."""
         if len(self._ms) == 1:
             for tree in self:
                 if tree._is_symmetric():
@@ -233,6 +251,13 @@ class UnorderedTree(ClonableMultiset):
             return False
 
     def get_free_tree(self):
+        """Return the FreeTree representative of `self`.
+
+        Note that the returned object is not necessarily complete in
+        the sense that it knows about all rooted trees it represents.
+        To make sure the rooted tree is complete, call
+        ``the_trees[self.order()].free_trees()``.
+        """
         if self in the_trees[self.order()]._free_dict:
             return the_trees[self.order()]._free_dict[self]
         else:
@@ -250,28 +275,116 @@ class UnorderedTree(ClonableMultiset):
                     return free_tree
                 elif self.order() % 2 == 0 and childtree.order() == half_order:
                     amputated_tree = self.sub(childtree)
-                    if childtree < amputated_tree:  # TODO: Check that this corresponds to Muruas convention.
-                        shifted_tree = childtree.butcher_product(amputated_tree)
+                    if childtree < amputated_tree:
+                        shifted_tree = childtree.butcher_product(
+                            amputated_tree)
                         free_tree = shifted_tree.get_free_tree()
                         free_tree._rooted_trees[self] = -1
-                        the_trees[self.order()]._free_dict[self] = free_tree
-                        return free_tree
                     elif childtree == amputated_tree:
                         free_tree = FreeTree(self, superfluous=True)
-                        the_trees[self.order()]._free_dict[self] = free_tree
-                        return free_tree
                     else:  # non-superfluous
                         free_tree = FreeTree(self, superfluous=False)
-                        the_trees[self.order()]._free_dict[self] = free_tree
-                        return free_tree
-            free_tree = FreeTree(representative=self, superfluous=False)  # Only odd ordered trees.
+                    the_trees[self.order()]._free_dict[self] = free_tree
+                    return free_tree
+            free_tree = FreeTree(representative=self, superfluous=False)
+            # Only odd ordered trees.
             the_trees[self.order()]._free_dict[self] = free_tree
             return free_tree
 
-leaf = UnorderedTree()
+
+class FreeTree(object):
+    """FreeTree-objects represent free trees.
+
+    They are based around the rooted tree representative and
+    a dictionary of rooted trees that are equivalent as free trees.
+    """
+    def __init__(self, representative, superfluous=None):
+        # TODO: check that representative IS indeed a representative.
+        if superfluous is None:
+            # TODO: Make sure the free tree is completed.
+            representative = representative.get_free_tree()
+            self.representative = representative.representative
+            self.superfluous = representative.superfluous
+        else:
+            self.representative = representative
+            self.superfluous = superfluous
+        # TODO: representative.free_tree() = self ?!?
+        self._rooted_trees = {self.representative: 1}
+        # key = euivalent tree,
+        # value = binary kappa relative the representative.
+        # Gets strange error message from _rooted_trees if key is not in it...
+        self.complete = False  # False signifies incomplete OR unknown.
+        self._symmetric = None
+    # TODO: implement member check?
+    # TODO: implement a complete_me(self)
+    # TODO: inherit comparison and order from the representative. Implement!
+
+    def __eq__(self, other):
+        """FreeTree-objects are considered equal iff their representatives are equal.
+        """
+        return self.representative == other.representative
+
+    def __ne__(self, other):
+        return self.representative != other.representative
+
+    def __str__(self):
+        """Return a string reresentative of the free tree.
+
+        This is just the string representative of its
+        rooted tree representative.
+        """
+        return str(self.representative)
+
+    def __cmp__(self, other):
+        """Ordering based on ordering of representative.
+
+        """
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        if self is other:
+            return 0
+        else:
+            return self.representative.__cmp__(other.representative)
+
+    def order(self):
+        """Return the order of the free tree.
+
+        The order of a free tree is the same as the order of all
+        the rooted trees it represents.
+        """
+        return self.representative.order()
+
+    def is_symmetric(self):
+        """Return true if any of its rooted trees are symmetric.
+        """
+        if self._symmetric is not None:
+            return self._symmetric
+        else:
+            if not the_trees[self.order()]._free_trees_are_complete:
+                    the_trees[self.order()].free_trees(False)
+                    # Complete them for symmetry check.
+                    # TODO: Make is_symmetric() force completion of free_tree.
+            for tree in self._rooted_trees:
+                if tree._is_symmetric():
+                    self._symmetric = True
+                    return True
+            else:  # This else-clause is on the for-loop.
+                self._symmetric = False
+                return False
 
 
 class Trees(object):
+    """Class to memoize trees and provide some useful functions.
+
+    One instance, called ``the_trees``, is made as the module is loaded.
+    There is no need to make more.
+
+    Main purpose is to be a dictionary of  :class:`TreeOrder` objects.
+    The TreeOrder object for trees of order `n` is accessed as
+    ``the_trees[n]``.
+    If the TreeOrder object does not exist, it will be made by
+    the ``the_trees`` object and returned.
+    """
     def __init__(self):
         self._orders = dict()
 
@@ -287,7 +400,12 @@ class Trees(object):
         pass
 
     def index(self, tree):
-        'One indexed total indexing respecting the order.'
+        r"""Return a tree's index in :math:`T` or :math:`FT`.
+
+        The index starts at 1 and respects to the total ordering.
+        If the tree object is a FreeTree,
+        the index is only over the free trees.
+        """
         order = tree.order()
         if isinstance(tree, UnorderedTree):
             return number_of_trees_up_to_order(order) + \
@@ -297,8 +415,10 @@ class Trees(object):
                 self[order].index(tree) + 1
 
     def non_superfluous_index(self, tree):
-        """WHERE IS THIS USED?
+        """Return the index of a non-superfluous FreeTree.
 
+        Similar to the above, except that only non-superfluous
+        trees are given indexes.
         """
         if tree.superfluous:
             raise ValueError
@@ -310,6 +430,12 @@ the_trees = Trees()
 
 
 class TreeOrder(object):  # TODO: Find an enum type.
+    """A TreeOrder object provides all the trees of a given order.
+
+    It keeps a set or list of the rooted trees,
+    the free trees and the non-superluous free trees of a given order.
+    The purpose is mainly memoization.
+    """
     def __init__(self, order, tree_type=treeType.ordinary):
         self.order = order
         self.tree_type = tree_type
@@ -321,15 +447,22 @@ class TreeOrder(object):  # TODO: Find an enum type.
         self._non_superfluous_trees = None
         self._non_superfluous_trees_are_sorted = False
         self._free_dict = dict()
-        #self.tree_generator  # TODO: Needed?
 
-    def __hash__(self):  # OK, since ti does appears immutable to the outside.
-        return hash((hash(self.order), hash(self.tree_type)))
-
-    def __eq__(self, other):
-        return self.order == other.order and self.tree_type == other.tree_type
+#    def __hash__(self):  # OK, since ti does appears immutable to the outside.
+#        return hash((hash(self.order), hash(self.tree_type)))
+#
+#    def __eq__(self, other):
+#        return self.order == other.order and self.tree_type == other.tree_type
 
     def trees(self, sort=False):
+        """Return the rooted trees of the order.
+
+        The trees are generated only the first time they are asked for,
+        and they are sorted only the first time they are needed sorted.
+        This is thus a slightly intricate memoization function.
+        The `sort` argument in the following two
+        functions serve the same purpose.
+        """
         if self._trees is not None:
             if not sort:
                 return self._trees
@@ -356,13 +489,18 @@ class TreeOrder(object):  # TODO: Find an enum type.
             for tree in previous_trees:
                 self._trees.update(_graft_leaf(tree))
             if sort:
-                self._trees = tuple(sorted(self._trees))  # Tuple to protect from mutability.
+                self._trees = tuple(sorted(self._trees))
                 self._trees_are_sorted = True
             else:  # Freeze the set
-                self._trees = frozenset(self._trees)  # Modest protection from alteration.
+                self._trees = frozenset(self._trees)
             return self._trees
 
     def free_trees(self, sort=False):
+        """Return the free trees of the order.
+
+        Similar to ``trees()``. Note that the FreeTree objects are guaranteed
+        to know the complete set of rooted trees they represent.
+        """
         # Always use ordinary _trees.
         if self._free_trees_are_complete:
             if (not sort) or self._free_trees_are_sorted:
@@ -383,14 +521,11 @@ class TreeOrder(object):  # TODO: Find an enum type.
                 self._free_trees = frozenset(self._free_trees)
             return self._free_trees
 
-    def number_of_free_trees_up_to_order(self):
-        if self.order == 1:
-            return 0
-        else:
-            return the_trees[self.order-1].number_of_free_trees_up_to_order() + \
-                len(the_trees[self.order-1].free_trees())
-
     def non_superfluous_trees(self, sort=False):
+        """Return the non-superfluous free trees of the order.
+
+        Similar to ``trees()``.
+        """
         if self._non_superfluous_trees is not None:
             if (not sort) or self._non_superfluous_trees_are_sorted:
                 return self._non_superfluous_trees
@@ -412,7 +547,23 @@ class TreeOrder(object):  # TODO: Find an enum type.
                     frozenset(self._non_superfluous_trees)
             return self._non_superfluous_trees
 
+    def number_of_free_trees_up_to_order(self):
+        """Return the number of free trees up to, but not including the order.
+
+        Calculated by counting.
+        """
+        if self.order == 1:
+            return 0
+        else:
+            return the_trees[self.order-1].number_of_free_trees_up_to_order() + \
+                len(the_trees[self.order-1].free_trees())
+
     def number_of_non_superfluous_trees_up_to_order(self):
+        """Return the number of non-superfluous free trees up to,
+        but not including the order.
+
+        Calculated by counting.
+        """
         if self.order == 1:
             return 0
         else:
@@ -420,34 +571,62 @@ class TreeOrder(object):  # TODO: Find an enum type.
                 len(the_trees[self.order-1].non_superfluous_trees())
 
     def index(self, tree):
-        'Zero indexed within the order.'
+        """Return the index of a tree in the order.
+
+        The index starts at zero for the smallest tree of the order.
+        If the tree is a FreeTree, the index only counts free trees.
+        """
         if isinstance(tree, UnorderedTree):
             return self.trees(True).index(tree)
         elif isinstance(tree, FreeTree):
             return self.free_trees(True).index(tree)
 
     def non_superfluous_index(self, tree):
+        """Return the index of a non-superfluous free tree in the order.
+
+        Just as the ``index()``-method.
+        """
         # It's your problem if you enter a rooted tree.
         return self.non_superfluous_trees(True).index(tree)
 
     def tree_with_index(self, index):
+        """Reurn the UnorderedTree with `index` within the order.
+
+        The index starts at zero.
+        """
         return self.trees(True)[index]
 
     def free_tree_with_index(self, index):
+        """Reurn the FreeTree with `index` within the order.
+
+        The index starts at zero.
+        """
         return self.free_trees(True)[index]
 
     def non_superfluous_tree_with_index(self, index):
+        """Reurn the `index`-th non-superfuous free tree within the order.
+
+        The index starts at zero.
+        """
         return self.non_superfluous_trees(True)[index]
 
 
+leaf = UnorderedTree()
+
+
 def tree_generator(sort=False, tree_type=treeType.ordinary):
+    """Return a generator for all the trees.
+
+    If `sort` is true, the trees are returned in sorted order;
+    if not they are returned order by order but otherwise arbitrarily.
+    """
+    # TODO: Implement tree type.
     if tree_type == treeType.ordinary:
         return _ordinary_tree_generator(sort)
 
 
-def _ordinary_tree_generator(sort):
-    """Yields all _trees by increasing order.
-
+def _ordinary_tree_generator(sort=False):
+    """Yields all unordered trees by increasing order.
     """
     for order in _count(1):
             for tree in the_trees[order].trees(sort):
@@ -455,10 +634,12 @@ def _ordinary_tree_generator(sort):
 
 
 def trees_of_order(order, sort=False, tree_type=treeType.ordinary):
-        return the_trees[order].trees(sort)
+    # Kept for backward compatibility
+    return the_trees[order].trees(sort)
 
 
 def _graft_leaf_on_set(oldSet):
+    # Unused.
     newSet = set()
     for tree in oldSet:
         newSet.update(_graft_leaf(tree))
@@ -467,6 +648,11 @@ def _graft_leaf_on_set(oldSet):
 
 
 def _graft_leaf(tree):
+    """Return a set of all trees made by grafting a leaf node on `tree`
+
+    This is the function used to construct all trees of a given order.
+    It is **not** the grafting product, since multiplicity is ignored.
+    """
     result = set()
     result.add(tree.butcher_product(leaf))
     for subtree in tree.keys():
@@ -479,63 +665,10 @@ def _graft_leaf(tree):
     return result
 
 
-class FreeTree(object):
-    def __init__(self, representative, superfluous=None):
-        # TODO: check that representative IS indeed a representative.
-        if superfluous is None:
-            # TODO: Make sure the free tree is completed.
-            representative = representative.get_free_tree()
-            self.representative = representative.representative
-            self.superfluous = representative.superfluous
-        else:
-            self.representative = representative
-            self.superfluous = superfluous
-        # TODO: representative.free_tree() = self ?!?
-        # TODO: are any properties like symmetry shared by all equivalent trees?
-        self._rooted_trees = {self.representative: 1}  # key = euivalent tree, value = binary cappa kappa relative the representative.
-        # Gets strange error message from _rooted_trees if key is not in it... THROW something.
-        self.complete = False  # False signifies incomplete OR unknown.
-        self._symmetric = None
-    # TODO: implement member check?
-    # TODO: implement a complete_me(self)
-    # TODO: inherit comparison and order from the representative. Implement!
-
-    def __eq__(self, other):
-        return self.representative == other.representative
-
-    def __ne__(self, other):
-        return self.representative != other.representative
-
-    def __str__(self):
-        return str(self.representative)
-
-    def __cmp__(self, other):
-        """Ordering based on ordering of representative.
-
-        """
-        if not isinstance(other, type(self)):
-            return NotImplemented
-        if self is other:
-            return 0
-        else:
-            return self.representative.__cmp__(other.representative)
-
-    def order(self):
-        return self.representative.order()
-
-    def is_symmetric(self):
-        """WHat the HELL is this?
-        """
-        if self._symmetric is not None:
-            return self._symmetric
-        else:
-            if not the_trees[self.order()]._free_trees_are_complete:
-                    the_trees[self.order()].free_trees(False)  # Complete them for symmetry check.
-                    # TODO: Make is_symmetric() force completion of free_tree.
-            for tree in self._rooted_trees:
-                if tree._is_symmetric():
-                    self._symmetric = True
-                    return True
-            else:  # This else-clause is on the for-loop.
-                self._symmetric = False
-                return False
+def partition_into_free_trees(list_of_trees):
+    """Return a set of all the free trees from `list_of_trees`.
+    """
+    result = set()
+    for tree in list_of_trees:
+        result.add(tree.get_free_tree())
+    return result
