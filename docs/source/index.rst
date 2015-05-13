@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
 
    trees
-   forests
+   combinations
    series
    utils
 

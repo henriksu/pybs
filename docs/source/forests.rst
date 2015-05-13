@@ -3,5 +3,4 @@ Forests
 .. automodule:: pybs.combinations.forests
    :members:
 
-.. automodule:: pybs.combinations.functions
-   :members:
+MENTION EMPTY_TREE

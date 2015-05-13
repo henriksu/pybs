@@ -11,10 +11,8 @@ def graft(other, base):
     result = LinearCombination()
     if base == empty_tree:
         result += other
-        return result
     elif other == empty_tree:
         result += base
-        return result
     else:
         result += base.butcher_product(other)
         for subtree, multiplicity1 in base.items():
@@ -23,7 +21,7 @@ def graft(other, base):
             for replacement, multiplicity2 in replacements.items():
                 new_tree = amputated_tree.add(replacement)
                 result[new_tree] += multiplicity1 * multiplicity2
-        return result
+    return result
 
 
 def split(tree, truncate=False):
@@ -50,7 +48,7 @@ def symp_split(tree):
 
 
 def subtrees(tree):
-    """Returns the HCK coproduct
+    """Returns the HCK coproduct.
 
     This is function does the heavy lifting when composing B-series.
     """
@@ -142,7 +140,7 @@ def differentiate(thing):
     return result
 
 
-def treeD(tree):
+def treeD(tree): # TODO: USe graft_leaf?
     return graft(leaf, tree)
 
 
