@@ -8,7 +8,7 @@ from pybs.combinations import \
     split, \
     subtrees, \
     antipode_ck, \
-    treeCommutator as tree_commutator
+    tree_commutator as tree_commutator
 from pybs.series import \
     BseriesRule, \
     VectorfieldRule, \

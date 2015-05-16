@@ -25,7 +25,12 @@ def graft(other, base):
 
 
 def split(tree, truncate=False):
-    """Splits a tree."""  # TODO: Check that this is the right way around!!!!!!
+    """Return the splittings of a tree as a linear combination.
+
+    The return value is a linear combination of tuples.
+    The 0th element is the cutting, the 1st element is the subtree.
+    Both elements are :class:`UnorderedTree`, except if it is the empty tree.
+    """
     result = _split(tree)
     if not truncate:
         result[(tree, empty_tree)] = 1
@@ -33,7 +38,10 @@ def split(tree, truncate=False):
 
 
 def symp_split(tree):
-    """Perform the split needed for symplecticity checks."""
+    """Perform the split needed for symplecticity checks.
+
+    It differs from the ``split``-function
+    by WHAT?"""
     result = LinearCombination()
     for childtree, multiplicity in tree.items():
         amputated_tree = tree.sub(childtree)
@@ -48,14 +56,17 @@ def symp_split(tree):
 
 
 def subtrees(tree):
-    """Returns the HCK coproduct.
+    """Return the HCK coproduct.
 
     This is function does the heavy lifting when composing B-series.
+    The return value is a :class:`LinearCombination` of 2 tuples.
+    The 0th element in the tuples are the forests of cutting,
+    while the 1st element is the subtree.
     """
     result = LinearCombination()
     if tree == empty_tree:
         result += (empty_tree, empty_tree)
-        return result  # TODO: IS THIS NECESSARY?
+        return result
     elif isinstance(tree, Forest):
         if tree.number_of_trees() == 1:
             for elem in tree:
@@ -64,7 +75,6 @@ def subtrees(tree):
             for elem in tree:
                 amputated_forest = tree.sub(elem)
                 break
-            result = LinearCombination()
             for pair1, multiplicity1 in subtrees(elem).items():
                 for pair2, multiplicity2 in subtrees(amputated_forest).items():
                     if isinstance(pair1[1], UnorderedTree):
@@ -81,9 +91,10 @@ def subtrees(tree):
     result[(Forest((tree,)), empty_tree)] = 1
     tmp = [subtrees(child_tree) for child_tree in tree.elements()]
     # TODO: more efficient looping.
+    # TODO: The multiplicities in "tree" are accounted for by "elements()".    
     if tmp:
-        tmp2 = [elem.items() for elem in tmp]  # TODO: Try using iterators.
-        for item in product(*tmp2):  # iterator over all combinations.
+        tmp = [elem.items() for elem in tmp]  # TODO: Try using iterators.
+        for item in product(*tmp):  # iterator over all combinations.
             tensorproducts, factors = zip(*item)
             multiplicity = 1
             for factor in factors:
@@ -100,7 +111,7 @@ def subtrees(tree):
 
 
 def antipode_ck(tree):
-    """Antipode in the Butcher, Connes, Kreimer Hopf-algebra"""
+    """Return the antipode in the Butcher, Connes, Kreimer Hopf-algebra."""
     # TODO: Should be memoized, but linearCOmbination is mutable.
     # Make LinComb clonable??
     result = LinearCombination()
@@ -158,22 +169,26 @@ def linCombCommutator(op1, op2, max_order=None):
     for tree1, factor1 in op1.items():
         for tree2, factor2 in op2.items():
             if (not max_order) or tree1.order() + tree2.order() <= max_order:
-                result += (factor1 * factor2) * treeCommutator(tree1, tree2)
+                result += (factor1 * factor2) * tree_commutator(tree1, tree2)
     return result
 
 
-def treeCommutator(op1, op2):
+def tree_commutator(op1, op2):
     """Return :math:`op1 \curvearrowright op2 - op2 \curvearrowright op1`
     as a :class:`LinearCombination`."""
     return graft(op1, op2) - graft(op2, op1)
 
 
 def _subtrees_for_antipode(tree):
+    """Slightly modified edition of ``subtrees`` used by ``antipode_ck``
+    
+    DIFFERS BY?!?
+    """
     result = LinearCombination()
     tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
     if tmp:
-        tmp2 = [elem.items() for elem in tmp]  # TODO: Try using iterators.
-        for item in product(*tmp2):  # iterator over all combinations.
+        tmp = [elem.items() for elem in tmp]  # TODO: Try using iterators.
+        for item in product(*tmp):  # iterator over all combinations.
             tensorproducts, factors = zip(*item)
             multiplicity = 1
             for factor in factors:
@@ -188,6 +203,8 @@ def _subtrees_for_antipode(tree):
 
 
 def _split(tree):
+    """Return the splitting of tree except for :math:`tree \otimes \emptyset`.
+    """
     result = LinearCombination()
     for childtree, multiplicity in tree.items():
         amputated_tree = tree.sub(childtree)

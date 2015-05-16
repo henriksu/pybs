@@ -5,6 +5,6 @@ from functions import \
     subtrees, \
     differentiate, \
     linCombCommutator, \
-    treeCommutator, \
+    tree_commutator, \
     antipode_ck, \
     symp_split

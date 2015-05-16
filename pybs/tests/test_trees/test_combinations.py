@@ -5,7 +5,7 @@ from pybs.utils import LinearCombination
 from pybs.unordered_tree import UnorderedTree, leaf, tree_generator
 from pybs.combinations.forests import empty_tree
 from pybs.combinations import Forest, differentiate as D, \
-    treeCommutator
+    tree_commutator
 from pybs.combinations.functions import subtrees, \
     _subtrees_for_antipode, antipode_ck, symp_split
 
@@ -13,13 +13,13 @@ from pybs.combinations.functions import subtrees, \
 class test_commutator(unittest.TestCase):
     def test_empty(self):
         tree = empty_tree
-        self.assertEqual(treeCommutator(tree, tree), LinearCombination())
+        self.assertEqual(tree_commutator(tree, tree), LinearCombination())
 
     def test_first_and_empty(self):
         tree1 = empty_tree
         tree2 = leaf
-        self.assertEqual(treeCommutator(tree1, tree2), LinearCombination())
-        self.assertEqual(treeCommutator(tree2, tree2), LinearCombination())
+        self.assertEqual(tree_commutator(tree1, tree2), LinearCombination())
+        self.assertEqual(tree_commutator(tree2, tree2), LinearCombination())
 
     def test_first_second(self):
         tree1 = leaf
@@ -28,7 +28,7 @@ class test_commutator(unittest.TestCase):
         forest1 = Forest([tree1, tree1])
         tree3 = UnorderedTree(forest1)
         expected -= tree3
-        result = treeCommutator(tree2, tree1)
+        result = tree_commutator(tree2, tree1)
         self.assertEqual(result, expected)
 
 
