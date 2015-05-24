@@ -11,7 +11,12 @@ class ClonableMultiset(Clonable):
     __slots__ = ('_ms',)
 
     def __init__(self, iterable=0, *args, **kwargs):
-        # ClonableElement.__init__(self, parent=Parent())
+        """Make a new ClonableMultiset.
+
+        If an argument is given, it is added to the new instance using
+        ``inplace_multiset_sum``.
+        The result is immutable.
+        """
         Clonable.__init__(self)
         Clonable.__setattr__(self, '_ms', dict())
         self.inplace_multiset_sum(iterable, **kwargs)
@@ -21,11 +26,15 @@ class ClonableMultiset(Clonable):
         pass
 
     def __copy__(self):
+        """Return a shallow mutable copy of self."""
         result = self.__class__(self)
         result._set_mutable()
         return result
 
     def __nonzero__(self):
+        """Return true if set is not empty.
+
+        Used to determine boolean value."""
         return bool(self._ms)
 
     def __setitem__(self, key, value):
@@ -61,7 +70,7 @@ class ClonableMultiset(Clonable):
             del self._ms[elem]
 
     def inplace_multiset_sum(self, iterable=0, **kwds):
-        'Inplace multiset sum'
+        """Updates :math:`A` to :math:`A \uplus B`."""
         self._require_mutable()
         if iterable is not 0:
             self_get = self._ms.get
@@ -86,17 +95,28 @@ class ClonableMultiset(Clonable):
             self.inplace_multiset_sum(kwds)
 
     def inplace_add(self, elem):
-        'Fast inplace increment/addition of element.'
+        """"Add `elem` to `self` with multiplicity 1.
+
+        If elem is already in A its multiplicity is increased by one.
+        """
         self._require_mutable()
         self._ms[elem] = self._ms.get(elem, 0) + 1
 
     def add(self, elem):
+        """Same as above, except the result is returned as a new instance of
+        ClonableMultiset."""
         with self.clone() as result:
             result._ms[elem] = result._ms.get(elem, 0) + 1
         return result
 
     def inplace_multiset_difference(self, iterable=None, **kwds):
-        'Inplace multiset difference. Not truncated.'
+        """Update :math:`A` to :math:`A \setminus B`.
+
+        Raises an exception if the multiplicity of an element in B is larger
+        than the multiplicity of the same element in A.
+        This is non-standard behavior for mathematical multisets, but a sound
+        check when they are used for trees.
+        """
         self._require_mutable()
         if iterable is not None:
             self_get = self._ms.get
@@ -123,6 +143,10 @@ class ClonableMultiset(Clonable):
             self.inplace_multiset_difference(kwds)
 
     def scalar_mul(self, n):
+        r"""Returns :math:`n \bigotimes A` as a new instance.
+
+        That is a multiset where the multiplicities are scaled by `n`.
+        """
         if isinstance(n, int):
             with self.clone() as result:
                 for key in self.iterkeys():
@@ -135,7 +159,7 @@ class ClonableMultiset(Clonable):
             return NotImplemented
 
     def multiset_sum(self, other):  # Old name: __add__
-        'Multiset sum. Returns new instance.'
+        """Return :math:`A \uplus B` as a new instance."""
         if isinstance(other, ClonableMultiset):
             with self.clone() as result:
                 for elem, count in other.items():
@@ -145,7 +169,12 @@ class ClonableMultiset(Clonable):
             return NotImplemented
 
     def multiset_difference(self, other):  # Old name: __sub__
-        'Zero truncated multiset difference. Returns new instance.'
+        """Return :math:`A \setminus B` as a new instance.
+
+        .. note:: Does allow a multiplicity in B to be larger than the
+           corresponding multiplicity in A,
+           the multiplicity of the element in question is 0.
+        """
         # TODO: Choose the not-truncated?
         if isinstance(other, ClonableMultiset):
             with self.__class__().clone() as result:
@@ -158,7 +187,11 @@ class ClonableMultiset(Clonable):
             return NotImplemented
 
     def __or__(self, other):
-        'Multiset union'  # TODO: Correctly assosciated to "|". Rename?
+        """Return the multiset union :math:`A \cup B` as a new instance.
+
+        This is the same syntax as set union in Python (``|``).
+        """
+        # TODO: Correctly assosciated to "|". Rename?
         if isinstance(other, ClonableMultiset):
             with self.__class__().clone() as result:
                 for elem, count in self.items():
@@ -173,7 +206,10 @@ class ClonableMultiset(Clonable):
             return NotImplemented
 
     def __and__(self, other):
-        'Multiset intersection'  # TODO: Correctly associated to "&". Rename?
+        """"Return the multiset intersection :math:`A \cap B` as a new instance.
+
+        This is the same syntax as set intersection in Python (``&``)."""
+        # TODO: Correctly associated to "&". Rename?
         if isinstance(other, ClonableMultiset):
             with self.__class__().clone() as result:
                 for elem, count in self.items():
@@ -186,14 +222,16 @@ class ClonableMultiset(Clonable):
             return NotImplemented
 
     def cardinality(self):
-        'Cardinality. Sum of multiplicities.'
+        """Return sum of multiplicities."""
         return reduce(_add, self._ms.values(), 0)
 
     def no_uniques(self):
-        'Number of different elements in the multiset.'
+        """Number of different elements in the multiset."""
         return len(self._ms)
 
     def most_common(self, n=None):
+        """Return the `n` most common elements.
+        """
         if n is None:
             return sorted(self.iteritems(), key=_itemgetter(1), reverse=True)
         return _heapq.nlargest(n, self.iteritems(), key=_itemgetter(1))
@@ -228,18 +266,23 @@ class ClonableMultiset(Clonable):
         return iter(self._ms)
 
     def iteritems(self):
+        """Return iterator over (key,value)-pairs."""
         return self._ms.iteritems()
 
     def iterkeys(self):
+        """Return iterator over keys."""
         return self._ms.iterkeys()
 
     def keys(self):
+        """Return list of keys (elements)."""
         return self._ms.keys()
 
     def values(self):
+        """Return list of values (multiplicities)"""
         return self._ms.values()
 
     def items(self):
+        """Return list of (key,value)-pairs."""
         return self._ms.items()
 
     def sub(self, elem):
@@ -255,12 +298,17 @@ class ClonableMultiset(Clonable):
             return result
 
     def __contains__(self, elem):
+        """Return True if elem is in self."""
         return elem in self._ms
 
     def __bool__(self):
         return bool(self._ms)
 
     def _hash_(self):
+        """Return hash value for multiset.
+
+        Only called if immutable.
+        """
         # It would have been simpler and maybe more obvious to
         # use hash(tuple(sorted(self._d.iteritems()))) from this discussion
         # so far, but this solution is O(n). I don't know what kind of
@@ -271,7 +319,8 @@ class ClonableMultiset(Clonable):
             result ^= hash(pair)
         return result
 
-    def __repr__(self):  # TODO: Do something like this in my classes too!
+    def __repr__(self):
+        """Return a string representative of the ClonableMultiset-object."""
         if not self:
             return '%s()' % self.__class__.__name__
         items = ', '.join(map('%r: %r'.__mod__, self.most_common()))

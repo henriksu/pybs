@@ -37,7 +37,7 @@ def equal_up_to_order(a, b, max_order=None):
 
 
 def convergence_order(a):
-    '''Cecks the convergence order of a character.
+    '''Return the convergence order of a B-series representing a flow.
 
     Compares the input to the exact solution.
     '''
@@ -47,7 +47,8 @@ def convergence_order(a):
 
 
 def symmetric_up_to_order(a, max_order=None):
-    '''Return the order up to which 'a', a character, is symmetric.
+    '''Return the order up to which 'a', a B-series representing a flow, is\
+     symmetric.
 
     Calculated by finding the adjoint and comparing.
     If 'max_order' is given, the check stops at 'max_order'
@@ -320,10 +321,10 @@ def not_in_colspan(A, b):
     Determined numerically by lsqr() (least squares) from scipy.sparse.linalg.
     '''
     try:
-        res = lsqr(A, b)
+        result = lsqr(A, b)
     except ZeroDivisionError:
         return False  # Suspecting: Happens if iteration hits exact solution.
     # res[1] = 0: x=0, special case for trivial solution.
     # res[1] = 1: Found (approx) solution to Ax = b.
     # res[1] = 2: Not in colspan, lst.sq. approximation was found.
-    return res[1] != 1 and (res[1] == 2 or res[3] > 10.0**(-10))
+    return result[1] != 1 and (result[1] == 2 or result[3] > 10.0**(-10))

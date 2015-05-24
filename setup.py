@@ -11,7 +11,7 @@ def _license():
 
 
 setup(name='pybs',
-      version='0.1',
+      version='0.2',
       description='A library for computing with trees and B-series',
       long_description=readme(),
       classifiers=[
@@ -28,7 +28,7 @@ setup(name='pybs',
       license=_license(),
       packages=['pybs'],
     install_requires=[
-          'numpy',
+          'numpy', 'scipy', 'enum34'
       ],
     test_suite='nose.collector',
     tests_require=['nose'],
