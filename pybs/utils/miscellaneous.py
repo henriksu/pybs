@@ -36,6 +36,10 @@ class memoized(object):
 
 
 def memoized2(func):
+    """Slightly different memoization.
+
+    Does not confuse autodoc the way other decorators do.
+    """
     @wraps(func)
     def wrapper(*args):
         if args in wrapper.cache:
