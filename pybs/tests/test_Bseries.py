@@ -33,7 +33,6 @@ from pybs.series import \
     hamiltonian_up_to_order, \
     new_hamiltonian_up_to_order, \
 \
-    zero, \
     exponential, \
     unit, \
     _kahan, \
@@ -60,7 +59,7 @@ from pybs.rungekutta.methods import \
 
 class simple_series(unittest.TestCase):
     def test_zero_series(self):
-        rule1 = zero
+        rule1 = BseriesRule()
         tree1 = leaf
         self.assertEqual(0, rule1(tree1))
 

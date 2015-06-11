@@ -3,7 +3,6 @@ from Bseries import \
     VectorfieldRule, \
     ForestRule, \
     exponential, \
-    zero, \
     unit, \
     _kahan, \
     unit_field, \

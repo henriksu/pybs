@@ -58,7 +58,7 @@ def lie_derivative(c, b, truncate=False):
         for pair, multiplicity in pairs.items():
             result += multiplicity * b(pair[0]) * c(pair[1])
         return result
-    return BseriesRule(new_rule)
+    return VectorfieldRule(new_rule)
 
 
 def modified_equation(a):
@@ -92,10 +92,9 @@ def log(a):
     This is the inverse? of :func:`exp`.
     MORE
     """
-    # TODO: The implementation with Lie derivative is MUCH faster. Why?
     if a(empty_tree) != 1:
         raise ValueError(
-            'Can not calculate the logarithm for this BseriesRule.')
+            'Can not calculate the logarithm for this rule.')
 
     @memoized
     def new_rule(tree):
@@ -109,8 +108,7 @@ def log(a):
 #            c = stepsize_adjustment(b, Fraction(1, n))  # TODO: Remove.
             result += ((-1)**(n+1)) * Fraction(b(tree), n)
         return result
-#    return BseriesRule(new_rule)
-    return VectorfieldRule(new_rule)  # TODO: is VectorfieldRule always right??
+    return VectorfieldRule(new_rule)
 #    result = BseriesRule(new_rule)
 #    if a.quadratic_vectorfield:
 #        result = remove_non_binary(result)
@@ -125,7 +123,7 @@ def exp(a):
     """
     if a(empty_tree) != 0:
         raise ValueError(
-            'Can not calculate the exponential for this BseriesRule.')
+            'Can not calculate the exponential for this rule.')
 
     @memoized
     def new_rule(tree):
@@ -179,15 +177,12 @@ def composition_ssa(a, b):
         raise ValueError(
             'Composition can only be performed on consistent B-series.')
 
-    def subRule(pair):
-        return a(pair[0]) * b(pair[1])
-
     @memoized
     def new_rule(tree):
         sub_trees = subtrees(tree)
         result = 0
         for pair, multiplicity in sub_trees.items():
-            result += subRule(pair) * multiplicity
+            result += a(pair[0]) * b(pair[1]) * multiplicity
         return Fraction(result, 2**tree.order())
 
     return BseriesRule(new_rule)
@@ -240,7 +235,7 @@ def inverse(a):
 
 def conjugate(a, c):
     """The conjugate of 'a' with change of coordinates 'c'."""
-    return BseriesRule(composition(inverse(c), composition(a, c)))
+    return composition(inverse(c), composition(a, c))
 
 
 def conjugate_by_commutator(a, c):
@@ -262,11 +257,8 @@ def conjugate_by_commutator(a, c):
 
 def adjoint(a):
     """The adjoint is the inverse with reversed time step."""
-    # TODO: REFERENCE!
-    b = inverse(a)
-
     def new_rule(tree):
-        return (-1)**tree.order() * b(tree)
+        return (-1)**tree.order() * inverse(a)(tree)
     return BseriesRule(new_rule)
 # TODO: Adjoint of a modified equation p. 324 HLW.
 

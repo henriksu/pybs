@@ -6,7 +6,11 @@ from pybs.unordered_tree import UnorderedTree, leaf
 
 
 class BseriesRule(object):
-    """This is the docstring for BseriesRule! YEA!!"""
+    """Objects of this class are B-series rules.
+
+    They treat forests as characters of the Hopf algebra.
+    For infinitesimal characters see :Class:`VectorfieldRule`
+    or :class:`ForestRule`."""
     def __init__(self, arg=None, quadratic_vectorfield=False):
         if arg is None:
             self._call = lambda x: 0
@@ -37,6 +41,10 @@ class BseriesRule(object):
 
 
 class VectorfieldRule(object):
+    """Objects of this class are rules that correspond to the modified equation.
+
+    That means they act on forests as infinitesimal characters.
+    """
     def __init__(self, arg=None, quadratic_vectorfield=False):
         if arg is None:
             self._call = lambda x: 0
@@ -64,6 +72,11 @@ class VectorfieldRule(object):
 
 
 class ForestRule(object):
+    """General element in the dual.
+
+    The behaviour for forests is arbitrary. Use this
+    if the two others are unsuitable.
+    """
 #  Results on forests are not deducable from results on trees.
     def __init__(self, arg=None, quadratic_vectorfield=False):
         if arg is None:
@@ -83,10 +96,6 @@ class ForestRule(object):
             for elem, multiplicity in arg.items():
                 result += self(elem) * multiplicity
             return result
-
-
-def _zero(tree):
-    return 0
 
 
 def _unit(tree):
@@ -151,7 +160,6 @@ def _unit_field(tree):
     return 0
 
 exponential = BseriesRule(_exact)
-zero = BseriesRule(_zero)
 unit = BseriesRule(_unit)
-unit_field = BseriesRule(_unit_field)
+unit_field = VectorfieldRule(_unit_field)
 AVF = BseriesRule(_AVF)

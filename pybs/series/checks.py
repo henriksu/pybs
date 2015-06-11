@@ -153,7 +153,7 @@ def hamiltonian_up_to_order(a, max_order=None):
     # TODO: Check convergence order (equal to 01000...)
     # and check only from there upwards.
     if a(empty_tree) != 0 or a(leaf) == 0:
-        return None  # TODO: Throw some kind of exception
+        return None  # TODO: Throw some kind of exception?
     orders = count(start=2)
     if max_order:
         orders = islice(orders, max_order - 1)
@@ -187,7 +187,6 @@ def _symplecticity_condition(a, tree1, tree2):
 
 def _hamilton_condition(a, tree1, tree2):
     'Symmetric function in tree1, tree2.'
-    # TODO: extract the sum into another function?
     return a(tree1.butcher_product(tree2)) + \
         a(tree2.butcher_product(tree1)) == 0
 

@@ -89,24 +89,24 @@ def subtrees(tree):
                     result[pair] += multiplicity1 * multiplicity2
             return result
     result[(Forest((tree,)), empty_tree)] = 1
+    if tree == leaf:
+        result[(empty_tree, tree)] = 1
+        return result
     tmp = [subtrees(child_tree) for child_tree in tree.elements()]
     # TODO: more efficient looping.
     # TODO: The multiplicities in "tree" are accounted for by "elements()".    
-    if tmp:
-        tmp = [elem.items() for elem in tmp]  # TODO: Try using iterators.
-        for item in product(*tmp):  # iterator over all combinations.
-            tensorproducts, factors = zip(*item)
-            multiplicity = 1
-            for factor in factors:
-                multiplicity *= factor
-            cuttings, to_be_grafted = zip(*tensorproducts)
-            with Forest().clone() as forest_of_cuttings:
-                for forest in cuttings:
-                    forest_of_cuttings.inplace_multiset_sum(forest)
-            result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += \
-                multiplicity
-    else:
-        result[(empty_tree, tree)] = 1
+    tmp = [elem.items() for elem in tmp]  # TODO: Try using iterators.
+    for item in product(*tmp):  # iterator over all combinations.
+        tensorproducts, factors = zip(*item)
+        multiplicity = 1
+        for factor in factors:
+            multiplicity *= factor
+        cuttings, to_be_grafted = zip(*tensorproducts)
+        with Forest().clone() as forest_of_cuttings:
+            for forest in cuttings:
+                forest_of_cuttings.inplace_multiset_sum(forest)
+        result[(forest_of_cuttings, UnorderedTree(to_be_grafted))] += \
+            multiplicity
     return result
 
 
@@ -181,7 +181,7 @@ def tree_commutator(op1, op2):
 
 def _subtrees_for_antipode(tree):
     """Slightly modified edition of ``subtrees`` used by ``antipode_ck``
-    
+
     DIFFERS BY?!?
     """
     result = LinearCombination()
