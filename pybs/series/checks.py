@@ -74,13 +74,8 @@ def conjugate_to_symplectic(a, max_order=float("inf")):
     conv_order = convergence_order(a)  # Known minimum.
     # Methods of order 2 are always conjugate to symplectic up to order 3:
     first_order_checked = conv_order + 1 + (conv_order == 2)
-    # TODO: Find out why max order is 2*convergence_order. Simplification?
     max_order = min(max_order, 2*conv_order)
     orders = xrange(first_order_checked, max_order+1)
-
-    # FOllowing is slow and abandoned,
-    # because it usually checks too far.
-    # symmetry_order = symmetric_up_to_order(a, max_order)
     _alpha = modified_equation(a)
 
     def alpha(u, v):
@@ -191,22 +186,20 @@ def _hamilton_condition(a, tree1, tree2):
         a(tree2.butcher_product(tree1)) == 0
 
 
-def new_hamiltonian_up_to_order(a, max_order=None):
+def subspace_hamiltonian_up_to_order(a, max_order=None):
     if a(empty_tree) != 0 or a(leaf) == 0:
         return None  # Not vectorfield at all. TODO: exception.
-    orders = count(start=2)  # TODO: start at 2 ? why not? no conditions?
+    orders = count(start=2)
     if max_order:
         orders = islice(orders, max_order - 1)
     for order in orders:
-        A = hamiltonian_matrix(order)
         b = np.asarray(map(a, trees_of_order(order, sort=True)),
                        dtype=np.float64)
-#        b = b.transpose()
-        # lstsq "wants" NumPy-matrices, but eats Python-lists OK.
         if not np.any(b):
             continue  # b is zero vector, no need to check further.
         if order == 2:
             return 1
+        A = hamiltonian_matrix(order)
         if not_in_colspan(A, b):
             return order - 1
     return max_order
@@ -239,9 +232,9 @@ def energy_preserving_upto_order(a, max_order=None):
 
     Uses the method in Celledoni et al. DETAILS
     Input: vector field/Lie ALGEBRA element'''
-    if a(empty_tree) != 0 or a(leaf) == 0:
+    if a(empty_tree) != 0 or a(leaf) != 1:
         return None  # Not vectorfield at all. TODO: exception.
-    orders = count(start=2)  # TODO: start at 2 ? why not 1? no conditions?
+    orders = count(start=2)
     if max_order:
         orders = islice(orders, max_order - 1)
     for order in orders:

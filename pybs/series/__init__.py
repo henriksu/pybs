@@ -31,7 +31,7 @@ from checks import \
     symmetric_up_to_order, \
     symplectic_up_to_order, \
     hamiltonian_up_to_order, \
-    new_hamiltonian_up_to_order, \
+    subspace_hamiltonian_up_to_order, \
     conjugate_to_symplectic, \
     energy_preserving_upto_order, \
     _conjugate_symplecticity_matrix  # TODO: Needed? Private?

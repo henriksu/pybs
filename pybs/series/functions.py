@@ -11,7 +11,7 @@ def tree_pairs_of_order(order, sort=False):
         # Sorting is important for reproducability.
         for tree1 in trees_of_order(order1, sort):
             for tree2 in trees_of_order(order2, sort):
-                # TODO: I think some trees are repeated! Merge with the other similar case.
+                # TODO: I think some trees are repeated.
                 if (order1 != order2) or \
                    ((order1 == order2) and (tree2, tree1) not in result):
                     result.append((tree1, tree2))
