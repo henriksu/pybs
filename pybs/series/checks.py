@@ -2,7 +2,6 @@ from fractions import Fraction
 from itertools import count, islice
 from functools import partial
 
-from numpy.linalg import lstsq
 from scipy import sparse
 from scipy.sparse.linalg import lsqr
 import numpy as np
@@ -25,8 +24,7 @@ from pybs.series import \
 def equal_up_to_order(a, b, max_order=None):
     '''Checks that 'a' and 'b' give the exact same answer for all trees.
     Returns n equals the largest order for which this is true.
-
-    More details'''
+    '''
     if not a(empty_tree) == b(empty_tree):
         return None
     for tree in tree_generator():
@@ -67,9 +65,6 @@ def symmetric_up_to_order(a, max_order=None):
 
 def conjugate_to_symplectic(a, max_order=float("inf")):
     '''Checks to what order  a character 'a' is conjugate to symplectic.
-
-    Uses the method described in XX.
-    DETAILS.
     '''
     conv_order = convergence_order(a)  # Known minimum.
     # Methods of order 2 are always conjugate to symplectic up to order 3:
@@ -84,10 +79,10 @@ def conjugate_to_symplectic(a, max_order=float("inf")):
         if symmetric_up_to_order(a, order) == order and order % 2 == 0:
             continue
         A = _conjugate_symplecticity_matrix(order)
-        b = [alpha(u, v) for u, v in tree_pairs_of_order(order, sort=True)]
-        # lstsq "wants" NumPy-matrices, but eats Python-lists OK.
-        res = lstsq(A, b)[1]  # square of 2-norm in a 1x1 matrix/ndarray.
-        if res > 10.0**(-14):  # TODO: Choose a good tolerance.
+        b = np.asarray(
+            [alpha(u, v) for u, v in tree_pairs_of_order(order, sort=True)],
+            dtype=np.float64)
+        if not_in_colspan(A, b):
             return order - 1
     return max_order
 
@@ -96,7 +91,7 @@ def _conjugate_symplecticity_matrix(order):
     '''An m_(order) by m_(order-1) matrix of integers. \
     Independent of the method under consideration.
 
-    The columns of A are the casis vectors of WHAT?'''
+    Used by 'conjugate_to_symplectic'.'''
     A = []
     list_of_pairs1 = tree_pairs_of_order(order, sort=True)
     list_of_pairs2 = tree_pairs_of_order(order-1, sort=True)
@@ -119,13 +114,12 @@ def _conjugate_symplecticity_matrix(order):
             tmp[the_number] += multiplicity
 
         A.append(tmp)
+    A = np.asarray(A)
     return A
 
 
 def symplectic_up_to_order(a, max_order=None):
-    '''Check to what order a character 'a' is symplectic.
-
-    Uses the method descibed in XX DETAILS.
+    '''Check to what order the character 'a' is symplectic.
     '''
     # TODO: Find convergence order and check only from there upwards.
     if a(empty_tree) != 1:
@@ -142,8 +136,6 @@ def symplectic_up_to_order(a, max_order=None):
 
 def hamiltonian_up_to_order(a, max_order=None):
     '''Check to what order an infinitesimal character is Hamiltonian.
-
-    MORE DETALS. METHOD and stuff.
     '''
     # TODO: Check convergence order (equal to 01000...)
     # and check only from there upwards.
@@ -209,8 +201,6 @@ def subspace_hamiltonian_up_to_order(a, max_order=None):
 def hamiltonian_matrix(order):
     '''returns a matrix whose columns form a basis for \
     Hamiltonian B-series of "order".
-
-    Details.
     '''
     nsft = the_trees[order].non_superfluous_trees(sort=True)
     m = number_of_trees_of_order(order)
@@ -230,8 +220,7 @@ def hamiltonian_matrix(order):
 def energy_preserving_upto_order(a, max_order=None):
     '''Check what order an infinitesimal character is symmetric up to.
 
-    Uses the method in Celledoni et al. DETAILS
-    Input: vector field/Lie ALGEBRA element'''
+    Uses the method of subspaces.'''
     if a(empty_tree) != 0 or a(leaf) != 1:
         return None  # Not vectorfield at all. TODO: exception.
     orders = count(start=2)
@@ -245,8 +234,6 @@ def energy_preserving_upto_order(a, max_order=None):
 
 def _is_energy_preserving_of_order(a, order):
     '''Does the heavy lifting for 'energy_preserving_upto_order'.
-
-    MORE DETAILS.
     '''
     forbidden_trees, interesting_trees = _get_tree_sets(order)
     for tree in forbidden_trees:
@@ -263,10 +250,9 @@ def _is_energy_preserving_of_order(a, order):
 
 # @memoized TODO: Find a way of hashing input.
 def get_energy_matrix(free_tree, collection):
-    '''Return matrix A whose columns form a basis of WHAT
+    '''Return matrix A whose columns form a basis of a certain linear space.
 
     Used by '_is_energy_preserving_of_order'.
-    MORE DETAILS.
     '''
     # collection = sorted(collection)
     le = len(collection)
@@ -285,10 +271,7 @@ def get_energy_matrix(free_tree, collection):
 
 @memoized
 def _get_tree_sets(order):
-    '''Used for checking energy preservation by the method of Celledoni et al. FCM.
-
-    MORE DETAILS
-    '''
+    '''Used for checking energy preservation by the method of subspaces.'''
     # TODO: Better docstring.
     # uninteresting_trees = set()  # Energy preservation does not care.
     forbidden_trees = set()  # Never found in energy preserving series.

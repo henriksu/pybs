@@ -41,7 +41,7 @@ def symp_split(tree):
     """Perform the split needed for symplecticity checks.
 
     It differs from the ``split``-function
-    by WHAT?"""
+    by only splitting off leaves."""
     result = LinearCombination()
     for childtree, multiplicity in tree.items():
         amputated_tree = tree.sub(childtree)
