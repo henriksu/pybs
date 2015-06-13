@@ -63,7 +63,8 @@ def symmetric_up_to_order(a, max_order=None):
     # TODO: check convergence order and exploit it. efficiency.
 
 
-def conjugate_to_symplectic(a, max_order=float("inf")):
+def conjugate_to_symplectic(a, max_order=float("inf"),
+                            quadratic_vectorfield=False):
     '''Checks to what order  a character 'a' is conjugate to symplectic.
     '''
     conv_order = convergence_order(a)  # Known minimum.
@@ -71,7 +72,7 @@ def conjugate_to_symplectic(a, max_order=float("inf")):
     first_order_checked = conv_order + 1 + (conv_order == 2)
     max_order = min(max_order, 2*conv_order)
     orders = xrange(first_order_checked, max_order+1)
-    _alpha = modified_equation(a)
+    _alpha = modified_equation(a, quadratic_vectorfield)
 
     def alpha(u, v):
         return _alpha(u.butcher_product(v)) - _alpha(v.butcher_product(u))

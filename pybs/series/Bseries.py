@@ -11,15 +11,13 @@ class BseriesRule(object):
     They treat forests as characters of the Hopf algebra.
     For infinitesimal characters see :Class:`VectorfieldRule`
     or :class:`ForestRule`."""
-    def __init__(self, arg=None, quadratic_vectorfield=False):
+    def __init__(self, arg=None):
         if arg is None:
             self._call = lambda x: 0
         elif isinstance(arg, LinearCombination):
             self._call = lambda tree: arg[tree]  # TODO: Check that there are no non-trees.
         elif callable(arg):
             self._call = arg
-
-            self.quadratic_vectorfield = quadratic_vectorfield
 
     def __call__(self, arg):
         if isinstance(arg, UnorderedTree) or arg == empty_tree:
@@ -45,15 +43,13 @@ class VectorfieldRule(object):
 
     That means they act on forests as infinitesimal characters.
     """
-    def __init__(self, arg=None, quadratic_vectorfield=False):
+    def __init__(self, arg=None):
         if arg is None:
             self._call = lambda x: 0
         elif isinstance(arg, LinearCombination):
             self._call = lambda tree: arg[tree]  # TODO: Check that this is reasonable.
         elif callable(arg):
             self._call = arg
-
-            self.quadratic_vectorfield = quadratic_vectorfield
 
     def __call__(self, arg):
         if isinstance(arg, UnorderedTree) or arg == empty_tree:
@@ -78,15 +74,13 @@ class ForestRule(object):
     if the two others are unsuitable.
     """
 #  Results on forests are not deducable from results on trees.
-    def __init__(self, arg=None, quadratic_vectorfield=False):
+    def __init__(self, arg=None):
         if arg is None:
             self._call = lambda x: 0
         elif isinstance(arg, LinearCombination):
             self._call = lambda forest: arg[forest]
         elif callable(arg):
             self._call = arg
-
-            self.quadratic_vectorfield = quadratic_vectorfield
 
     def __call__(self, arg):
         if isinstance(arg, (UnorderedTree, Forest)):

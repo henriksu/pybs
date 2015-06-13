@@ -61,7 +61,7 @@ def lie_derivative(c, b, truncate=False):
     return VectorfieldRule(new_rule)
 
 
-def modified_equation(a):
+def modified_equation(a, quadratic_vectorfield=False):
     """The modified equation. Mostely equivalent to :func:`log`."""
     if a(empty_tree) != 1 or a(leaf) != 1:  # TODO: Check last condition.
         raise ValueError(
@@ -78,12 +78,12 @@ def modified_equation(a):
             result -= Fraction(c(tree), factorial(j))
         return result
     result = VectorfieldRule(new_rule)
-    if a.quadratic_vectorfield:
+    if quadratic_vectorfield:
         result = remove_non_binary(result)
     return result
 
 
-def log(a):
+def log(a, quadratic_vectorfield=False):
     """Taking a character to an infinitesimal character.
 
     .. note::
@@ -105,17 +105,15 @@ def log(a):
         b = a_2
         for n in range(2, tree.order() + 1):
             b = composition(b, a_2)
-#            c = stepsize_adjustment(b, Fraction(1, n))  # TODO: Remove.
             result += ((-1)**(n+1)) * Fraction(b(tree), n)
         return result
-    return VectorfieldRule(new_rule)
-#    result = BseriesRule(new_rule)
-#    if a.quadratic_vectorfield:
-#        result = remove_non_binary(result)
-#    return result
+    result = VectorfieldRule(new_rule)
+    if quadratic_vectorfield:
+        result = remove_non_binary(result)
+    return result
 
 
-def exp(a):
+def exp(a, quadratic_vectorfield=False):
     """Taking an infinitesimal character to a character.
 
     This is the inverse? of :func:`log`
@@ -136,18 +134,19 @@ def exp(a):
             result += Fraction(b(tree), factorial(n))
         return result
     result = BseriesRule(new_rule)
-    if a.quadratic_vectorfield:
+    if quadratic_vectorfield:
         result = remove_non_binary(result)
     return result
 
 
 def remove_non_binary(a):
-    """Sets the value at all non-binary trees to zero. TO BE DEPRECATED!"""
+    """Sets the value at all non-binary trees to zero.
+
+    Maybe there is a better way to handle quadratic vectorfields?"""
     base_rule = a._call
-    et = empty_tree
 
     def new_rule(tree):
-        if tree == et or tree.is_binary():
+        if tree == empty_tree or tree.is_binary():
             return base_rule(tree)
         else:
             return 0
@@ -264,7 +263,7 @@ def adjoint(a):
 
 
 def series_commutator(a, b):
-    """Corresponds to tree commutator, just for series. TEST ME"""
+    """Corresponds to tree commutator, just for series."""
     # TODO: TEST ME!
 
     def new_rule(tree):

@@ -497,9 +497,8 @@ class test_conjugate_to_symplectic(unittest.TestCase):
         result = conjugate_to_symplectic(method)
         self.assertEqual(4, result)
 
-        method = BseriesRule(_kahan, quadratic_vectorfield=True)
-        # TODO: Treat quadratic f more professionally!
-        result = conjugate_to_symplectic(method)
+        method = BseriesRule(_kahan)
+        result = conjugate_to_symplectic(method, quadratic_vectorfield=True)
         self.assertEqual(4, result)
 
 
