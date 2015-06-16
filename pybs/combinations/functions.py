@@ -151,7 +151,7 @@ def differentiate(thing):
     return result
 
 
-def treeD(tree): # TODO: USe graft_leaf?
+def treeD(tree):
     return graft(leaf, tree)
 
 
@@ -180,9 +180,11 @@ def tree_commutator(op1, op2):
 
 
 def _subtrees_for_antipode(tree):
-    """Slightly modified edition of ``subtrees`` used by ``antipode_ck``
+    r"""Slightly modified edition of ``subtrees`` used by ``antipode_ck``
 
-    DIFFERS BY?!?
+    Does not include
+    :math:`\tau \otimes \emptyset` and
+    :math:`\emptyset \otimes \tau`.
     """
     result = LinearCombination()
     tmp = [subtrees(child_tree) for child_tree in tree.elements()]  # TODO: more efficient looping.
@@ -204,6 +206,8 @@ def _subtrees_for_antipode(tree):
 
 def _split(tree):
     """Return the splitting of tree except for :math:`tree \otimes \emptyset`.
+
+    Used by `split()`.
     """
     result = LinearCombination()
     for childtree, multiplicity in tree.items():

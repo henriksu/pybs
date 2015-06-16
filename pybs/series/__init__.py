@@ -34,4 +34,4 @@ from checks import \
     subspace_hamiltonian_up_to_order, \
     conjugate_to_symplectic, \
     energy_preserving_upto_order, \
-    _conjugate_symplecticity_matrix  # TODO: Needed? Private?
+    conjugate_symplecticity_matrix  # TODO: Needed? Private?

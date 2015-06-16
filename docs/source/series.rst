@@ -10,8 +10,14 @@ The series
 
 Classes for B-series
 --------------------
-.. automodule:: pybs.series.Bseries
-   :members:
+.. currentmodule:: pybs.series.Bseries
+
+
+.. autoclass:: BseriesRule
+
+.. autoclass:: VectorfieldRule
+
+.. autoclass:: ForestRule
 
 
 .. include operations.rst

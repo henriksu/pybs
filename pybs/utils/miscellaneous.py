@@ -6,7 +6,8 @@ from functools import partial as _partial, wraps
 
 # Copied from https://wiki.python.org/moin/PythonDecoratorLibrary#Memoize
 class memoized(object):
-    '''Decorator. Caches a function's return value each time it is called.
+    '''Decorator. Caches a function's return value.
+
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
     '''

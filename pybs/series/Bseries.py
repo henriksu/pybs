@@ -6,10 +6,10 @@ from pybs.unordered_tree import UnorderedTree, leaf
 
 
 class BseriesRule(object):
-    """Objects of this class are B-series rules.
+    """Objects of this class are B-series rules for numerical methods.
 
     They treat forests as characters of the Hopf algebra.
-    For infinitesimal characters see :Class:`VectorfieldRule`
+    For other B-series rules use :Class:`VectorfieldRule`
     or :class:`ForestRule`."""
     def __init__(self, arg=None):
         if arg is None:
@@ -23,7 +23,6 @@ class BseriesRule(object):
         if isinstance(arg, UnorderedTree) or arg == empty_tree:
             return self._call(arg)
         elif isinstance(arg, Forest):
-#            if self._call(empty_tree) == 1 or arg.number_of_trees() == 1:  # TODO: Do nicer.
             result = 1
             for tree, multiplicity in arg.items():
                 result *= self._call(tree) ** multiplicity
@@ -39,7 +38,8 @@ class BseriesRule(object):
 
 
 class VectorfieldRule(object):
-    """Objects of this class are rules that correspond to the modified equation.
+    """Objects of this class are B-series rules that correspond to modified
+    equations.
 
     That means they act on forests as infinitesimal characters.
     """
@@ -68,10 +68,9 @@ class VectorfieldRule(object):
 
 
 class ForestRule(object):
-    """General element in the dual.
+    """General rule with arbitrary behavior for forest.
 
-    The behaviour for forests is arbitrary. Use this
-    if the two others are unsuitable.
+    Use this if the two others are unsuitable.
     """
 #  Results on forests are not deducable from results on trees.
     def __init__(self, arg=None):
@@ -106,7 +105,6 @@ def _exact(tree):
 
 
 def _kahan(tree):
-    'Directly from Owren'  # TODO: Test
     if tree == empty_tree:
         return 1
     if tree.is_tall():
@@ -116,7 +114,6 @@ def _kahan(tree):
 
 
 def _AVF_old(a, tree):
-    'Directly from Owren'  # TODO: Test
     if tree == empty_tree:
         return 1
     if tree == leaf:
@@ -136,7 +133,7 @@ def _AVF_old(a, tree):
 
 
 def _AVF(tree):
-    "According to ENERGY-PRESERVING RUNGE-KUTTA METHODS, Celledoni et al."
+    "According to `Energy-Preserving Runge-Kutta Methods`, Celledoni et al."
     if tree == empty_tree:
         return 1
     if tree == leaf:

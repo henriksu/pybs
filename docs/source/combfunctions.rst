@@ -3,7 +3,7 @@ Functions involving combinations of trees
 .. currentmodule:: pybs.combinations.functions
 
 
-Functions regarding grafting
+Grafting
 -----------------------------
    
 .. autofunction:: graft(other, base)
@@ -13,7 +13,7 @@ Functions regarding grafting
 .. autofunction:: linCombCommutator(op1, op2, max_order=None)
 
 
-Functions regarding splitting
+Splitting
 ------------------------------
 .. autofunction:: split
 
@@ -21,7 +21,7 @@ Functions regarding splitting
 
 .. autofunction:: symp_split
 
-Functions regarding the coproduct and antipode
+Coproduct and Antipode
 -----------------------------------------------
 
 .. autofunction:: subtrees

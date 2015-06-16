@@ -20,7 +20,7 @@ from pybs.series import \
 def hf_composition(a):
     r"""The composition :math:`a b`,
     where :math:`b` is the B-series representing
-    the vector field of the exact solution.
+    the vector field corresponding to the exact solution.
 
     That is :math:`b = \delta_{\circ}`.
     """  # TODO: include some trees in the sphinx docs.
@@ -40,11 +40,9 @@ def hf_composition(a):
 
 
 def lie_derivative(c, b, truncate=False):
-    """The Lie-derivative of c with respect to b as
+    """The Lie-derivative of ``c`` with respect to ``b`` as
     a new :class:`series.Bseries.BseriesRule`.
-
-    More!
-    """
+   """
     if b(empty_tree) != 0:
         raise ValueError(
             'The second argument does not satisfy b(ButcherEmptyTree()) == 0.')
@@ -84,13 +82,13 @@ def modified_equation(a, quadratic_vectorfield=False):
 
 
 def log(a, quadratic_vectorfield=False):
-    """Taking a character to an infinitesimal character.
+    """The logarithm.
+
+    If ``a`` is the B-series rule for a numerical method,
+    it returns the rule for the modified equation.
 
     .. note::
        Much slower than :func:`modified_equation`.
-
-    This is the inverse? of :func:`exp`.
-    MORE
     """
     if a(empty_tree) != 1:
         raise ValueError(
@@ -114,10 +112,10 @@ def log(a, quadratic_vectorfield=False):
 
 
 def exp(a, quadratic_vectorfield=False):
-    """Taking an infinitesimal character to a character.
+    """The exponential.
 
-    This is the inverse? of :func:`log`
-    MORE
+    If ``a`` is the rule for the B-serie of some modified equation,
+    it returns the B-series rule for the numerical method.
     """
     if a(empty_tree) != 0:
         raise ValueError(
@@ -142,7 +140,7 @@ def exp(a, quadratic_vectorfield=False):
 def remove_non_binary(a):
     """Sets the value at all non-binary trees to zero.
 
-    Maybe there is a better way to handle quadratic vectorfields?"""
+    Used for quadratic vector fields."""
     base_rule = a._call
 
     def new_rule(tree):
@@ -154,7 +152,9 @@ def remove_non_binary(a):
 
 
 def remove_empty_tree(a):
-    """Returns :math:`a - I`."""
+    """Returns :math:`a - I`.
+
+    Used by :func:`log`."""
     base_rule = a._call
     et = empty_tree
 
@@ -198,13 +198,12 @@ def stepsize_adjustment(a, A):
 
 
 def composition(a, b):
-    """Composition of methods, b after a.
+    r"""Composition of methods, b after a.
 
-    :param a: The first method.
-    :type a: BseriesRule, Lie-Group element.
-    :param b: The second B-series.
-    :type b: B-series? General dual element?
-    :rtype: B-seriesRule or ForestRule
+    Return the composition :math:`a \circ b`.
+    The returned object is a :class:`BseriesRule` if
+    :math:`a(\emptyset) = 1` and a :class:`ForestRule`
+    otherwise.
     """
     @memoized
     def new_rule(arg):  # arg is tree or forest.
@@ -222,8 +221,8 @@ def inverse(a):
     r"""Return the inverse of *a* in the Butcher group.
 
     The returned BseriesRule is calculated as
-    :math:`\left((a \otimes a) \circ S\right)(\tau)`,
-    where :math:`S` denotes the :func:`antipode_ck`.
+    :math:`\left(a \circ S\right)(\tau)`,
+    where :math:`S` denotes the antipode.
     """
     # TODO: Test that a is of the right kind.
     @memoized
@@ -233,14 +232,16 @@ def inverse(a):
 
 
 def conjugate(a, c):
-    """The conjugate of 'a' with change of coordinates 'c'."""
+    """The conjugate of ``a`` with change of coordinates ``c``.
+
+    Calculated with compositions and inverse."""
     return composition(inverse(c), composition(a, c))
 
 
 def conjugate_by_commutator(a, c):
-    """Calculates the conjugate by means of the commutator.
+    """The conjugate of ``a`` with change of coordinates ``c``.
 
-    TODO: Check if the order is right.
+    Calculated using the commutator.
     """
     def new_rule(tree):
         if tree == empty_tree:
@@ -255,7 +256,10 @@ def conjugate_by_commutator(a, c):
 
 
 def adjoint(a):
-    """The adjoint is the inverse with reversed time step."""
+    """The adjoint is the inverse with reversed time step.
+
+    Returns a BseriesRule.
+    """
     def new_rule(tree):
         return (-1)**tree.order() * inverse(a)(tree)
     return BseriesRule(new_rule)

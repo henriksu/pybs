@@ -22,8 +22,8 @@ from pybs.series import \
 
 
 def equal_up_to_order(a, b, max_order=None):
-    '''Checks that 'a' and 'b' give the exact same answer for all trees.
-    Returns n equals the largest order for which this is true.
+    '''Checks that ``a`` and ``b`` give the exact same answer for all trees.
+    Returns the largest order for which this is true.
     '''
     if not a(empty_tree) == b(empty_tree):
         return None
@@ -45,12 +45,12 @@ def convergence_order(a):
 
 
 def symmetric_up_to_order(a, max_order=None):
-    '''Return the order up to which 'a', a B-series representing a flow, is\
+    '''Return the order up to which ``a``, a B-series representing a flow, is\
      symmetric.
 
     Calculated by finding the adjoint and comparing.
-    If 'max_order' is given, the check stops at 'max_order'
-    and returns 'max_order'.
+    If ``max_order`` is given, the check stops at ``max_order``
+    and returns ``max_order``.
     This is useful if a is completely symmetric,
     or if symmetry up to some given order is all that matters.
     '''
@@ -65,7 +65,7 @@ def symmetric_up_to_order(a, max_order=None):
 
 def conjugate_to_symplectic(a, max_order=float("inf"),
                             quadratic_vectorfield=False):
-    '''Checks to what order  a character 'a' is conjugate to symplectic.
+    '''Checks to what order  a character ``a`` is conjugate to symplectic.
     '''
     conv_order = convergence_order(a)  # Known minimum.
     # Methods of order 2 are always conjugate to symplectic up to order 3:
@@ -79,7 +79,7 @@ def conjugate_to_symplectic(a, max_order=float("inf"),
     for order in orders:
         if symmetric_up_to_order(a, order) == order and order % 2 == 0:
             continue
-        A = _conjugate_symplecticity_matrix(order)
+        A = conjugate_symplecticity_matrix(order)
         b = np.asarray(
             [alpha(u, v) for u, v in tree_pairs_of_order(order, sort=True)],
             dtype=np.float64)
@@ -88,7 +88,7 @@ def conjugate_to_symplectic(a, max_order=float("inf"),
     return max_order
 
 
-def _conjugate_symplecticity_matrix(order):
+def conjugate_symplecticity_matrix(order):
     '''An m_(order) by m_(order-1) matrix of integers. \
     Independent of the method under consideration.
 
@@ -120,7 +120,7 @@ def _conjugate_symplecticity_matrix(order):
 
 
 def symplectic_up_to_order(a, max_order=None):
-    '''Check to what order the character 'a' is symplectic.
+    '''Check to what order the character ``a`` is symplectic.
     '''
     # TODO: Find convergence order and check only from there upwards.
     if a(empty_tree) != 1:
@@ -128,9 +128,9 @@ def symplectic_up_to_order(a, max_order=None):
     orders = count(start=2)
     if max_order:
         orders = islice(orders, max_order - 1)
-    _symp_cond = partial(_symplecticity_condition, a)
+    _symp_cond = partial(symplecticity_condition, a)
     for order in orders:
-        if not _satisfied_for_tree_pairs_of_order(_symp_cond, order):
+        if not satisfied_for_tree_pairs_of_order(_symp_cond, order):
             return order - 1
     return max_order
 
@@ -145,15 +145,15 @@ def hamiltonian_up_to_order(a, max_order=None):
     orders = count(start=2)
     if max_order:
         orders = islice(orders, max_order - 1)
-    _ham_cond = partial(_hamilton_condition, a)
+    _ham_cond = partial(hamilton_condition, a)
     for order in orders:
-        if not _satisfied_for_tree_pairs_of_order(_ham_cond, order):
+        if not satisfied_for_tree_pairs_of_order(_ham_cond, order):
             return order - 1
     return max_order
 
 
-def _satisfied_for_tree_pairs_of_order(condition, order):
-    '''Used in 'hamiltonian_up_to_order' and 'symplectic_up_to_order'.
+def satisfied_for_tree_pairs_of_order(condition, order):
+    '''Used in :func:`hamiltonian_up_to_order` and :func:`symplectic_up_to_order`.
 
     Checks all relevant pairs of trees for the two tests using it.
     '''
@@ -167,19 +167,21 @@ def _satisfied_for_tree_pairs_of_order(condition, order):
     return True
 
 
-def _symplecticity_condition(a, tree1, tree2):
-    'Symmetric function in tree1, tree2.'
+def symplecticity_condition(a, tree1, tree2):
+    'Symmetric function in ``tree1``, ``tree2``.'
     return a(tree1.butcher_product(tree2)) + a(tree2.butcher_product(tree1)) \
         == a(tree1) * a(tree2)
 
 
-def _hamilton_condition(a, tree1, tree2):
-    'Symmetric function in tree1, tree2.'
+def hamilton_condition(a, tree1, tree2):
+    'Symmetric function in ``tree1``, ``tree2``.'
     return a(tree1.butcher_product(tree2)) + \
         a(tree2.butcher_product(tree1)) == 0
 
 
 def subspace_hamiltonian_up_to_order(a, max_order=None):
+    """Does the same as :func:`hamiltonian_up_to_order`, but the subspace approach.
+    """
     if a(empty_tree) != 0 or a(leaf) == 0:
         return None  # Not vectorfield at all. TODO: exception.
     orders = count(start=2)
@@ -228,15 +230,15 @@ def energy_preserving_upto_order(a, max_order=None):
     if max_order:
         orders = islice(orders, max_order - 1)
     for order in orders:
-        if not _is_energy_preserving_of_order(a, order):
+        if not is_energy_preserving_of_order(a, order):
             return order - 1
     return max_order
 
 
-def _is_energy_preserving_of_order(a, order):
-    '''Does the heavy lifting for 'energy_preserving_upto_order'.
+def is_energy_preserving_of_order(a, order):
+    '''Does the heavy lifting for :func:`energy_preserving_upto_order`.
     '''
-    forbidden_trees, interesting_trees = _get_tree_sets(order)
+    forbidden_trees, interesting_trees = get_tree_sets(order)
     for tree in forbidden_trees:
         if a(tree) != 0:
             return False
@@ -249,7 +251,6 @@ def _is_energy_preserving_of_order(a, order):
     return True
 
 
-# @memoized TODO: Find a way of hashing input.
 def get_energy_matrix(free_tree, collection):
     '''Return matrix A whose columns form a basis of a certain linear space.
 
@@ -271,7 +272,7 @@ def get_energy_matrix(free_tree, collection):
 
 
 @memoized
-def _get_tree_sets(order):
+def get_tree_sets(order):
     '''Used for checking energy preservation by the method of subspaces.'''
     # TODO: Better docstring.
     # uninteresting_trees = set()  # Energy preservation does not care.
@@ -292,9 +293,9 @@ def _get_tree_sets(order):
 
 
 def not_in_colspan(A, b):
-    '''Returns true of 'b' is not in colspan(A)
+    '''Returns true of ``b`` is not in colspan(``A``)
 
-    Determined numerically by lsqr() (least squares) from scipy.sparse.linalg.
+    Determined numerically by :func:`lsqr` (least squares) from scipy.sparse.linalg.
     '''
     try:
         result = lsqr(A, b)

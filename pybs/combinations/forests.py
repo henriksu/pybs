@@ -3,15 +3,11 @@ from pybs.utils import ClonableMultiset
 
 
 class Forest(ClonableMultiset):
-    """A forest of trees
+    """Objects of this class represent forests.
 
-    Forests are the basis-vectors in the XYZ algebra.
-
-    How to initialize:
-
-    How it is represented as string.
-
-    Multiplication as "concatenation".
+    Forests are initialized by a list of trees.
+    Furthermore, multiplication of two forests, ``*``, is overloaded to
+    give a new forest containing all the trees of the two original forests.
     """
     __slots__ = ()
     multiplicities = ClonableMultiset.values

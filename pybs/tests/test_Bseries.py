@@ -40,7 +40,7 @@ from pybs.series import \
     AVF
 from pybs.series.checks import \
     tree_pairs_of_order, \
-    _conjugate_symplecticity_matrix
+    conjugate_symplecticity_matrix
 
 from pybs.rungekutta.methods import \
     RKeuler, \
@@ -454,33 +454,33 @@ class test_conjugate_to_symplectic(unittest.TestCase):
 #         self.assertEqual(expected, result)
 
     def test_matrix(self):
-        A = _conjugate_symplecticity_matrix(0)
+        A = conjugate_symplecticity_matrix(0)
         self.assertEqual(0, len(A))
 
-        A = _conjugate_symplecticity_matrix(1)
+        A = conjugate_symplecticity_matrix(1)
         self.assertEqual(0, len(A))
 
-        A = _conjugate_symplecticity_matrix(2)
+        A = conjugate_symplecticity_matrix(2)
         self.assertEqual(1, len(A))
         self.assertEqual(0, len(A[0]))
 
-        A = _conjugate_symplecticity_matrix(3)
+        A = conjugate_symplecticity_matrix(3)
         self.assertEqual(1, len(A))
         self.assertEqual(1, len(A[0]))
 
-        A = _conjugate_symplecticity_matrix(4)
+        A = conjugate_symplecticity_matrix(4)
         self.assertEqual(3, len(A))
         self.assertEqual(1, len(A[0]))
 
-        A = _conjugate_symplecticity_matrix(5)
+        A = conjugate_symplecticity_matrix(5)
         self.assertEqual(6, len(A))
         self.assertEqual(3, len(A[0]))
 
-        A = _conjugate_symplecticity_matrix(6)
+        A = conjugate_symplecticity_matrix(6)
         self.assertEqual(16, len(A))
         self.assertEqual(6, len(A[0]))
 
-        A = _conjugate_symplecticity_matrix(7)
+        A = conjugate_symplecticity_matrix(7)
         self.assertEqual(37, len(A))
         self.assertEqual(16, len(A[0]))
 

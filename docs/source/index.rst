@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to PyBS's documentation!
+Documentation PyBS
 ================================
 
 Contents:
@@ -16,8 +16,8 @@ Contents:
    series
    utils
 
-Generally about PyBS
---------------------
+.. Generally about PyBS
+.. --------------------
 .. automodule:: pybs
    :members:
 
