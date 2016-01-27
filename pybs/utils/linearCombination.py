@@ -56,7 +56,7 @@ class LinearCombination(dict):
         self_get = self.get
         if isinstance(other, LinearCombination):
             if self:
-                for elem, count in other.iteritems():
+                for elem, count in other.items():
                     self._fast_setitem(elem, self_get(elem, 0) + count)
             else:
                 super(LinearCombination, self).update(other)
@@ -100,7 +100,7 @@ class LinearCombination(dict):
         """
         if isinstance(other, Number):
             result = LinearCombination()
-            for key, value in self.iteritems():
+            for key, value in self.items():
                 result[key] = value * other
             return result
         else:
