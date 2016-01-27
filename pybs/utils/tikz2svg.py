@@ -25,9 +25,9 @@ class cmds(object):
 latex_doc =r'''
 \documentclass[border=2bp]{standalone}
 \usepackage{tikz}
-\\begin{document}
-\\begingroup
-\\tikzset{every picture/.style={scale=1}}
+\begin{document}
+\begingroup
+\tikzset{every picture/.style={scale=1}}
 %(content)s
 \endgroup
 \end{document}
