@@ -186,7 +186,8 @@ class UnorderedTree(ClonableMultiset):
     def symmetry(self):
         r"""Return the symmetry, :math:`\sigma`, of a tree.
         """
-        def _subtree_contribution((tree, multiplicity)):
+        def _subtree_contribution(elt):
+            tree, multiplicity = elt
             return tree.symmetry() ** multiplicity * \
                 factorial(multiplicity)
         return reduce(__mul__,

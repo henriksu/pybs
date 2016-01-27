@@ -40,7 +40,8 @@ class RK_method(object):
     def g_vector(self, tree):
         g_vector = np.ones((self._s, 1), dtype=object)
 
-        def u_vector((subtree, multiplicity)):
+        def u_vector(elt):
+            subtree, multiplicity = elt
             return np.dot(self.A,
                           self.g_vector(subtree)) ** multiplicity
         return reduce(operator.__mul__, map(u_vector, tree.items()), g_vector)
