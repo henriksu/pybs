@@ -157,7 +157,7 @@ def satisfied_for_tree_pairs_of_order(condition, order):
 
     Checks all relevant pairs of trees for the two tests using it.
     '''
-    max_check_order = order / 2  # Intentional truncation in division.
+    max_check_order = order // 2  # Intentional truncation in division.
     for order1 in range(1, max_check_order + 1):
         order2 = order - order1
         for tree1 in trees_of_order(order1):

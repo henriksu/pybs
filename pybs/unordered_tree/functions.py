@@ -22,7 +22,7 @@ def number_of_trees_of_order(n):
 def _s(n, k):
     """Used in number_of_trees_of_order"""
     result = 0
-    for j in range(1, n/k + 1):
+    for j in range(1, n//k + 1):
         result += number_of_trees_of_order(n+1-j*k)
     return result
 # Joe Riel (joer(AT)san.rr.com), Jun 23 2008
