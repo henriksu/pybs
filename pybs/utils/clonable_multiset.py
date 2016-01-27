@@ -241,6 +241,9 @@ class ClonableMultiset(Clonable):
         'Iterator returning each element as many times as its multiplicity.'
         return _chain.from_iterable(_starmap(_repeat, self._ms.items()))
 
+    def __hash__(self):
+        return super(ClonableMultiset, self).__hash__()
+
     def __eq__(self, other):
         if self is other:
             return True

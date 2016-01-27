@@ -42,6 +42,9 @@ class Forest(ClonableMultiset):
             return ClonableMultiset.__eq__(self, other)
         return NotImplemented
 
+    def __hash__(self):
+        return super(Forest, self).__hash__()
+
     def __ne__(self, other):
         if isinstance(other, type(self)):
             return ClonableMultiset.__ne__(self, other)

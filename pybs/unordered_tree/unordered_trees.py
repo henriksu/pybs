@@ -124,6 +124,9 @@ class UnorderedTree(ClonableMultiset):
         else:
             return NotImplemented
 
+    def __hash__(self):
+        return super(UnorderedTree, self).__hash__()
+
     def __cmp__(self, other):
         r"""Ordering due to P.Leone (2000) PhD thesis.
 
@@ -325,6 +328,9 @@ class FreeTree(object):
         """FreeTree-objects are considered equal iff their representatives are equal.
         """
         return self.representative == other.representative
+
+    def __hash__(self):
+        return super(FreeTree, self).__hash__()
 
     def __ne__(self, other):
         return self.representative != other.representative
