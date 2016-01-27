@@ -70,7 +70,7 @@ class ClonableMultiset(Clonable):
             del self._ms[elem]
 
     def inplace_multiset_sum(self, iterable=0, **kwds):
-        """Updates :math:`A` to :math:`A \uplus B`."""
+        #"""Updates :math:`A` to :math:`A \uplus B`."""
         self._require_mutable()
         if iterable is not 0:
             self_get = self._ms.get
@@ -159,7 +159,7 @@ class ClonableMultiset(Clonable):
             return NotImplemented
 
     def multiset_sum(self, other):  # Old name: __add__
-        """Return :math:`A \uplus B` as a new instance."""
+        #"""Return :math:`A \uplus B` as a new instance."""
         if isinstance(other, ClonableMultiset):
             with self.clone() as result:
                 for elem, count in other.items():
