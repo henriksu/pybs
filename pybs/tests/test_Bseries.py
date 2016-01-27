@@ -252,7 +252,7 @@ class simple_series(unittest.TestCase):
         self.assertEqual(subspace_hamiltonian_up_to_order(
             modified_equation(runge1), max_order), 3)  # == order + 1
 
-#    @unittest.skip
+    @unittest.skip("Too slow")
     def test_hamiltonian_2(self):
         max_order = 7
         euler = RKeuler.phi()
