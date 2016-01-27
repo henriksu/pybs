@@ -24,7 +24,7 @@ class UnorderedTree(ClonableMultiset):
         Possible arguments include strings of the format ``[[],[]]``,
         another :class:`UnorderedTree` and a list/tuple of trees.
         """
-        if isinstance(arg, basestring):
+        if isinstance(arg, str):
             if not (arg[0] == '[' and arg[-1] == ']'):
                 raise ValueError('Invalid string')
             elif arg == '[]':
