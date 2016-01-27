@@ -188,7 +188,7 @@ def subspace_hamiltonian_up_to_order(a, max_order=None):
     if max_order:
         orders = islice(orders, max_order - 1)
     for order in orders:
-        b = np.asarray(map(a, trees_of_order(order, sort=True)),
+        b = np.asarray(list(map(a, trees_of_order(order, sort=True))),
                        dtype=np.float64)
         if not np.any(b):
             continue  # b is zero vector, no need to check further.
@@ -245,7 +245,7 @@ def is_energy_preserving_of_order(a, order):
     for free_tree, collection in interesting_trees.items():
         collection = sorted(collection)
         A = get_energy_matrix(free_tree, collection)
-        b = np.asarray(map(a, collection), dtype=np.float64)
+        b = np.asarray(list(map(a, collection)), dtype=np.float64)
         if not_in_colspan(A, b):
             return False
     return True

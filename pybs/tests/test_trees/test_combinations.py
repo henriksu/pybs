@@ -23,7 +23,7 @@ class test_commutator(unittest.TestCase):
 
     def test_first_second(self):
         tree1 = leaf
-        tree2 = D(tree1).keys()[0]
+        tree2 = list(D(tree1).keys())[0]
         expected = LinearCombination()
         forest1 = Forest([tree1, tree1])
         tree3 = UnorderedTree(forest1)

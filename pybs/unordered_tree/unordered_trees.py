@@ -150,9 +150,9 @@ class UnorderedTree(ClonableMultiset):
         elif self.number_of_children() > other.number_of_children():
             return 1
         else:
-            list_a = self.items()
+            list_a = list(self.items())
             list_a.sort(key=itemgetter(0))
-            list_b = other.items()
+            list_b = list(other.items())
             list_b.sort(key=itemgetter(0))
             for (a, b) in zip(list_a, list_b):
                 if a != b:
@@ -214,7 +214,7 @@ class UnorderedTree(ClonableMultiset):
         """
         result = 'f' + "'" * self.number_of_children()
         if self.number_of_children() == 1:
-            result += self.keys()[0].F()
+            result += list(self.keys())[0].F()
         elif self.number_of_children() > 1:
             result += '(' + ','.join([elem.F() for elem in self.elements()]) \
                 + ')'
@@ -242,7 +242,7 @@ class UnorderedTree(ClonableMultiset):
         """Check if the :class:`UnorderedTree` is a bushy tree."""
         if self == leaf:
             return True
-        elif self.keys() == [leaf]:
+        elif list(self.keys()) == [leaf]:
             return True
         else:
             return False
