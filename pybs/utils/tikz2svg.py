@@ -39,7 +39,7 @@ def run(cmd, stdin=None, exit_on_error=True):
     # print '>', cmd
     p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     if stdin:
-        p.stdin.write(stdin)
+        p.stdin.write(stdin.encode('utf-8'))
         p.stdin.close()
     p.wait()
 
@@ -63,7 +63,7 @@ def memoize_in_file(fn):
     @functools.wraps(fn)
     def memoized(*args, **kwds):
         i = fn.__name__ + str(*args) + str(**kwds)
-        h = hashlib.sha1(i).hexdigest()
+        h = hashlib.sha1(i.encode('utf-8')).hexdigest()
         if os.path.exists(h):
             with open(h) as f:
                 return f.read()
