@@ -127,6 +127,9 @@ class UnorderedTree(ClonableMultiset):
     def __hash__(self):
         return super(UnorderedTree, self).__hash__()
 
+    def __gt__(self, other):
+        return self.__cmp__(other) == 1
+
     def __cmp__(self, other):
         r"""Ordering due to P.Leone (2000) PhD thesis.
 
@@ -342,6 +345,9 @@ class FreeTree(object):
         rooted tree representative.
         """
         return str(self.representative)
+
+    def __gt__(self, other):
+        return self.__cmp__(other) == 1
 
     def __cmp__(self, other):
         """Ordering based on ordering of representative.
