@@ -427,7 +427,7 @@ class test_Butcher_forest(unittest.TestCase):
     def test_count_forests(self):  # Also a stress test.
         # self.assertTrue(False)
         result = [1]
-        for _ in xrange(11):
+        for _ in range(11):
             self.basetree = D(self.basetree)
             result.append(self.basetree.dimensions())
         expected = [1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766]

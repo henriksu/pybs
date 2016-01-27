@@ -71,7 +71,7 @@ def conjugate_to_symplectic(a, max_order=float("inf"),
     # Methods of order 2 are always conjugate to symplectic up to order 3:
     first_order_checked = conv_order + 1 + (conv_order == 2)
     max_order = min(max_order, 2*conv_order)
-    orders = xrange(first_order_checked, max_order+1)
+    orders = range(first_order_checked, max_order+1)
     _alpha = modified_equation(a, quadratic_vectorfield)
 
     def alpha(u, v):

@@ -33,7 +33,7 @@ def number_of_trees_up_to_order(n):
 
     Based on :class:`number_of_trees_of_order`.
     '''
-    return reduce(_add, map(number_of_trees_of_order, xrange(n)), 0)
+    return reduce(_add, map(number_of_trees_of_order, range(n)), 0)
 
 
 def number_of_tree_pairs_of_total_order(n):
