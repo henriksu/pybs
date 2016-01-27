@@ -2,7 +2,7 @@ from operator import itemgetter, __mul__
 from math import factorial
 from fractions import Fraction
 from copy import copy
-from itertools import ifilter, count as _count
+from itertools import count as _count
 
 from pybs.utils import ClonableMultiset, generate_forest, tikz2svg
 from pybs.unordered_tree import treeType, number_of_trees_up_to_order
@@ -59,7 +59,7 @@ class UnorderedTree(ClonableMultiset):
             object.__setattr__(self, '_hash', None)
             self.set_immutable()
         else:
-            arg = ifilter(lambda x: isinstance(x, UnorderedTree), arg)
+            arg = filter(lambda x: isinstance(x, UnorderedTree), arg)
             ClonableMultiset.__init__(self, arg)
 
     multiplicities = ClonableMultiset.values
