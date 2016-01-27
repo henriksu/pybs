@@ -102,8 +102,8 @@ class test_subtrees(unittest.TestCase):
         expected[(Forest((self.t1_1, self.t1_1)), self.t2_1)] = 1
         expected[(Forest((self.t1_1,)), self.t3_1)] = 2
         expected[(self.et, self.t4_2)] = 1
-        print expected
-        print result
+        print(expected)
+        print(result)
         self.assertEqual(expected, result)
 
     def test_seventh(self):
@@ -186,8 +186,8 @@ class test_subtrees_for_antipode(unittest.TestCase):
         expected[(Forest((self.t3_2,)), self.t1_1)] = 1
         expected[(Forest((self.t1_1, self.t1_1)), self.t2_1)] = 1
         expected[(Forest((self.t1_1,)), self.t3_1)] = 2
-        print expected
-        print result
+        print(expected)
+        print(result)
         self.assertEqual(expected, result)
 
     def test_seventh(self):
