@@ -1,5 +1,6 @@
 from copy import copy
 from itertools import repeat as _repeat, chain as _chain, starmap as _starmap
+import functools
 import heapq as _heapq
 from collections import Mapping as _Mapping
 from operator import itemgetter as _itemgetter, __add__ as _add
@@ -223,7 +224,7 @@ class ClonableMultiset(Clonable):
 
     def cardinality(self):
         """Return sum of multiplicities."""
-        return reduce(_add, self._ms.values(), 0)
+        return functools.reduce(_add, self._ms.values(), 0)
 
     def no_uniques(self):
         """Number of different elements in the multiset."""
