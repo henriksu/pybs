@@ -179,7 +179,7 @@ class UnorderedTree(ClonableMultiset):
         r"""Return the density, :math:`\gamma`, of a tree.
         """
         result = self.order()
-        for elem, mult in self.iteritems():
+        for elem, mult in self.items():
             result *= elem.density() ** mult
         return result
 
