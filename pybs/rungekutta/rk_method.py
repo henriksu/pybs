@@ -1,6 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import operator
 import numpy as np
+from functools import reduce
 
 
 from pybs.utils import memoized as memoized

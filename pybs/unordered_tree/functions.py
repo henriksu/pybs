@@ -1,4 +1,5 @@
 from operator import __add__ as _add
+from functools import reduce
 
 from pybs.utils import memoized2 as memoized
 
