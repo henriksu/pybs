@@ -2,7 +2,7 @@
 import numpy as _np
 from fractions import Fraction as _Fraction
 
-from rk_method import RK_method as _RK
+from .rk_method import RK_method as _RK
 
 
 RKeuler = _RK(_np.array([[0]], dtype=object),

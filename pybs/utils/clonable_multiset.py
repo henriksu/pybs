@@ -4,7 +4,7 @@ import heapq as _heapq
 from collections import Mapping as _Mapping
 from operator import itemgetter as _itemgetter, __add__ as _add
 
-from clonable import Clonable
+from .clonable import Clonable
 
 
 class ClonableMultiset(Clonable):

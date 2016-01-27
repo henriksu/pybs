@@ -1,5 +1,5 @@
-from forests import Forest, empty_tree
-from functions import \
+from .forests import Forest, empty_tree
+from .functions import \
     graft, \
     split, \
     subtrees, \
