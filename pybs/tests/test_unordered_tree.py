@@ -41,10 +41,10 @@ class simple_tree(unittest.TestCase):
 #        self.assertTrue(False)
 
     def test_graded_component(self):
-        print "graded component"
+        print("graded component")
         gen = unordered_tree.trees_of_order(4, True)
         for tree in gen:
-            print tree
+            print(tree)
 
     def test_indexing(self):
         result = the_trees.index(self.t1_1)

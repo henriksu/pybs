@@ -17,9 +17,9 @@ class RK_method(object):
         self._s = self.b.size
 
     def printMe(self):  # Simple thing. Look into prettyPrint
-        print 'A ='
-        print self.A
-        print 'b =', self.b
+        print('A =')
+        print(self.A)
+        print('b =', self.b)
 
     @property
     @memoized

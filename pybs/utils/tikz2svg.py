@@ -45,14 +45,14 @@ def run(cmd, stdin=None, exit_on_error=True):
 
     # error out if necessary
     if p.returncode != 0 and exit_on_error:
-        print '>', cmd
-        print 'Error.'
-        print '-' * 20, 'STDIN'
-        print stdin
-        print '-' * 20, 'STDOUT'
-        print p.stdout.read()
-        print '-' * 20, 'STDERR'
-        print p.stderr.read()
+        print('>', cmd)
+        print('Error.')
+        print('-' * 20, 'STDIN')
+        print(stdin)
+        print('-' * 20, 'STDOUT')
+        print(p.stdout.read())
+        print('-' * 20, 'STDERR')
+        print(p.stderr.read())
         sys.exit(p.returncode)
 
     return p.stdout.read()
@@ -107,11 +107,11 @@ def chdir(inp):
 
 if __name__ == '__main__':
     if '-h' in sys.argv or '--help' in sys.argv:
-        print 'Usage: %s [<file>]' % sys.argv[0]
-        print 'Outputs svg conversion of tikz input (files or stdin).'
+        print('Usage: %s [<file>]' % sys.argv[0])
+        print('Outputs svg conversion of tikz input (files or stdin).')
         sys.exit(0)
 
     import fileinput
     lines = ''.join([l for l in fileinput.input()])
     chdir(lines)
-    print tikz2svg(lines)
+    print(tikz2svg(lines))
