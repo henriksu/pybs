@@ -15,7 +15,7 @@ def number_of_trees_of_order(n):
     result = 0
     for k in range(1, n):
         result += k * number_of_trees_of_order(k) * _s(n-1, k)
-    return result / (n - 1)
+    return result // (n - 1)
 
 
 @memoized
