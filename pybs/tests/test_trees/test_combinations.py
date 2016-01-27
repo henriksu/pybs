@@ -36,14 +36,14 @@ class test_subtrees(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)
         self.et = empty_tree
-        self.t1_1 = a.next()  # []
-        self.t2_1 = a.next()  # [[]]
-        self.t3_1 = a.next()  # [[[]]]
-        self.t3_2 = a.next()  # [[],[]]
-        self.t4_1 = a.next()  # [[[[]]]]
-        self.t4_2 = a.next()  # [[[],[]]]
-        self.t4_3 = a.next()  # [[[]],[]]
-        self.t4_4 = a.next()  # [[],[],[]]
+        self.t1_1 = next(a)  # []
+        self.t2_1 = next(a)  # [[]]
+        self.t3_1 = next(a)  # [[[]]]
+        self.t3_2 = next(a)  # [[],[]]
+        self.t4_1 = next(a)  # [[[[]]]]
+        self.t4_2 = next(a)  # [[[],[]]]
+        self.t4_3 = next(a)  # [[[]],[]]
+        self.t4_4 = next(a)  # [[],[],[]]
 
     def test_empty(self):
         result = subtrees(self.et)
@@ -133,14 +133,14 @@ class test_subtrees_for_antipode(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)
         self.et = empty_tree
-        self.t1_1 = a.next()  # []
-        self.t2_1 = a.next()  # [[]]
-        self.t3_1 = a.next()  # [[[]]]
-        self.t3_2 = a.next()  # [[],[]]
-        self.t4_1 = a.next()  # [[[[]]]]
-        self.t4_2 = a.next()  # [[[],[]]]
-        self.t4_3 = a.next()  # [[[]],[]]
-        self.t4_4 = a.next()  # [[],[],[]]
+        self.t1_1 = next(a)  # []
+        self.t2_1 = next(a)  # [[]]
+        self.t3_1 = next(a)  # [[[]]]
+        self.t3_2 = next(a)  # [[],[]]
+        self.t4_1 = next(a)  # [[[[]]]]
+        self.t4_2 = next(a)  # [[[],[]]]
+        self.t4_3 = next(a)  # [[[]],[]]
+        self.t4_4 = next(a)  # [[],[],[]]
 
     def test_empty(self):
         result = _subtrees_for_antipode(self.et)
@@ -213,14 +213,14 @@ class test_antipode(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)
         self.et = empty_tree
-        self.t1_1 = a.next()  # []
-        self.t2_1 = a.next()  # [[]]
-        self.t3_1 = a.next()  # [[[]]]
-        self.t3_2 = a.next()  # [[],[]]
-        self.t4_1 = a.next()  # [[[[]]]]
-        self.t4_2 = a.next()  # [[[],[]]]
-        self.t4_3 = a.next()  # [[[]],[]]
-        self.t4_4 = a.next()  # [[],[],[]]
+        self.t1_1 = next(a)  # []
+        self.t2_1 = next(a)  # [[]]
+        self.t3_1 = next(a)  # [[[]]]
+        self.t3_2 = next(a)  # [[],[]]
+        self.t4_1 = next(a)  # [[[[]]]]
+        self.t4_2 = next(a)  # [[[],[]]]
+        self.t4_3 = next(a)  # [[[]],[]]
+        self.t4_4 = next(a)  # [[],[],[]]
 
     def test_empty(self):
         result = antipode_ck(self.et)
@@ -262,23 +262,23 @@ class test_symp_split(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)
         self.et = empty_tree
-        self.t1_1 = a.next()  # []
-        self.t2_1 = a.next()  # [[]]
-        self.t3_1 = a.next()  # [[[]]]
-        self.t3_2 = a.next()  # [[],[]]
-        self.t4_1 = a.next()  # [[[[]]]]
-        self.t4_2 = a.next()  # [[[],[]]]
-        self.t4_3 = a.next()  # [[[]],[]]
-        self.t4_4 = a.next()  # [[],[],[]]
-        self.t5_1 = a.next()  # [[[[[]]]]]
-        self.t5_2 = a.next()  # [[[[],[]]]]
-        self.t5_3 = a.next()  # [[[[]],[]]]
-        self.t5_4 = a.next()  # [[[],[],[]]]
-        self.t5_5 = a.next()  # [[[[]]],[]
-        self.t5_6 = a.next()  # [[[],[]],[]]
-        self.t5_7 = a.next()  # [[[]],[[]]]
-        self.t5_8 = a.next()  # [[[]],[],[]]
-        self.t5_9 = a.next()  # [[],[],[],[]]
+        self.t1_1 = next(a)  # []
+        self.t2_1 = next(a)  # [[]]
+        self.t3_1 = next(a)  # [[[]]]
+        self.t3_2 = next(a)  # [[],[]]
+        self.t4_1 = next(a)  # [[[[]]]]
+        self.t4_2 = next(a)  # [[[],[]]]
+        self.t4_3 = next(a)  # [[[]],[]]
+        self.t4_4 = next(a)  # [[],[],[]]
+        self.t5_1 = next(a)  # [[[[[]]]]]
+        self.t5_2 = next(a)  # [[[[],[]]]]
+        self.t5_3 = next(a)  # [[[[]],[]]]
+        self.t5_4 = next(a)  # [[[],[],[]]]
+        self.t5_5 = next(a)  # [[[[]]],[]
+        self.t5_6 = next(a)  # [[[],[]],[]]
+        self.t5_7 = next(a)  # [[[]],[[]]]
+        self.t5_8 = next(a)  # [[[]],[],[]]
+        self.t5_9 = next(a)  # [[],[],[],[]]
 
     def test_first(self):
         result = symp_split(self.t1_1)
