@@ -1,10 +1,11 @@
 from copy import copy
 from itertools import repeat as _repeat, chain as _chain, starmap as _starmap
+import functools
 import heapq as _heapq
 from collections import Mapping as _Mapping
 from operator import itemgetter as _itemgetter, __add__ as _add
 
-from clonable import Clonable
+from .clonable import Clonable
 
 
 class ClonableMultiset(Clonable):
@@ -70,23 +71,23 @@ class ClonableMultiset(Clonable):
             del self._ms[elem]
 
     def inplace_multiset_sum(self, iterable=0, **kwds):
-        """Updates :math:`A` to :math:`A \uplus B`."""
+        #"""Updates :math:`A` to :math:`A \uplus B`."""
         self._require_mutable()
         if iterable is not 0:
             self_get = self._ms.get
             if isinstance(iterable, ClonableMultiset):
                 if self:
-                    for elem, count in iterable.iteritems():
+                    for elem, count in iterable.items():
                         self._ms[elem] = self_get(elem, 0) + count
                 else:
                     self._ms.update(iterable)
                     # Fast path when counter is empty
             elif isinstance(iterable, _Mapping):
                 if self:
-                    for elem, count in iterable.iteritems():
+                    for elem, count in iterable.items():
                             self[elem] = self_get(elem, 0) + count
                 else:
-                    for elem, count in iterable.iteritems():
+                    for elem, count in iterable.items():
                         self[elem] = count
             else:
                 for elem in iterable:
@@ -153,13 +154,13 @@ class ClonableMultiset(Clonable):
                     result[key] *= n
             return result
 #            return type(self)(dict(((key, n*value)
-#                                    for (key, value) in self.iteritems())))
+#                                    for (key, value) in self.items())))
             # TODO: This is a nasty workaround.
         else:
             return NotImplemented
 
     def multiset_sum(self, other):  # Old name: __add__
-        """Return :math:`A \uplus B` as a new instance."""
+        #"""Return :math:`A \uplus B` as a new instance."""
         if isinstance(other, ClonableMultiset):
             with self.clone() as result:
                 for elem, count in other.items():
@@ -223,7 +224,7 @@ class ClonableMultiset(Clonable):
 
     def cardinality(self):
         """Return sum of multiplicities."""
-        return reduce(_add, self._ms.values(), 0)
+        return functools.reduce(_add, self._ms.values(), 0)
 
     def no_uniques(self):
         """Number of different elements in the multiset."""
@@ -233,12 +234,15 @@ class ClonableMultiset(Clonable):
         """Return the `n` most common elements.
         """
         if n is None:
-            return sorted(self.iteritems(), key=_itemgetter(1), reverse=True)
-        return _heapq.nlargest(n, self.iteritems(), key=_itemgetter(1))
+            return sorted(self.items(), key=_itemgetter(1), reverse=True)
+        return _heapq.nlargest(n, self.items(), key=_itemgetter(1))
 
     def elements(self):
         'Iterator returning each element as many times as its multiplicity.'
-        return _chain.from_iterable(_starmap(_repeat, self._ms.iteritems()))
+        return _chain.from_iterable(_starmap(_repeat, self._ms.items()))
+
+    def __hash__(self):
+        return super(ClonableMultiset, self).__hash__()
 
     def __eq__(self, other):
         if self is other:
@@ -265,13 +269,13 @@ class ClonableMultiset(Clonable):
     def __iter__(self):
         return iter(self._ms)
 
-    def iteritems(self):
+    def items(self):
         """Return iterator over (key,value)-pairs."""
-        return self._ms.iteritems()
+        return self._ms.items()
 
     def iterkeys(self):
         """Return iterator over keys."""
-        return self._ms.iterkeys()
+        return self._ms.keys()
 
     def keys(self):
         """Return list of keys (elements)."""
@@ -310,12 +314,12 @@ class ClonableMultiset(Clonable):
         Only called if immutable.
         """
         # It would have been simpler and maybe more obvious to
-        # use hash(tuple(sorted(self._d.iteritems()))) from this discussion
+        # use hash(tuple(sorted(self._d.items()))) from this discussion
         # so far, but this solution is O(n). I don't know what kind of
         # n we are going to run into, but sometimes it's hard to resist the
         # urge to optimize when it will gain improved algorithmic performance.
         result = 0
-        for pair in self._ms.iteritems():
+        for pair in self._ms.items():
             result ^= hash(pair)
         return result
 

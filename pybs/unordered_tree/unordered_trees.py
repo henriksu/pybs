@@ -2,7 +2,8 @@ from operator import itemgetter, __mul__
 from math import factorial
 from fractions import Fraction
 from copy import copy
-from itertools import ifilter, count as _count
+from itertools import count as _count
+from functools import reduce
 
 from pybs.utils import ClonableMultiset, generate_forest, tikz2svg
 from pybs.unordered_tree import treeType, number_of_trees_up_to_order
@@ -24,7 +25,7 @@ class UnorderedTree(ClonableMultiset):
         Possible arguments include strings of the format ``[[],[]]``,
         another :class:`UnorderedTree` and a list/tuple of trees.
         """
-        if isinstance(arg, basestring):
+        if isinstance(arg, str):
             if not (arg[0] == '[' and arg[-1] == ']'):
                 raise ValueError('Invalid string')
             elif arg == '[]':
@@ -59,7 +60,7 @@ class UnorderedTree(ClonableMultiset):
             object.__setattr__(self, '_hash', None)
             self.set_immutable()
         else:
-            arg = ifilter(lambda x: isinstance(x, UnorderedTree), arg)
+            arg = filter(lambda x: isinstance(x, UnorderedTree), arg)
             ClonableMultiset.__init__(self, arg)
 
     multiplicities = ClonableMultiset.values
@@ -123,6 +124,12 @@ class UnorderedTree(ClonableMultiset):
         else:
             return NotImplemented
 
+    def __hash__(self):
+        return super(UnorderedTree, self).__hash__()
+
+    def __gt__(self, other):
+        return self.__cmp__(other) == 1
+
     def __cmp__(self, other):
         r"""Ordering due to P.Leone (2000) PhD thesis.
 
@@ -143,9 +150,9 @@ class UnorderedTree(ClonableMultiset):
         elif self.number_of_children() > other.number_of_children():
             return 1
         else:
-            list_a = self.items()
+            list_a = list(self.items())
             list_a.sort(key=itemgetter(0))
-            list_b = other.items()
+            list_b = list(other.items())
             list_b.sort(key=itemgetter(0))
             for (a, b) in zip(list_a, list_b):
                 if a != b:
@@ -179,14 +186,15 @@ class UnorderedTree(ClonableMultiset):
         r"""Return the density, :math:`\gamma`, of a tree.
         """
         result = self.order()
-        for elem, mult in self.iteritems():
+        for elem, mult in self.items():
             result *= elem.density() ** mult
         return result
 
     def symmetry(self):
         r"""Return the symmetry, :math:`\sigma`, of a tree.
         """
-        def _subtree_contribution((tree, multiplicity)):
+        def _subtree_contribution(elt):
+            tree, multiplicity = elt
             return tree.symmetry() ** multiplicity * \
                 factorial(multiplicity)
         return reduce(__mul__,
@@ -206,7 +214,7 @@ class UnorderedTree(ClonableMultiset):
         """
         result = 'f' + "'" * self.number_of_children()
         if self.number_of_children() == 1:
-            result += self.keys()[0].F()
+            result += list(self.keys())[0].F()
         elif self.number_of_children() > 1:
             result += '(' + ','.join([elem.F() for elem in self.elements()]) \
                 + ')'
@@ -234,7 +242,7 @@ class UnorderedTree(ClonableMultiset):
         """Check if the :class:`UnorderedTree` is a bushy tree."""
         if self == leaf:
             return True
-        elif self.keys() == [leaf]:
+        elif list(self.keys()) == [leaf]:
             return True
         else:
             return False
@@ -324,6 +332,9 @@ class FreeTree(object):
         """
         return self.representative == other.representative
 
+    def __hash__(self):
+        return super(FreeTree, self).__hash__()
+
     def __ne__(self, other):
         return self.representative != other.representative
 
@@ -334,6 +345,9 @@ class FreeTree(object):
         rooted tree representative.
         """
         return str(self.representative)
+
+    def __gt__(self, other):
+        return self.__cmp__(other) == 1
 
     def __cmp__(self, other):
         """Ordering based on ordering of representative.

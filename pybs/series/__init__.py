@@ -1,4 +1,4 @@
-from Bseries import \
+from .Bseries import \
     BseriesRule, \
     VectorfieldRule, \
     ForestRule, \
@@ -7,10 +7,10 @@ from Bseries import \
     _kahan, \
     unit_field, \
     AVF
-from functions import \
+from .functions import \
     tree_pairs_of_order, \
     tree_tuples_of_order
-from operations import \
+from .operations import \
     hf_composition, \
     lie_derivative, \
     modified_equation, \
@@ -25,7 +25,7 @@ from operations import \
     conjugate_by_commutator, \
     series_commutator
 
-from checks import \
+from .checks import \
     equal_up_to_order, \
     convergence_order, \
     symmetric_up_to_order, \

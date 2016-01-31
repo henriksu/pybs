@@ -71,7 +71,7 @@ def conjugate_to_symplectic(a, max_order=float("inf"),
     # Methods of order 2 are always conjugate to symplectic up to order 3:
     first_order_checked = conv_order + 1 + (conv_order == 2)
     max_order = min(max_order, 2*conv_order)
-    orders = xrange(first_order_checked, max_order+1)
+    orders = range(first_order_checked, max_order+1)
     _alpha = modified_equation(a, quadratic_vectorfield)
 
     def alpha(u, v):
@@ -157,7 +157,7 @@ def satisfied_for_tree_pairs_of_order(condition, order):
 
     Checks all relevant pairs of trees for the two tests using it.
     '''
-    max_check_order = order / 2  # Intentional truncation in division.
+    max_check_order = order // 2  # Intentional truncation in division.
     for order1 in range(1, max_check_order + 1):
         order2 = order - order1
         for tree1 in trees_of_order(order1):
@@ -188,7 +188,7 @@ def subspace_hamiltonian_up_to_order(a, max_order=None):
     if max_order:
         orders = islice(orders, max_order - 1)
     for order in orders:
-        b = np.asarray(map(a, trees_of_order(order, sort=True)),
+        b = np.asarray(list(map(a, trees_of_order(order, sort=True))),
                        dtype=np.float64)
         if not np.any(b):
             continue  # b is zero vector, no need to check further.
@@ -245,7 +245,7 @@ def is_energy_preserving_of_order(a, order):
     for free_tree, collection in interesting_trees.items():
         collection = sorted(collection)
         A = get_energy_matrix(free_tree, collection)
-        b = np.asarray(map(a, collection), dtype=np.float64)
+        b = np.asarray(list(map(a, collection)), dtype=np.float64)
         if not_in_colspan(A, b):
             return False
     return True

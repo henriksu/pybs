@@ -22,12 +22,12 @@ class cmds(object):
     pdf2svg = 'pdf2svg texput.pdf out.svg'
 
 
-latex_doc ='''
+latex_doc =r'''
 \documentclass[border=2bp]{standalone}
 \usepackage{tikz}
-\\begin{document}
-\\begingroup
-\\tikzset{every picture/.style={scale=1}}
+\begin{document}
+\begingroup
+\tikzset{every picture/.style={scale=1}}
 %(content)s
 \endgroup
 \end{document}
@@ -39,20 +39,20 @@ def run(cmd, stdin=None, exit_on_error=True):
     # print '>', cmd
     p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     if stdin:
-        p.stdin.write(stdin)
+        p.stdin.write(stdin.encode('utf-8'))
         p.stdin.close()
     p.wait()
 
     # error out if necessary
     if p.returncode != 0 and exit_on_error:
-        print '>', cmd
-        print 'Error.'
-        print '-' * 20, 'STDIN'
-        print stdin
-        print '-' * 20, 'STDOUT'
-        print p.stdout.read()
-        print '-' * 20, 'STDERR'
-        print p.stderr.read()
+        print('>', cmd)
+        print('Error.')
+        print('-' * 20, 'STDIN')
+        print(stdin)
+        print('-' * 20, 'STDOUT')
+        print(p.stdout.read())
+        print('-' * 20, 'STDERR')
+        print(p.stderr.read())
         sys.exit(p.returncode)
 
     return p.stdout.read()
@@ -63,7 +63,7 @@ def memoize_in_file(fn):
     @functools.wraps(fn)
     def memoized(*args, **kwds):
         i = fn.__name__ + str(*args) + str(**kwds)
-        h = hashlib.sha1(i).hexdigest()
+        h = hashlib.sha1(i.encode('utf-8')).hexdigest()
         if os.path.exists(h):
             with open(h) as f:
                 return f.read()
@@ -107,11 +107,11 @@ def chdir(inp):
 
 if __name__ == '__main__':
     if '-h' in sys.argv or '--help' in sys.argv:
-        print 'Usage: %s [<file>]' % sys.argv[0]
-        print 'Outputs svg conversion of tikz input (files or stdin).'
+        print('Usage: %s [<file>]' % sys.argv[0])
+        print('Outputs svg conversion of tikz input (files or stdin).')
         sys.exit(0)
 
     import fileinput
     lines = ''.join([l for l in fileinput.input()])
     chdir(lines)
-    print tikz2svg(lines)
+    print(tikz2svg(lines))

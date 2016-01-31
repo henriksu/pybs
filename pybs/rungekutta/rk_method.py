@@ -1,6 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import operator
 import numpy as np
+from functools import reduce
 
 
 from pybs.utils import memoized as memoized
@@ -17,9 +18,9 @@ class RK_method(object):
         self._s = self.b.size
 
     def printMe(self):  # Simple thing. Look into prettyPrint
-        print 'A ='
-        print self.A
-        print 'b =', self.b
+        print('A =')
+        print(self.A)
+        print('b =', self.b)
 
     @property
     @memoized
@@ -40,7 +41,8 @@ class RK_method(object):
     def g_vector(self, tree):
         g_vector = np.ones((self._s, 1), dtype=object)
 
-        def u_vector((subtree, multiplicity)):
+        def u_vector(elt):
+            subtree, multiplicity = elt
             return np.dot(self.A,
                           self.g_vector(subtree)) ** multiplicity
         return reduce(operator.__mul__, map(u_vector, tree.items()), g_vector)

@@ -8,43 +8,42 @@ class simple_tree(unittest.TestCase):
     def setUp(self):
         a = tree_generator(sort=True)  # TODO: Implement indexing of functions.
         self.et = empty_tree
-        self.t1_1 = a.next()  # []
-        self.t2_1 = a.next()  # [[]]
-        self.t3_1 = a.next()  # [[[]]]
-        self.t3_2 = a.next()  # [[],[]]
-        self.t4_1 = a.next()  # [[[[]]]]
-        self.t4_2 = a.next()  # [[[],[]]]
-        self.t4_3 = a.next()  # [[[]],[]]
-        self.t4_4 = a.next()  # [[],[],[]]
-        self.t5_1 = a.next()  # [[[[[]]]]]
-        self.t5_2 = a.next()  # [[[[],[]]]]
-        self.t5_3 = a.next()  # [[[[]],[]]]
-        self.t5_4 = a.next()  # [[[],[],[]]]
-        self.t5_5 = a.next()  # [[[[]]],[]
-        self.t5_6 = a.next()  # [[[],[]],[]]
-        self.t5_7 = a.next()  # [[[]],[[]]]
-        self.t5_8 = a.next()  # [[[]],[],[]]
-        self.t5_9 = a.next()  # [[],[],[],[]]
+        self.t1_1 = next(a)  # []
+        self.t2_1 = next(a)  # [[]]
+        self.t3_1 = next(a)  # [[[]]]
+        self.t3_2 = next(a)  # [[],[]]
+        self.t4_1 = next(a)  # [[[[]]]]
+        self.t4_2 = next(a)  # [[[],[]]]
+        self.t4_3 = next(a)  # [[[]],[]]
+        self.t4_4 = next(a)  # [[],[],[]]
+        self.t5_1 = next(a)  # [[[[[]]]]]
+        self.t5_2 = next(a)  # [[[[],[]]]]
+        self.t5_3 = next(a)  # [[[[]],[]]]
+        self.t5_4 = next(a)  # [[[],[],[]]]
+        self.t5_5 = next(a)  # [[[[]]],[]
+        self.t5_6 = next(a)  # [[[],[]],[]]
+        self.t5_7 = next(a)  # [[[]],[[]]]
+        self.t5_8 = next(a)  # [[[]],[],[]]
+        self.t5_9 = next(a)  # [[],[],[],[]]
 
     def test_generator(self):
-        print "Hello World!"
         gen = unordered_tree.tree_generator(sort=True)
-        print gen.next()
-        print gen.next()
-        print gen.next()
-        print gen.next()
-        print gen.next()
-        print gen.next()
-        print gen.next()
-        print gen.next()
-        print gen.next()
+        print(next(gen))
+        print(next(gen))
+        print(next(gen))
+        print(next(gen))
+        print(next(gen))
+        print(next(gen))
+        print(next(gen))
+        print(next(gen))
+        print(next(gen))
 #        self.assertTrue(False)
 
     def test_graded_component(self):
-        print "graded component"
+        print("graded component")
         gen = unordered_tree.trees_of_order(4, True)
         for tree in gen:
-            print tree
+            print(tree)
 
     def test_indexing(self):
         result = the_trees.index(self.t1_1)

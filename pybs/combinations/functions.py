@@ -141,7 +141,7 @@ def differentiate(thing):
     derivate once more with respect to *t*."""
     if isinstance(thing, LinearCombination):
         result = LinearCombination()
-        for tree, factor in thing.iteritems():
+        for tree, factor in thing.items():
             result += treeD(tree) * factor
     elif isinstance(thing, UnorderedTree):
         result = treeD(thing)

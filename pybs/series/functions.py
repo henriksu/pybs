@@ -5,7 +5,7 @@ def tree_pairs_of_order(order, sort=False):
     "Returns a list of tuples of functions. \
     Each tuple considered as an unordered pair is returned exactly once."
     result = []
-    max_order = order / 2  # Intentional truncation in division.
+    max_order = order // 2  # Intentional truncation in division.
     for order1 in range(1, max_order + 1):
         order2 = order - order1
         # Sorting is important for reproducability.
